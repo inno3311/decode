@@ -3,12 +3,11 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.Drivebase.CentricDrive;
-import org.firstinspires.ftc.teamcode.Drivebase.TurnToHeading;
+import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
+import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.IMU;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 
 @TeleOp(name = "Centric Command *Don't run this one*", group = "FieldCentric")
 @Disabled

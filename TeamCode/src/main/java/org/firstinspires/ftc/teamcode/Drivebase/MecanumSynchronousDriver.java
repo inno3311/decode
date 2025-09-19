@@ -5,10 +5,11 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-//import org.firstinspires.ftc.teamcode.IMU.IMU;
-import org.firstinspires.ftc.teamcode.util.Logging;
-import org.firstinspires.ftc.teamcode.util.PIDController;
-import org.firstinspires.ftc.teamcode.util.ImuHardware;
+
+
+import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.ImuHardware;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
+import org.firstinspires.ftc.teamcode.Misc.Logging;
 
 import java.io.IOException;
 

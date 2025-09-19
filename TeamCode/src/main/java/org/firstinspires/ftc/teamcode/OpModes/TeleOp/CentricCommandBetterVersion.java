@@ -5,11 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.Drivebase.CentricDriveTheBetterVersion;
-import org.firstinspires.ftc.teamcode.Drivebase.TurnToHeading;
+import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDriveTheBetterVersion;
+import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.IMU;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 
 @TeleOp(name = "Centric Command", group = "FieldCentric")
 @Disabled

@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Roadrunner;
+package org.firstinspires.ftc.teamcode.Drivebase;
 
 import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -33,26 +32,39 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Roadrunner.Drawing;
+import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.PoseMessage;
-
 import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 @Config
-public final class MecanumDrive {
+public final class MecanumDrive
+{
+    private double leftPowerFront  = 0;
+    private double rightPowerFront = 0;
+    private double rightPowerBack  = 0;
+    private double leftPowerBack   = 0;
+    private double speed = 0;
+
+    private int driveDir = 1;
+    private int strafeDir = 1;
+    private int turnDir = 1;
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -494,4 +506,113 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
+
+    /**
+     * Standard controls from a gamepad
+     *
+     * @param gamepad - the gamepad you want to control the drive base
+     */
+    public void gamepadController(Gamepad gamepad)
+    {
+        double drive = driveDir * -gamepad.left_stick_y;
+        double turn = turnDir * gamepad.right_stick_x;
+        double strafe = strafeDir * gamepad.left_stick_x;
+        speed = 1 - (1.5 * gamepad.right_trigger);
+        driveMotors(drive, turn, strafe, speed);
+    }
+
+    /**
+     * Drive the motors according to drive, turn, strafe inputs.
+     *
+     * @param drive forward / backward (-1 to 1)
+     * @param turn how much to turn left or right (heading) (-1 to 1)
+     * @param strafe strafe (left or right = -1 to 1)
+     * @param speed scale factor that is applied to all motor powers (0 to 1)
+     */
+    public void driveMotors(double drive, double turn, double strafe, double speed)
+    {
+        leftPowerFront  = (drive + turn + strafe);
+        rightPowerFront = (drive - turn - strafe);
+        leftPowerBack   = (drive + turn - strafe);
+        rightPowerBack  = (drive - turn + strafe);
+
+        // This code is awful.
+        double maxAbsVal = maxAbsVal(leftPowerFront, leftPowerBack,
+                rightPowerFront, rightPowerBack);
+
+        maxAbsVal = Math.max(1.0, maxAbsVal);
+
+        leftFront.setPower(leftPowerFront/maxAbsVal * speed);
+        rightFront.setPower(rightPowerFront/maxAbsVal * speed);
+        leftBack.setPower(leftPowerBack/maxAbsVal * speed);
+        rightBack.setPower(rightPowerBack/maxAbsVal * speed);
+
+    }
+
+    /**
+     * Drives the bot right or backward in a straight line.
+     * @param target distance in inches to travel.
+     * @param right indicates direction of travel.  1 is right -1 is left
+     * @param power double value indicating the power from 0 to 1.
+     */
+
+    public void strafe(double target, int right, double power)
+    {
+        //reset the encoders
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        power *= right;
+        double targetPos = rightFront.getCurrentPosition();
+        targetPos += target * PARAMS.inPerTick;
+
+        if ((Math.abs(rightFront.getCurrentPosition()) <= targetPos))
+        {
+            this.driveMotors(0, 0, power, 1); // run with PID
+        }
+    }
+
+    public void forward(double target, int forward, double power)
+    {
+        //reset the encoders
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        power *= forward;
+        int targetPos = rightBack.getCurrentPosition();
+        targetPos += target * PARAMS.inPerTick;
+
+        if ((Math.abs(rightBack.getCurrentPosition()) <= targetPos))
+        {
+            this.driveMotors(power, 0, 0, 1); // run with PID
+        }
+    }
+
+    /**
+     * maxAbsVal returns the maximum absolute value among an arbitrary number of arguments.
+     *
+     * @param values an arbitrary number of values.
+     * @return the maximum absolute value among the numbers.
+     */
+    public static double maxAbsVal(double ... values){
+        double mav = Double.NEGATIVE_INFINITY;
+        for (double val: values) {
+            mav = Math.max(mav, Math.abs(val));
+        }
+        return mav;
+    }
+
+    /**
+     * report drivebase telemetry
+     *
+     * @param telemetry the telemetry object we're reporting to.
+     */
+    public void driveBaseTelemetry(Telemetry telemetry)
+    {
+        telemetry.addData("Motors", "lf: %.2f rf: %.2f lb: %.2f rb: %.2f", leftPowerFront, rightPowerFront, leftPowerBack, rightPowerBack);
+        telemetry.addData("Speed control", speed);
+    }
+
 }

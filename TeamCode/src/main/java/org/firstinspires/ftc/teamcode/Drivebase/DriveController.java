@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.IMU;
-import org.firstinspires.ftc.teamcode.IMU.IMUControl;
 
 // Do not use
 public class DriveController
