@@ -199,14 +199,14 @@ public class IMU
         speed *= forward;
 
         //Fetch the odometry pod wheel location.
-        leftFrontPos = driveController.lf.getCurrentPosition();
+        leftFrontPos = driveController.leftFront.getCurrentPosition();
         if (forward == 1)
         {
             //Add the target distance to the current location
             leftFrontPos += target;
 
             //Drive from current position to target position
-            while (driveController.lf.getCurrentPosition() <= leftFrontPos)
+            while (driveController.leftFront.getCurrentPosition() <= leftFrontPos)
             {
                 // Use PID with imu input to drive in a straight line.
                 correction = pidDrive.performPID(getAngle());
@@ -219,14 +219,14 @@ public class IMU
                 telemetry.addData("2 global heading", globalAngle);
                 telemetry.addData("3 correction", correction);
                 telemetry.addData("4 turn rotation", rotation);
-                telemetry.addData("5 lf pos", driveController.lf.getCurrentPosition());
+                telemetry.addData("5 lf pos", driveController.leftFront.getCurrentPosition());
                 telemetry.update();
             }
         }
         else
         {
             leftFrontPos -= target;
-            while (driveController.lf.getCurrentPosition() >= leftFrontPos)
+            while (driveController.leftFront.getCurrentPosition() >= leftFrontPos)
             {
                 // Use PID with imu input to drive in a straight line.
                 correction = pidDrive.performPID(getAngle());
@@ -237,7 +237,7 @@ public class IMU
                 telemetry.addData("2 global heading", globalAngle);
                 telemetry.addData("3 correction", correction);
                 telemetry.addData("4 turn rotation", rotation);
-                telemetry.addData("5 lf pos", driveController.lf.getCurrentPosition());
+                telemetry.addData("5 lf pos", driveController.leftFront.getCurrentPosition());
                 telemetry.update();
             }
         }
@@ -345,26 +345,26 @@ public class IMU
         if (right == 1)
         {
             rightFrontPos -= target;
-            while (driveController.rf.getCurrentPosition() >= rightFrontPos)
+            while (driveController.rightFront.getCurrentPosition() >= rightFrontPos)
             {
                 // Use PID with imu input to drive in a straight line.
                 strafeCorrection = pidStrafe.performPID(getAngle());
 
                 driveController.driveMotors(0, strafeCorrection, speed, 1);
-                telemetry.addData("", driveController.rf.getCurrentPosition());
+                telemetry.addData("", driveController.rightFront.getCurrentPosition());
                 telemetry.update();
             }
         }
         else
         {
             rightFrontPos += target;
-            while (driveController.rf.getCurrentPosition() <= rightFrontPos)
+            while (driveController.rightFront.getCurrentPosition() <= rightFrontPos)
             {
                 // Use PID with imu input to drive in a straight line.
                 strafeCorrection = pidStrafe.performPID(getAngle());
 
                 driveController.driveMotors(0, strafeCorrection, speed, 1);
-                telemetry.addData("", driveController.rf.getCurrentPosition());
+                telemetry.addData("", driveController.rightFront.getCurrentPosition());
                 telemetry.update();
             }
         }

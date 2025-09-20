@@ -10,7 +10,6 @@ public class TurnToHeading
     MecanumDrive driveController;
     IMU imu;
 
-//    PIDController pid;
     private double target;
 
     public TurnToHeading(Telemetry telemetry, MecanumDrive driveController, IMU imu)
@@ -47,36 +46,8 @@ public class TurnToHeading
             }
         }
         delta_heading = delta_heading/90;
-        /*
-        telemetry.addData("cur heading", current_heading);
-        telemetry.addData("target heading", target_heading);
-        telemetry.addData("delta heading", delta_heading);
-        telemetry.addData("x sign", Math.signum(x));
-        telemetry.addData("x", x);
-        telemetry.addData("y", y);
-        telemetry.update();
-        */
+
         return (delta_heading);
     }
-/*
-    {
-        double imu_heading = imu.getAngle();
-        imu_heading = Math.abs(imu_heading) % 360;
-        //if (Math.abs(x) > deadzone && Math.abs(y) > deadzone)
-        //{
-            double target_heading = Math.toDegrees(Math.atan2(x, y));
-            if (x != 0)
-            {
-                target_heading = target_heading * Math.signum(x);
-            }
-        //}
 
-        telemetry.addData("cur heading", imu_heading);
-        telemetry.addData("target heading", target_heading);
-        telemetry.addData("x sign", Math.signum(x));
-        telemetry.addData("x", x);
-        telemetry.addData("y", y);
-        telemetry.update();
-    }
-*/
 }

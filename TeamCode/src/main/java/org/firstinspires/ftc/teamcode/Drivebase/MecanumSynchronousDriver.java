@@ -26,19 +26,10 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
     * NOTE: value may need fine tuning.
     */
    private final double ticksPerInch = (8192 * 1) / (2 * 3.1415); // == 1303
-//                    Circumference of the robot when turning == encoder dist from center (radius) * 2 * pi
-//                                        ^^^
-//   private final double ticksPerDegree = (ticksPerInch * 64.09) / 360; // 16,000
- //  private final double ticksPerDegree = (ticksPerInch * 56.0) / 360; // 16,000
-   //private final double ticksPerDegree = (ticksPerInch * 54.6) / 360; // 16,000
-//private final double ticksPerDegree = (ticksPerInch * 55.0) / 360;
-   //private final double ticksPerDegree = (ticksPerInch * 54.0) / 360;  // 195.57536208817444
-//private final double ticksPerDegree = 202.75;//190;  //FOR BATT 12.3 VOLTS
+// Circumference of the robot when turning == encoder dist from center (radius) * 2 * pi
+
    private final double ticksPerDegree = 199;  // 12.63 V
-//68,466 for 360
-//34,233 for 180
-//17,116 for 90
-// 8,558 for 45
+
 
    /**
     * Logging method used to write data to file.
@@ -62,12 +53,9 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
     */
    PIDController pidStrafe;
 
-
    PIDController pidRotateImu;
 
    PIDController pidRotateOd;
-
-   double rotation;
 
    //Time out timer to kep the robot from getting stuck
    ElapsedTime time;
@@ -137,7 +125,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
         pidStrafe.enable();
 
         speed *= forward;
-        int leftFrontPos = this.lf.getCurrentPosition();
+        int leftFrontPos = this.leftFront.getCurrentPosition();
 
         if (forward == 1)
             leftFrontPos += target * ticksPerInch;
@@ -148,8 +136,8 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
         {
             int frontLeftPos, frontRightPos;
 
-            frontLeftPos = this.lf.getCurrentPosition();
-            frontRightPos = this.rf.getCurrentPosition();
+            frontLeftPos = this.leftFront.getCurrentPosition();
+            frontRightPos = this.rightFront.getCurrentPosition();
 
             double currPosTicks = (frontLeftPos + frontRightPos) / 2;
 
@@ -161,7 +149,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
 
             // if the number is positive the bot strafed left
             // if the number is negative the bot strafed right
-            int strafeDifference = this.rb.getCurrentPosition();
+            int strafeDifference = this.rightBack.getCurrentPosition();
 
             // Use PID with imu input to drive in a straight line.
             // pos is right turn, neg is left turn
@@ -243,7 +231,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
         pidStrafe.enable();
 
         speed *= forward;
-        int leftFrontPos = this.lf.getCurrentPosition();
+        int leftFrontPos = this.leftFront.getCurrentPosition();
 
             if (forward == 1)
                 leftFrontPos += target * ticksPerInch;
@@ -254,8 +242,8 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
             {
                 int frontLeftPos, frontRightPos;
 
-                frontLeftPos = this.lf.getCurrentPosition();
-                frontRightPos = this.rf.getCurrentPosition();
+                frontLeftPos = this.leftFront.getCurrentPosition();
+                frontRightPos = this.rightFront.getCurrentPosition();
 
                 double currPosTicks = (frontLeftPos + frontRightPos) / 2;
 
@@ -267,7 +255,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
 
                 // if the number is positive the bot strafed left
                 // if the number is negative the bot strafed right
-                int strafeDifference = this.rb.getCurrentPosition();
+                int strafeDifference = this.rightBack.getCurrentPosition();
 
                 // Use PID with imu input to drive in a straight line.
                 // pos is right turn, neg is left turn
@@ -368,18 +356,18 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
         pidRotateImu.enable();
 
         speed *= right;
-        int strafeTargetPos = this.rb.getCurrentPosition();
+        int strafeTargetPos = this.rightBack.getCurrentPosition();
         strafeTargetPos += target * ticksPerInch;
 
         time.reset();
         time.startTime();
 
-        while ((Math.abs(this.rb.getCurrentPosition()) <= strafeTargetPos) && mOpMode.opModeIsActive() && seconds > time.seconds())
+        while ((Math.abs(this.rightBack.getCurrentPosition()) <= strafeTargetPos) && mOpMode.opModeIsActive() && seconds > time.seconds())
         {
             //if the number is positive the bot is slipping forward
             //if the number is negative the bot is slipping backwards
             //lf and rf are added because rf is reverse of lf direction.
-            int yDifference = ((this.lf.getCurrentPosition() + this.rf.getCurrentPosition()) / 2);
+            int yDifference = ((this.leftFront.getCurrentPosition() + this.rightFront.getCurrentPosition()) / 2);
 
             int direction = 1;
             if (yDifference < 0)
@@ -387,7 +375,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
 
             // if the number is positive the bot strafed left
             // if the number is negative the bot strafed right
-            int strafeDifference = this.rb.getCurrentPosition();
+            int strafeDifference = this.rightBack.getCurrentPosition();
 
             double angle = imuControl.getAngle();
 
@@ -458,15 +446,15 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
         pidRotateImu.enable();
 
         speed *= right;
-        int strafeTargetPos = this.rb.getCurrentPosition();
+        int strafeTargetPos = this.rightBack.getCurrentPosition();
         strafeTargetPos += target * ticksPerInch;
 
-        while ((Math.abs(this.rb.getCurrentPosition()) <= strafeTargetPos) && mOpMode.opModeIsActive())
+        while ((Math.abs(this.rightBack.getCurrentPosition()) <= strafeTargetPos) && mOpMode.opModeIsActive())
         {
             //if the number is positive the bot is slipping forward
             //if the number is negative the bot is slipping backwards
             //lf and rf are added because rf is reverse of lf direction.
-            int yDifference = ((this.lf.getCurrentPosition() + this.rf.getCurrentPosition()) / 2);
+            int yDifference = ((this.leftFront.getCurrentPosition() + this.rightFront.getCurrentPosition()) / 2);
 
             int direction = 1;
             if (yDifference < 0)
@@ -474,7 +462,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
 
             // if the number is positive the bot strafed left
             // if the number is negative the bot strafed right
-            int strafeDifference = this.rb.getCurrentPosition();
+            int strafeDifference = this.rightBack.getCurrentPosition();
 
             double angle = imuControl.getAngle();
 
@@ -504,7 +492,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
     {
        Logging.log("#rotateOd degrees = %d  power = %f", degrees, power);
 
-       int startPos = this.rb.getCurrentPosition();
+       int startPos = this.rightBack.getCurrentPosition();
        double targetPos = degrees * ticksPerDegree;
        pidRotateOd.reset();
        pidRotateOd.setSetpoint(targetPos);
@@ -538,14 +526,14 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
 
        do
        {
-          power = pidRotateOd.performPID(this.rb.getCurrentPosition() - startPos); // power will be + on left turn.
+          power = pidRotateOd.performPID(this.rightBack.getCurrentPosition() - startPos); // power will be + on left turn.
           this.driveMotors(0, power, 0, 1);
 
           //mOpMode.telemetry.addData("rotateOd2", "startPos:  %d   targetPos: %f ", startPos,targetPos);
           //mOpMode.telemetry.addData("rotateOd2", "power: %f currPos:  %d", power, this.rb.getCurrentPosition() - startPos);
           //mOpMode.telemetry.update();
 
-          Logging.log("#rotateOd targetPos: %f power: %f currPos: %d degrees: %f",targetPos, power, this.rb.getCurrentPosition() - startPos, (this.rb.getCurrentPosition() - startPos)/ticksPerDegree);
+          Logging.log("#rotateOd targetPos: %f power: %f currPos: %d degrees: %f",targetPos, power, this.rightBack.getCurrentPosition() - startPos, (this.rightBack.getCurrentPosition() - startPos)/ticksPerDegree);
 
           if (pidRotateOd.onTarget())
           {
@@ -560,10 +548,10 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
        this.driveMotors(0, 0, 0, 0);
 
        mOpMode.telemetry.addData("rotateOd3", "startPos:  %d   targetPos: %f ", startPos,targetPos);
-       mOpMode.telemetry.addData("rotateOd3", "currPos:  %d  degrees: %f", this.rb.getCurrentPosition() - startPos, (this.rb.getCurrentPosition() - startPos)/ticksPerDegree);
+       mOpMode.telemetry.addData("rotateOd3", "currPos:  %d  degrees: %f", this.rightBack.getCurrentPosition() - startPos, (this.rightBack.getCurrentPosition() - startPos)/ticksPerDegree);
        mOpMode.telemetry.update();
 
-       Logging.log("#rotateOd complete  currPos:  %d  degrees: %f",  this.rb.getCurrentPosition() - startPos, (this.rb.getCurrentPosition() - startPos)/ticksPerDegree);
+       Logging.log("#rotateOd complete  currPos:  %d  degrees: %f",  this.rightBack.getCurrentPosition() - startPos, (this.rightBack.getCurrentPosition() - startPos)/ticksPerDegree);
     }
 
     public enum DirectionType

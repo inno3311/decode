@@ -18,10 +18,7 @@ public class CentricDrive
 
     public void drive(double x,double y, double robot_heading, double slowMo, double turn)
     {
-        // double speed = 1 * (1-Range.clip(slowMo, 0, 0.7));
-        // double speed = (2*Math.pow(slowMo-1.08*(Math.sqrt(0.3)), 2)) + 0.3;
-         double speed = 8*Math.pow((slowMo-0.543879), 4) + 0.3;
-        // double speed = 40*Math.pow((slowMo-0.52), 6) + 0.2;
+        double speed = 8*Math.pow((slowMo-0.543879), 4) + 0.3;
 
         double drive_y = y * Math.cos(Math.toRadians(robot_heading)) + x * Math.sin(Math.toRadians(robot_heading));
         double drive_x = -y * Math.sin(Math.toRadians(robot_heading)) + x * Math.cos(Math.toRadians(robot_heading));

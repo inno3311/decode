@@ -60,10 +60,10 @@ public class Logging
      */
     public static boolean enabled = true;
 
-    private static FileHandler 		fileTxt;
+    private static FileHandler fileTxt;
     //static private SimpleFormatter	formatterTxt;
-    private static LogFormatter		logFormatter;
-    private static boolean          isSetup;
+    private static LogFormatter logFormatter;
+    private static boolean isSetup;
 
     /**
      * Configures our custom logging. If you don't use this custom logging, logging will go to

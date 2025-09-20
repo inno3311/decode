@@ -9,11 +9,12 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.IMU;
 // Do not use
 public class DriveController
 {
-    public DcMotor lf;
-    public DcMotor lb;
-    public DcMotor rb;
-    public DcMotor rf;
-  
+    public DcMotor leftFront;
+    public DcMotor leftBack;
+    public DcMotor rightFront;
+    public DcMotor rightBack;
+
+
     public double leftPowerFront  = 0;
     public double rightPowerFront = 0;
     public double rightPowerBack  = 0;
@@ -26,8 +27,6 @@ public class DriveController
 
     final double  COUNTS_PER_INCH = (8192 * 1) / (2 * 3.1415); // 1,303.835747254496
     private double heading = 0;
-    IMU imuControl;
-
 
     public DriveController(HardwareMap hardwareMap, int driveDir, int strafeDir, int turnDir)
     {
@@ -45,15 +44,15 @@ public class DriveController
      */
     public DriveController(HardwareMap hardwareMap)
     {
-        lf = hardwareMap.get(DcMotor.class, "lf");
-        lb = hardwareMap.get(DcMotor.class, "lb");
-        rb = hardwareMap.get(DcMotor.class, "rb");
-        rf = hardwareMap.get(DcMotor.class, "rf");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
 
-        lf.setDirection(DcMotor.Direction.FORWARD);
-        rf.setDirection(DcMotor.Direction.REVERSE);
-        lb.setDirection(DcMotor.Direction.FORWARD);
-        rb.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         // Run Without Encoders
         resetRunMode();
@@ -62,10 +61,10 @@ public class DriveController
         resetRunMode();
 
         // Brake when power set to Zero
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -74,26 +73,26 @@ public class DriveController
      */
     protected void resetRunMode()
     {
-        lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     protected void resetEncoders()
     {
-        lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     //make the robot stop
     public void brake()
     {
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -131,10 +130,10 @@ public class DriveController
         
           maxAbsVal = Math.max(1.0, maxAbsVal);
 
-          lf.setPower(leftPowerFront/maxAbsVal * speed);
-          rf.setPower(rightPowerFront/maxAbsVal * speed);
-          lb.setPower(leftPowerBack/maxAbsVal * speed);
-          rb.setPower(rightPowerBack/maxAbsVal * speed);
+          leftFront.setPower(leftPowerFront/maxAbsVal * speed);
+          rightFront.setPower(rightPowerFront/maxAbsVal * speed);
+          leftBack.setPower(leftPowerBack/maxAbsVal * speed);
+          rightBack.setPower(rightPowerBack/maxAbsVal * speed);
 
       }
 
@@ -152,15 +151,15 @@ public class DriveController
         this.resetRunMode();
 
         speed *= right;
-        int strafeTargetPos = this.rb.getCurrentPosition();
+        int strafeTargetPos = this.rightBack.getCurrentPosition();
         strafeTargetPos += target * 1303.0*3;
 
-        if ((Math.abs(this.rb.getCurrentPosition()) <= strafeTargetPos))
+        if ((Math.abs(this.rightBack.getCurrentPosition()) <= strafeTargetPos))
         {
             //if the number is positive the bot is slipping forward
             //if the number is negative the bot is slipping backwards
             //lf and rf are added because rf is reverse of lf direction.
-            int yDifference = ((this.lf.getCurrentPosition() + this.rf.getCurrentPosition()) / 2);
+            int yDifference = ((this.leftFront.getCurrentPosition() + this.rightFront.getCurrentPosition()) / 2);
 
             int direction = 1;
             if (yDifference < 0)
@@ -168,7 +167,7 @@ public class DriveController
 
             // if the number is positive the bot strafed left
             // if the number is negative the bot strafed right
-            int strafeDifference = this.rb.getCurrentPosition();
+            int strafeDifference = this.rightBack.getCurrentPosition();
 
             // Use PID with imu input to drive in a straight line.
             // pos is right turn, neg is left turn
@@ -186,7 +185,7 @@ public class DriveController
      */
     public double maxMotorPower()
     {
-          return maxAbsVal(lf.getPower(), rf.getPower(), lb.getPower(), rb.getPower());
+          return maxAbsVal(leftFront.getPower(), rightFront.getPower(), leftBack.getPower(), rightBack.getPower());
     }
 
     /**
@@ -210,7 +209,7 @@ public class DriveController
      */
     public void driveBaseTelemetry(Telemetry telemetry)
     {
-        telemetry.addData("Motors", "lf: %.2f rf: %.2f lb: %.2f rb: %.2f", leftPowerFront, rightPowerFront, leftPowerBack, rightPowerBack);
+        telemetry.addData("Motors", "leftFront: %.2f leftBack: %.2f rightFront: %.2f rightBack: %.2f", leftPowerFront, leftPowerBack, rightPowerFront, rightPowerBack);
         telemetry.addData("Speed control", speed);
     }
 }

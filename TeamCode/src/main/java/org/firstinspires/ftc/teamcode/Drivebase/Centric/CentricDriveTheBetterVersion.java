@@ -38,8 +38,10 @@ public class CentricDriveTheBetterVersion
         chaosOverride(gamepad);
         int offset = veryImportsntMethod();
         robot_heading = robot_heading + offset;
+
         double drive_y = y * Math.cos(Math.toRadians(robot_heading)) + x * Math.sin(Math.toRadians(robot_heading));
         double drive_x = -y * Math.sin(Math.toRadians(robot_heading)) + x * Math.cos(Math.toRadians(robot_heading));
+
         drive.driveMotors(drive_y, -turn, -drive_x,1);
         telemetry.update();
 
