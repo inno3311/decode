@@ -3,24 +3,24 @@ package org.firstinspires.ftc.teamcode.OpModes.UItility;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagMaster;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 @Autonomous(name = "AprilTagLoc")
 @Disabled
 public class AprilTagLoc extends LinearOpMode
 {
-    AprilTagMaster aprilTagMaster;
+    AprilTagLocalizer aprilTagLocalizer;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        aprilTagMaster = new AprilTagMaster(hardwareMap);
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
 
         waitForStart();
 
         while (opModeIsActive())
         {
-            aprilTagMaster.tagsTelemetry(telemetry);
+            aprilTagLocalizer.tagsTelemetry(telemetry);
         }
 
     }
