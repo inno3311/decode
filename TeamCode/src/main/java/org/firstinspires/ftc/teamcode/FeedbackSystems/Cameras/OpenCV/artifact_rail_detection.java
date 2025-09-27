@@ -21,17 +21,23 @@ public class artifact_rail_detection extends OpenCvPipeline
    Telemetry telemetry;
 
    // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm], cam-to-arm hinge z_distance[cm])
-   private Scalar cam_placement = new Scalar(8*2.54, 12.5, 8.5, 25);
+   public Scalar cam_placement = new Scalar(8*2.54, 12.5, 8.5, 25);
    //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
    double camera_height = cam_placement.val[0];
    double distance_minimum_camera = cam_placement.val[1];
    double camera_x_offset = cam_placement.val[2];
    double camera_z_offset = cam_placement.val[3];
-   double range_limiter = 100; //larger = farther range detection
+   double range_limiter = 9999; //larger = farther range detection
    double x_resolution = 320;
    double y_resolution = 180;
    double y_fov = 52.2;
    double x_fov = 82.1;
+
+   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
+   double x_degrees_per_pixel = x_fov/x_resolution;
+   double y_degrees_per_pixel = y_fov/y_resolution;
+
+
    private Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
@@ -39,12 +45,9 @@ public class artifact_rail_detection extends OpenCvPipeline
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
-   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
-   double x_degrees_per_pixel = x_fov/x_resolution;
-   double y_degrees_per_pixel = y_fov/y_resolution;
 
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
-   public Scalar purple_1_lower = new Scalar(130, 50, 50);
+   public Scalar purple_1_lower = new Scalar(135, 50, 50);
 
 //   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
@@ -216,6 +219,7 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return input;
 //      return hsv_mask;
 //      return grey;
+//      return binary_mask_mat;
 //      return canny_output;
       return drawings;
 //      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
