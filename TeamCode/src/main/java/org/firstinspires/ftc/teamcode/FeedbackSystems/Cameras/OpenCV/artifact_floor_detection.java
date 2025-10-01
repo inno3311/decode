@@ -16,6 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 import java.lang.Math;
 
@@ -32,8 +33,13 @@ public class artifact_floor_detection extends OpenCvPipeline
    double camera_x_offset = cam_placement.val[2];
    double camera_z_offset = cam_placement.val[3];
    double range_limiter = 9999; //larger = farther range detection
+//   double x_resolution = 320;
+//   double y_resolution = 180;
+
+
    double x_resolution = 320;
    double y_resolution = 180;
+
    double y_fov = 52.2;
    double x_fov = 82.1;
    double object_radius = 12.7;
@@ -54,7 +60,6 @@ public class artifact_floor_detection extends OpenCvPipeline
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
    public Scalar purple_1_lower = new Scalar(135, 50, 50);
 
-//   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
 //   public Scalar purple_2_upper = new Scalar(10, 255, 255);
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
@@ -94,33 +99,19 @@ public class artifact_floor_detection extends OpenCvPipeline
       return(rect_dimensions);
    }
 
-   public ArrayList<ArrayList<Double>> object_distances()
+   public ArrayList<Double> calculate_artifact_distance(ArrayList<Double> artifact_pixel_radius_list, double actual_radius, double degrees_per_pixel_x)
    {
-      ArrayList<ArrayList<Double>> object_points = new ArrayList<>();
-      if (artifact_points.size() < 1)
+      ArrayList<Double> artifact_distances = new ArrayList<>();
+      for (int i = 0; i < artifact_pixel_radius_list.size(); i++)
       {
-         ArrayList<Double> no_object_point = new ArrayList<>(Arrays.asList(-100.0, -100.0, -100.0));
-         return new ArrayList<>(Arrays.asList(no_object_point));
-      }      int nearest_object_index = 0;
-      for (int i = 0; i < artifact_points.size(); i++)
-      {
-         if (artifact_points.get(i).y <= artifact_points.get(nearest_object_index).y)
-         {
-            continue;
-         }
-         nearest_object_index = i;
+         double artifact_pixel_radius = artifact_pixel_radius_list.get(i);
+         double angle = Math.toRadians(artifact_pixel_radius * degrees_per_pixel_x);
+         telemetry.addData("angle_degrees", (artifact_pixel_radius * degrees_per_pixel_x));
+         telemetry.addData("angle_radians", (angle));
+         double distance = actual_radius / Math.tan(angle);
+         artifact_distances.add(distance);
       }
-      Point position_in_camera = artifact_points.get(nearest_object_index);
-      double position_in_camera_x = position_in_camera.x;
-      double position_in_camera_y = y_resolution - position_in_camera.y;
-      double angle = Math.toRadians(angle_difference + y_degrees_per_pixel * (y_resolution - position_in_camera.y));
-      double z_distance = camera_height * Math.tan(angle);
-      double center_line = (x_degrees_per_pixel*x_resolution)/2;
-      double x_angle = (x_degrees_per_pixel*position_in_camera_x)-center_line;
-      double x_distance = Math.tan(Math.toRadians(x_angle))*z_distance+camera_x_offset;
-      ArrayList<Double> distances = new ArrayList<>(Arrays.asList(x_distance, 0.00, z_distance));
-      object_points.add(distances);
-      return object_points;
+      return artifact_distances;
    }
 
    // relative position resources:
@@ -257,7 +248,10 @@ public class artifact_floor_detection extends OpenCvPipeline
 
       this.artifact_points = artifact_points;
       this.artifact_radii = artifact_radii;
-      telemetry.addData("Artifact Points", artifact_points);
+//      telemetry.addData("Artifact Points", artifact_points);
+      telemetry.addData("Artifact Radii", artifact_radii);
+      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel);
+      telemetry.addData("Artifact Distances", artifact_distances);
       telemetry.update();
 
 
