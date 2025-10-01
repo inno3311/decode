@@ -150,7 +150,7 @@ public class opencvBalls extends OpenCvPipeline
        * Mat to "binaryMat" of the same size as our input.
        * "Discards" all the pixels outside the bounds specified
        * by the scalars above (and modifiable with EOCV-Sim's
-       * live variable tuner.)
+       * live variable tuner.)`
        *
        * Binary meaning that we have either a 0 or 255 value
        * for every pixel.

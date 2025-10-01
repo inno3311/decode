@@ -23,8 +23,8 @@ public class JoshOpenCV extends OpenCvPipeline
    public int blur = 0;
 
 
-   //private Mat ycrcbMat       = new Mat();
-   //private Mat binaryMat      = new Mat();
+   private Mat ycrcbMat       = new Mat();
+   private Mat binaryMat      = new Mat();
    Mat gray = new Mat();
    @Override
    public void init(Mat firstFrame)
@@ -117,6 +117,8 @@ public class JoshOpenCV extends OpenCvPipeline
 
 
       return gray;
+      //return input;
+      //Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
    }
 
 
