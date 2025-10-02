@@ -11,6 +11,8 @@ public class ServoTest extends LinearOpMode
 {
     Servo servo;
     ElapsedTime time;
+    private final double startingAngle = 30;
+    private final double servoRange = 270 * (5/7);
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -28,12 +30,12 @@ public class ServoTest extends LinearOpMode
             if (gamepad1.dpad_up && flagTime < time.seconds())
             {
                 flagTime = time.seconds() + 0.25;
-                servoTarget += 0.025;
+                servoTarget += 0.1;
             }
             else if (gamepad1.dpad_down && flagTime < time.seconds())
             {
                 flagTime = time.seconds() + 0.25;
-                servoTarget -= 0.025;
+                servoTarget -= 0.1;
             }
 
             if (gamepad1.a)
@@ -54,6 +56,24 @@ public class ServoTest extends LinearOpMode
             {
                 servo.setPosition(servoTarget);
             }
+
+            if (gamepad1.b)
+            {
+                servo.setPosition(driveServoToAngle(60));
+            }
         }
     }
+
+    private double driveServoToAngle(double angle)
+    {
+        if (angle < startingAngle)
+        {
+            return 0;
+        }
+        return servoRange/(angle-startingAngle);
+    }
 }
+
+//110
+//270
+//5/16
