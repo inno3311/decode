@@ -14,24 +14,41 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
+
+import java.lang.Math;
 
 public class artifact_floor_detection extends OpenCvPipeline
 {
    Telemetry telemetry;
 
-   // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm], cam-to-arm hinge z_distance[cm])
-   private Scalar cam_placement = new Scalar(8*2.54, 12.5, 8.5, 25);
+
+   // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm] (x offset), cam-to-arm hinge z_distance[cm] (z offset))
+   public Scalar cam_placement = new Scalar(13.5, 35.5, 0, 0);
    //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
    double camera_height = cam_placement.val[0];
    double distance_minimum_camera = cam_placement.val[1];
    double camera_x_offset = cam_placement.val[2];
    double camera_z_offset = cam_placement.val[3];
-   double range_limiter = 100; //larger = farther range detection
+   double range_limiter = 9999; //larger = farther range detection
+//   double x_resolution = 320;
+//   double y_resolution = 180;
+
+
    double x_resolution = 320;
    double y_resolution = 180;
+
    double y_fov = 52.2;
    double x_fov = 82.1;
+   double object_radius = 12.7;
+
+   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
+   double x_degrees_per_pixel = x_fov/x_resolution;
+   double y_degrees_per_pixel = y_fov/y_resolution;
+
+
    private Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
@@ -39,14 +56,10 @@ public class artifact_floor_detection extends OpenCvPipeline
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
-   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
-   double x_degrees_per_pixel = x_fov/x_resolution;
-   double y_degrees_per_pixel = y_fov/y_resolution;
 
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
-   public Scalar purple_1_lower = new Scalar(130, 50, 50);
+   public Scalar purple_1_lower = new Scalar(135, 50, 50);
 
-//   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
 //   public Scalar purple_2_upper = new Scalar(10, 255, 255);
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
@@ -70,6 +83,7 @@ public class artifact_floor_detection extends OpenCvPipeline
    private Mat grey = new Mat();
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
+   private ArrayList<Double> artifact_radii = new ArrayList<>();
 
    public ArrayList<Object> get_bounding_box_dimensions(Point[] rectangle_points)
    {
@@ -85,6 +99,23 @@ public class artifact_floor_detection extends OpenCvPipeline
       return(rect_dimensions);
    }
 
+   public ArrayList<Double> calculate_artifact_distance(ArrayList<Double> artifact_pixel_radius_list, double actual_radius, double degrees_per_pixel_x)
+   {
+      ArrayList<Double> artifact_distances = new ArrayList<>();
+      for (int i = 0; i < artifact_pixel_radius_list.size(); i++)
+      {
+         double artifact_pixel_radius = artifact_pixel_radius_list.get(i);
+         double angle = Math.toRadians(artifact_pixel_radius * degrees_per_pixel_x);
+         telemetry.addData("angle_degrees", (artifact_pixel_radius * degrees_per_pixel_x));
+         telemetry.addData("angle_radians", (angle));
+         double distance = actual_radius / Math.tan(angle);
+         artifact_distances.add(distance);
+      }
+      return artifact_distances;
+   }
+
+   // relative position resources:
+   // https://stackoverflow.com/questions/14038002/opencv-how-to-calculate-distance-between-camera-and-object-using-image
 
    @Override
    public void init(Mat firstFrame)
@@ -104,17 +135,7 @@ public class artifact_floor_detection extends OpenCvPipeline
       Scalar yellow_color = new Scalar(255, 255, 0);
       Scalar green_color = new Scalar(0, 255, 0);
       ArrayList<Point> artifact_points = new ArrayList<>();
-      double diagonal_fov = 55;
-      double x_resolution = 320;
-      double y_resolution = 240;
-      double diagonal_resolution = Math.sqrt(Math.pow(x_resolution, 2) + Math.pow(y_resolution, 2));
-      // number of degrees per pixel
-      double pixel_angle = diagonal_fov/diagonal_resolution;
-      //original size of object
-      double original_size = 3.5;
-      double x_center = x_resolution/2;
-
-//      telemetry.addData("pixel angle", pixel_angle);
+      ArrayList<Double> artifact_radii = new ArrayList<>();
 
 
       Imgproc.medianBlur(input, drawings, blur);
@@ -188,7 +209,7 @@ public class artifact_floor_detection extends OpenCvPipeline
                   Imgproc.ellipse(drawings, minEllipse[i], blue_color, 2);
                }
 
-                // Draw rotated rectangle
+               // Draw rotated rectangle
                Point[] rectPoints = new Point[4];
                minRect[i].points(rectPoints);
                if (draw_objects.val[2] >= 1)
@@ -199,28 +220,64 @@ public class artifact_floor_detection extends OpenCvPipeline
                   }
                }
 
+               //draw attempted_circle
+               double average_radius = 0;
+               if (draw_objects.val[3] >= 1)
+               {
+                  for (int k = 0; k < 4; k++)
+                  {
+                     average_radius += (double) get_bounding_box_dimensions(rectPoints).get(k) / 2;
+                  }
+                  average_radius = average_radius / 4;
+                  telemetry.addData("average_radius", (average_radius));
+                  Imgproc.circle(drawings, object_center_point, (int) Math.round(average_radius), white_color, 1);
+               }
+
+
                // Draw center points
                if (draw_objects.val[3] >= 1)
                {
                   Imgproc.circle(drawings, object_center_point, 1, yellow_color, 2, 8, 0);
                }
                artifact_points.add(object_center_point);
+               artifact_radii.add(average_radius);
                telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
             }
          }
       }
 
       this.artifact_points = artifact_points;
-      telemetry.addData("Artifact Points", artifact_points);
+      this.artifact_radii = artifact_radii;
+//      telemetry.addData("Artifact Points", artifact_points);
+      telemetry.addData("Artifact Radii", artifact_radii);
+      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel);
+      telemetry.addData("Artifact Distances", artifact_distances);
       telemetry.update();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //      return input;
 //      return hsv_mask;
 //      return grey;
 //      return canny_output;
+//      return binary_mask_mat;
       return drawings;
 //      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
-
-
 
    }
 }
