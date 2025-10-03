@@ -1,0 +1,293 @@
+package org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV;
+
+//import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Collections;
+
+import java.lang.Math;
+
+public class artifact_floor_detection extends OpenCvPipeline
+{
+   Telemetry telemetry;
+
+
+   // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm] (x offset), cam-to-arm hinge z_distance[cm] (z offset))
+   public Scalar cam_placement = new Scalar(13.5, 35.5, 0, 0);
+   //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
+   double camera_height = cam_placement.val[0];
+   double distance_minimum_camera = cam_placement.val[1];
+   double camera_x_offset = cam_placement.val[2];
+   double camera_z_offset = cam_placement.val[3];
+   double range_limiter = 9999; //larger = farther range detection
+
+   double x_resolution = 320;
+   double y_resolution = 180;
+
+//   double x_resolution = 640;
+//   double y_resolution = 480;
+
+   double y_fov = 52.2;
+   double x_fov = 82.1;
+   double object_radius = 12.7;
+
+   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
+   double x_degrees_per_pixel = x_fov/x_resolution;
+   double y_degrees_per_pixel = y_fov/y_resolution;
+
+
+   private Scalar object_size_limits = new Scalar(700, 20000);
+//   private Scalar object_size_limits = new Scalar(20000, 200000000);
+
+   // x_max, x_min, y_max, y_min
+   private Scalar detection_limits = new Scalar(0, x_resolution, 0, y_resolution);
+
+   // contours, ellipses, rectangles, center dots&bounding box
+   public Scalar draw_objects = new Scalar(1, 1, 1, 1);
+
+   public Scalar purple_1_upper = new Scalar(179, 255, 255);
+   public Scalar purple_1_lower = new Scalar(135, 50, 50);
+
+
+//   public Scalar purple_2_upper = new Scalar(10, 255, 255);
+//   public Scalar purple_2_lower = new Scalar(10, 50, 50);
+
+
+//   public Scalar green_upper = new Scalar(66, 255, 255);
+//   public Scalar green_lower = new Scalar(34, 44, 40);
+
+
+   // must be any odd number > 0
+   public int blur = 3;
+
+   // edge contour threshold
+   public int threshold = 500;
+
+
+   private Mat output = new Mat();
+   private Mat binary_mat      = new Mat();
+   private Mat hsv_mask = new Mat();
+   private Mat binary_mask_mat = new Mat();
+   private Mat grey = new Mat();
+   private Mat drawings = new Mat();
+   private ArrayList<Point> artifact_points = new ArrayList<>();
+   private ArrayList<Double> artifact_radii = new ArrayList<>();
+
+   public ArrayList<Object> get_bounding_box_dimensions(Point[] rectangle_points)
+   {
+      double a = Math.sqrt(Math.pow((rectangle_points[0].x-rectangle_points[1].x), 2) + Math.pow((rectangle_points[0].y-rectangle_points[1].y), 2));
+      double b = Math.sqrt(Math.pow((rectangle_points[1].x-rectangle_points[2].x), 2) + Math.pow((rectangle_points[1].y-rectangle_points[2].y), 2));
+      double c = Math.sqrt(Math.pow((rectangle_points[2].x-rectangle_points[3].x), 2) + Math.pow((rectangle_points[2].y-rectangle_points[3].y), 2));
+      double d = Math.sqrt(Math.pow((rectangle_points[3].x-rectangle_points[0].x), 2) + Math.pow((rectangle_points[3].y-rectangle_points[0].y), 2));
+      ArrayList<Object> rect_dimensions = new ArrayList<>();
+      rect_dimensions.add(a);
+      rect_dimensions.add(b);
+      rect_dimensions.add(c);
+      rect_dimensions.add(d);
+      return(rect_dimensions);
+   }
+
+   public ArrayList<Double> calculate_artifact_distance(ArrayList<Double> artifact_pixel_radius_list, double actual_radius, double degrees_per_pixel_x, double offset_scale)
+   {
+      ArrayList<Double> artifact_distances = new ArrayList<>();
+      for (int i = 0; i < artifact_pixel_radius_list.size(); i++)
+      {
+         double artifact_pixel_radius = artifact_pixel_radius_list.get(i);
+         double angle = Math.toRadians(artifact_pixel_radius * degrees_per_pixel_x);
+         telemetry.addData("angle_degrees", (artifact_pixel_radius * degrees_per_pixel_x));
+         telemetry.addData("angle_radians", (angle));
+         double distance = (actual_radius / Math.tan(angle))*offset_scale;
+         artifact_distances.add(distance);
+      }
+      return artifact_distances;
+   }
+
+   // relative position resources:
+   // https://stackoverflow.com/questions/14038002/opencv-how-to-calculate-distance-between-camera-and-object-using-image
+
+   @Override
+   public void init(Mat firstFrame)
+   {
+
+   }
+
+   public artifact_floor_detection(Telemetry telemetry) {
+      this.telemetry = telemetry;
+   }
+   @Override
+   public Mat processFrame(Mat input)
+   {
+      Scalar white_color = new Scalar(256, 256, 256);
+      Scalar blue_color = new Scalar(0, 15, 137); // phthalo blue
+      Scalar red_color = new Scalar(255, 0, 0);
+      Scalar yellow_color = new Scalar(255, 255, 0);
+      Scalar green_color = new Scalar(0, 255, 0);
+      Scalar purple_color = new Scalar(85, 45, 111);
+      ArrayList<Point> artifact_points = new ArrayList<>();
+      ArrayList<Double> artifact_radii = new ArrayList<>();
+
+
+      Imgproc.medianBlur(input, drawings, blur);
+      Imgproc.cvtColor(drawings, hsv_mask, Imgproc.COLOR_BGR2HSV);
+
+
+      // Color mat. Returns a binary (black/white) matrix.
+      Core.inRange(hsv_mask, purple_1_lower, purple_1_upper, binary_mat);
+//      Core.inRange(hsv_mask, green_lower, green_upper, binary_mat);
+      binary_mask_mat.release();
+
+
+      // overlay binary matrix onto it onto the input
+      Core.bitwise_and(drawings, drawings, binary_mask_mat, binary_mat);
+
+
+      // Start locating objects
+      Imgproc.cvtColor(binary_mask_mat, grey, Imgproc.COLOR_BGR2GRAY);
+//      Imgproc.blur(grey, grey, new Size(blur, blur));
+      Imgproc.medianBlur(grey, grey, blur);
+      Mat canny_output = new Mat();
+      Imgproc.Canny(binary_mat, canny_output, threshold, threshold*2);
+
+      // add found edges to an array
+      List<MatOfPoint> contours = new ArrayList<>();
+      Mat hierarchy = new Mat();
+      Imgproc.findContours(canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+
+      // Find the rotated rectangles and ellipses for each contour
+      RotatedRect[] minRect = new RotatedRect[contours.size()];
+      RotatedRect[] minEllipse = new RotatedRect[contours.size()];
+      for (int i = 0; i < contours.size(); i++) {
+         minRect[i] = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(i).toArray()));
+         minEllipse[i] = new RotatedRect();
+         if (contours.get(i).rows() > 5) {
+            minEllipse[i] = Imgproc.fitEllipse(new MatOfPoint2f(contours.get(i).toArray()));
+         }
+      }
+
+      // Draw detection bounding box
+      if (draw_objects.val[3] >= 1)
+      {
+         // Bottom left to top left
+         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
+         // Bottom left to bottom right
+         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
+         // top right to bottom right
+         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
+         // top right to top left
+         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
+      }
+
+      // Draw contours, elipses, and rectangles
+      for (int i = 0; i < contours.size(); i++) {
+         Point object_center_point = minEllipse[i].center;
+         // check to see if object is within the set margins
+         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && (object_center_point.y >= detection_limits.val[2] && object_center_point.y <= detection_limits.val[3]))
+         {
+            if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
+            {
+               telemetry.addData("area", minEllipse[i].boundingRect().area());
+               // Draw contour
+               if (draw_objects.val[0] >= 1)
+               {
+                  Imgproc.drawContours(drawings, contours, i, white_color);
+               }
+
+               // Draw rotated ellipse
+               if (draw_objects.val[1] >= 1)
+               {
+                  Imgproc.ellipse(drawings, minEllipse[i], blue_color, 2);
+               }
+
+               // Draw rotated rectangle
+               Point[] rectPoints = new Point[4];
+               minRect[i].points(rectPoints);
+               if (draw_objects.val[2] >= 1)
+               {
+                  for (int j = 0; j < 4; j++)
+                  {
+                     Imgproc.line(drawings, rectPoints[j], rectPoints[(j + 1) % 4], red_color);
+                  }
+               }
+
+               //draw attempted_circle
+               double average_radius = 0;
+               if (draw_objects.val[3] >= 1)
+               {
+                  Imgproc.line(drawings, new Point(0, y_resolution/2), new Point(x_resolution, y_resolution/2), white_color, (int) y_resolution/180);
+                  Imgproc.line(drawings, new Point(x_resolution/2, 0), new Point(x_resolution/2, y_resolution), white_color, (int) y_resolution/180);
+                  for (int k = 0; k < 4; k++)
+                  {
+                     average_radius += (double) get_bounding_box_dimensions(rectPoints).get(k) / 2;
+                  }
+                  average_radius = average_radius / 4;
+                  Imgproc.circle(drawings, object_center_point, (int) Math.round(average_radius), white_color, 1);
+               }
+
+
+               // Draw center points
+               if (draw_objects.val[3] >= 1)
+               {
+                  Imgproc.circle(drawings, object_center_point, 1, yellow_color, 2, 8, 0);
+               }
+               artifact_points.add(object_center_point);
+               artifact_radii.add(average_radius);
+               telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
+            }
+         }
+      }
+
+      this.artifact_points = artifact_points;
+      this.artifact_radii = artifact_radii;
+//      telemetry.addData("Artifact Points", artifact_points);
+      telemetry.addData("Artifact Radii", artifact_radii);
+
+      // 320x180 resolution
+      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.6);
+
+      // live camera (640x480)
+//      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.8);
+
+      telemetry.addData("Artifact Distances", artifact_distances);
+      telemetry.update();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//      return input;
+//      return hsv_mask;
+//      return grey;
+//      return canny_output;
+//      return binary_mask_mat;
+      return drawings;
+//      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
+
+   }
+}
