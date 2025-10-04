@@ -287,7 +287,7 @@ public class MotorParent
     {
         if (argument)
         {
-            if (motor.isBusy())
+            if (motor.getPower() != 0)
             {
                 motor.setPower(0);
             }

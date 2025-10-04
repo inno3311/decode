@@ -12,8 +12,8 @@ public class Transfer extends ServoParent
     }
 
     @Override
-    public void driveServo(double target, boolean argument)
+    public void driveServo(double target)
     {
-        super.driveServo(target, argument);
+        super.driveServo(target);
     }
 }

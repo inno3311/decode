@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name = "prototype")
@@ -16,8 +17,10 @@ public class PrototypeRobot extends LinearOpMode
     Shooter shooter;
     Hood hood;
     Transfer transfer;
-
     DriveController driveController;
+    ElapsedTime time;
+    double flag = 0;
+    double flag1 = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -26,18 +29,38 @@ public class PrototypeRobot extends LinearOpMode
         shooter = new Shooter(this);
         hood = new Hood(this);
         transfer = new Transfer(this);
+        time = new ElapsedTime();
 
         driveController = new DriveController(hardwareMap);
 
         waitForStart();
 
+        time.startTime();
+
         while (opModeIsActive())
         {
-            intake.toggleDrive(1, gamepad1.a);
-            shooter.toggleDrive(1, gamepad1.b);
+            intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
+
+            if (flag1 < time.seconds())
+            {
+                shooter.toggleDrive(1, gamepad1.b);
+                if (gamepad1.b)
+                {
+                    flag1 = time.seconds() + 0.5;
+                }
+            }
+
             hood.driveAngle(gamepad1.dpad_up, gamepad1.dpad_down);
-            transfer.driveServo(0, gamepad1.right_trigger> 0.25);
-            transfer.driveServo(1, gamepad1.right_bumper);
+
+            if (gamepad1.right_bumper)
+            {
+                transfer.driveServo(0.7);
+                flag = time.seconds() + 1;
+            }
+            else if (flag < time.startTime())
+            {
+                transfer.driveServo(1);
+            }
 
             driveController.gamepadController(gamepad1);
         }

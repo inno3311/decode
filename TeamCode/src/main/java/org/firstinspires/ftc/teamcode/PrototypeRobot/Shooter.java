@@ -7,7 +7,7 @@ public class Shooter extends MotorParent
 {
     public Shooter(LinearOpMode opMode)
     {
-        super("shooter", true, false, opMode);
+        super("shooter", false, false, opMode);
     }
 
     @Override

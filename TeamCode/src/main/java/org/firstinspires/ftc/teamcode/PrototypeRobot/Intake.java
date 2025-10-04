@@ -8,13 +8,12 @@ public class Intake extends MotorParent
 {
     public Intake(LinearOpMode opMode)
     {
-        super("intake", true, false, opMode);
+        super("intake", false, false, opMode);
     }
 
     @Override
-    public void toggleDrive(double speed, boolean argument)
+    public void simpleDrive(double speed, boolean argument)
     {
-        super.toggleDrive(speed, argument);
+        super.simpleDrive(speed, argument);
     }
-
 }

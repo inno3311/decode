@@ -66,16 +66,6 @@ public class FireControl
         return Math.sqrt(Math.pow(velocityX, 2) + Math.pow(velocityY, 2));
     }
 
-//    /**
-//     * @param velocityX velocity in X-Direction
-//     * @param velocityY velocity in Y-Direction
-//     * @return The angle of launch to hit target
-//     */
-//    private double calculateAngle(double velocityX, double velocityY)
-//    {
-//        return Math.toDegrees(Math.atan(velocityX/velocityY));
-//    }
-
 
     /**
      * @return Time of ball flight in seconds

@@ -85,7 +85,7 @@ public class ServoParent
 
     protected void driveAngle(boolean iIncrease, boolean iDecrease)
     {
-        double angle = 0;
+        double angle = getAngle();
         if (iIncrease)
         {
             angle = getAngle() + 5;
