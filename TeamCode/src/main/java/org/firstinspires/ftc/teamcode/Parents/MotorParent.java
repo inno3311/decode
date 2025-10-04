@@ -279,6 +279,27 @@ public class MotorParent
     }
 
     /**
+     * toggle drive lets the driver hit a button to turn on the system and hit again to turn off
+     * @param speed Speed atg which to spin motor
+     * @param argument Toggle to turn motor on and off
+     */
+    protected void toggleDrive(double speed, boolean argument)
+    {
+        if (argument)
+        {
+            if (motor.isBusy())
+            {
+                motor.setPower(0);
+            }
+            else
+            {
+                motor.setPower(speed);
+            }
+        }
+
+    }
+
+    /**
      * @param target Target location that the motor will move to
      * @param speed The speed at which the motor will spin
      * @param argument The Gamepad bool input that will make it move
