@@ -8,7 +8,7 @@ public class HippoTrigger extends ServoParent
     // the smalled the value the more the trigger will be extended, the larger the more it will be contracted
     public HippoTrigger(LinearOpMode opMode)
     {
-        super("trigger", 0, 1, opMode);
+        super("trigger", 0, opMode);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class ServoParent
 {
     private Servo servo;
     private String servoName;
-    double minPosition, maxPosition;
+    double servoRange;
 
     private HardwareMap hardwareMap;
     private Telemetry telemetry;
@@ -29,7 +29,7 @@ public class ServoParent
         this.gamepad2 = opMode.gamepad2;
     }
 
-    protected ServoParent(String servoName, double minPosition, double maxPosition, LinearOpMode opMode)
+    protected ServoParent(String servoName, double servoRange, LinearOpMode opMode)
     {
         this(opMode);
 
@@ -38,8 +38,7 @@ public class ServoParent
             this.servoName = servoName;
             servo = hardwareMap.servo.get(servoName);
 
-            this.minPosition = minPosition;
-            this.maxPosition = maxPosition;
+            this.servoRange = servoRange;
         }
         catch (IllegalArgumentException e)
         {
@@ -70,6 +69,35 @@ public class ServoParent
         }
     }
 
+    /**
+     * @param angle The angle you want the servo to drive to in its range (position 0 = o degrees, position 1 = max servoRange)
+     * @return a value in between 0-1 to drive the servo to. Must be inputted into drive servo
+     */
+    protected double driveToAngleTarget(double angle)
+    {
+        return angle/servoRange;
+    }
+
+    protected double getAngle()
+    {
+        return servo.getPosition() * servoRange;
+    }
+
+    protected void driveAngle(boolean iIncrease, boolean iDecrease)
+    {
+        double angle = 0;
+        if (iIncrease)
+        {
+            angle = getAngle() + 5;
+        }
+        else if (iDecrease)
+        {
+            angle = getAngle() - 5;
+        }
+
+        driveServo(driveToAngleTarget(angle));
+    }
+
     public Action action(double target)
     {
         return new Action()
@@ -87,13 +115,6 @@ public class ServoParent
                 return false;
             }
         };
-    }
-
-
-    protected void telemetry()
-    {
-        telemetry.addData(servoName, "minPosition: %.2f\n" +
-                "\tmaxPosition: %.2f", minPosition, maxPosition);
     }
 
 }

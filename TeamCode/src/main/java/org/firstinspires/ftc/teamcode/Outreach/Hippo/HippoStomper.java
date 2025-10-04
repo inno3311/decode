@@ -7,7 +7,7 @@ public class HippoStomper extends ServoParent
 {
     public HippoStomper(LinearOpMode opMode)
     {
-        super("stomper", 0, 1, opMode);
+        super("stomper", 0, opMode);
     }
 
     @Override
