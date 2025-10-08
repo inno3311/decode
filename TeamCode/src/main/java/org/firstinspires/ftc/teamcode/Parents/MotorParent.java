@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Misc.Logging;
 
 public class MotorParent
@@ -297,6 +298,16 @@ public class MotorParent
             }
         }
 
+    }
+
+    protected void driveToVelocity(double targetVelocity)
+    {
+        motor.setVelocity(targetVelocity, AngleUnit.RADIANS);
+    }
+
+    protected double getVelocity()
+    {
+        return motor.getVelocity(AngleUnit.RADIANS);
     }
 
     /**

@@ -8,7 +8,8 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 @TeleOp(name = "prototype")
 public class PrototypeRobot extends LinearOpMode
@@ -18,9 +19,11 @@ public class PrototypeRobot extends LinearOpMode
     Hood hood;
     Transfer transfer;
     DriveController driveController;
+    FireControl fireControl;
     ElapsedTime time;
     double flag = 0;
     double flag1 = 0;
+    double shooterVelocity = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -33,17 +36,20 @@ public class PrototypeRobot extends LinearOpMode
 
         driveController = new DriveController(hardwareMap);
 
+        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+
         waitForStart();
 
         time.startTime();
 
         while (opModeIsActive())
         {
+
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
             if (flag1 < time.seconds())
             {
-                shooter.toggleDrive(1, gamepad1.b);
+                shooter.toggleDrive(1, gamepad1.a && !gamepad1.start);
                 if (gamepad1.b)
                 {
                     flag1 = time.seconds() + 0.5;
@@ -62,7 +68,27 @@ public class PrototypeRobot extends LinearOpMode
                 transfer.driveServo(1);
             }
 
-            driveController.gamepadController(gamepad1);
+//            driveController.gamepadController(gamepad1);
+
+
+            if (gamepad1.b)
+            {
+                if (fireControl.calculateAngle(15)-25 > 0)
+                {
+                    hood.driveToAngleTarget(fireControl.calculateAngle(15) + 25);
+                }
+                else
+                {
+                    hood.driveToAngleTarget(0);
+
+                }
+                shooterVelocity = 15;
+            }
+
+            fireControl.calculateAngle(15);
+            telemetry.addData("shooter Power", shooter.getPower());
+            telemetry.addData("Shooter Velocity", shooter.getVelocity());
+            telemetry.update();
         }
 
     }
