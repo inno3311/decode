@@ -33,4 +33,10 @@ public class Shooter extends MotorParent
     {
         return super.getPower();
     }
+
+    @Override
+    public void setPower(double power)
+    {
+        super.setPower(power);
+    }
 }

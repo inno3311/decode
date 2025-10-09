@@ -302,7 +302,7 @@ public class MotorParent
 
     protected void driveToVelocity(double targetVelocity)
     {
-        motor.setVelocity(targetVelocity, AngleUnit.RADIANS);
+        motor.setVelocity(targetVelocity);
     }
 
     protected double getVelocity()
@@ -416,6 +416,12 @@ public class MotorParent
     {
         return motor.getPower();
     }
+
+    protected void setPower(double power)
+    {
+        motor.setPower(power);
+    }
+
 
     /**
      *     Prints motor telemetry

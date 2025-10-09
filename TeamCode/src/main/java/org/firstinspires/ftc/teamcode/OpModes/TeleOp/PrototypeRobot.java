@@ -24,6 +24,7 @@ public class PrototypeRobot extends LinearOpMode
     double flag = 0;
     double flag1 = 0;
     double shooterVelocity = 0;
+    double wait = Integer.MAX_VALUE;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -47,18 +48,18 @@ public class PrototypeRobot extends LinearOpMode
 
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
-            if (flag1 < time.seconds())
-            {
-                shooter.toggleDrive(1, gamepad1.a && !gamepad1.start);
-                if (gamepad1.b)
-                {
-                    flag1 = time.seconds() + 0.5;
-                }
-            }
+//            if (flag1 < time.seconds())
+//            {
+////                shooter.toggleDrive(1, gamepad1.a && !gamepad1.start);
+//                if (gamepad1.b)
+//                {
+//                    flag1 = time.seconds() + 0.5;
+//                }
+//            }
 
-            hood.driveAngle(gamepad1.dpad_up, gamepad1.dpad_down);
+//            hood.driveAngle(gamepad1.dpad_up, gamepad1.dpad_down);
 
-            if (gamepad1.right_bumper)
+            if (gamepad1.right_bumper || wait < time.seconds())
             {
                 transfer.driveServo(0.7);
                 flag = time.seconds() + 1;
@@ -73,21 +74,30 @@ public class PrototypeRobot extends LinearOpMode
 
             if (gamepad1.b)
             {
-                if (fireControl.calculateAngle(15)-25 > 0)
+                shooter.driveToVelocity(100);
+                if (65 - fireControl.calculateSteeperAngle(10) > 0)
                 {
-                    hood.driveToAngleTarget(fireControl.calculateAngle(15) + 25);
+                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(10));
                 }
                 else
                 {
                     hood.driveToAngleTarget(0);
 
                 }
-                shooterVelocity = 15;
+                wait = time.seconds()+10;
+
             }
 
-            fireControl.calculateAngle(15);
+            if (gamepad1.x)
+            {
+                shooter.setPower(0);
+            }
+
+
+            fireControl.calculateSteeperAngle(10);
+            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(10));
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter Velocity", shooter.getVelocity());
+            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
             telemetry.update();
         }
 
