@@ -21,7 +21,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    Telemetry telemetry;
 
    // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm], cam-to-arm hinge z_distance[cm])
-   public Scalar cam_placement = new Scalar(8*2.54, 12.5, 8.5, 25);
+   final Scalar cam_placement = new Scalar(8*2.54, 12.5, 8.5, 25);
    //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
    double camera_height = cam_placement.val[0];
    double distance_minimum_camera = cam_placement.val[1];
@@ -41,13 +41,13 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
-   public Scalar detection_limits = new Scalar(0, 320, 0, 180);
+   final Scalar detection_limits = new Scalar(0, 320, 0, 180);
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
 
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
-   public Scalar purple_1_lower = new Scalar(135, 50, 50);
+   public Scalar purple_1_lower = new Scalar(135, 35, 100);
 
 //   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
@@ -55,8 +55,8 @@ public class artifact_rail_detection extends OpenCvPipeline
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
 
 
-//   public Scalar green_upper = new Scalar(66, 255, 255);
-//   public Scalar green_lower = new Scalar(34, 44, 40);
+   public Scalar green_upper = new Scalar(50, 255, 240);
+   public Scalar green_lower = new Scalar(25, 30, 100);
 
 
    // must be any odd number > 0
@@ -67,7 +67,8 @@ public class artifact_rail_detection extends OpenCvPipeline
 
 
    private Mat output = new Mat();
-   private Mat binary_mat      = new Mat();
+   private Mat purple_binary_mat = new Mat();
+   private Mat green_binary_mat = new Mat();
    private Mat hsv_mask = new Mat();
    private Mat binary_mask_mat = new Mat();
    private Mat grey = new Mat();
@@ -109,7 +110,7 @@ public class artifact_rail_detection extends OpenCvPipeline
       ArrayList<Point> artifact_points = new ArrayList<>();
       double diagonal_fov = 55;
       double x_resolution = 320;
-      double y_resolution = 240;
+      double y_resolution = 180;
       double diagonal_resolution = Math.sqrt(Math.pow(x_resolution, 2) + Math.pow(y_resolution, 2));
       // number of degrees per pixel
       double pixel_angle = diagonal_fov/diagonal_resolution;
@@ -125,26 +126,30 @@ public class artifact_rail_detection extends OpenCvPipeline
 
 
       // Color mat. Returns a binary (black/white) matrix.
-      Core.inRange(hsv_mask, purple_1_lower, purple_1_upper, binary_mat);
-//      Core.inRange(hsv_mask, green_lower, green_upper, binary_mat);
+      Core.inRange(hsv_mask, purple_1_lower, purple_1_upper, purple_binary_mat);
+      Core.inRange(hsv_mask, green_lower, green_upper, green_binary_mat);
       binary_mask_mat.release();
 
 
       // overlay binary matrix onto it onto the input
-      Core.bitwise_and(drawings, drawings, binary_mask_mat, binary_mat);
+      Core.bitwise_or(drawings, drawings, binary_mask_mat, green_binary_mat);
+      Core.bitwise_or(drawings, drawings, binary_mask_mat, purple_binary_mat);
 
 
       // Start locating objects
       Imgproc.cvtColor(binary_mask_mat, grey, Imgproc.COLOR_BGR2GRAY);
 //      Imgproc.blur(grey, grey, new Size(blur, blur));
       Imgproc.medianBlur(grey, grey, blur);
-      Mat canny_output = new Mat();
-      Imgproc.Canny(binary_mat, canny_output, threshold, threshold*2);
+      Mat green_canny_output = new Mat();
+      Mat purple_canny_output = new Mat();
+      Imgproc.Canny(purple_binary_mat, purple_canny_output, threshold, threshold*2);
+      Imgproc.Canny(green_binary_mat, green_canny_output, threshold, threshold*2);
 
       // add found edges to an array
       List<MatOfPoint> contours = new ArrayList<>();
       Mat hierarchy = new Mat();
-      Imgproc.findContours(canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+      Imgproc.findContours(purple_canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+      Imgproc.findContours(green_canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
 
       // Find the rotated rectangles and ellipses for each contour
@@ -220,7 +225,6 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return hsv_mask;
 //      return grey;
 //      return binary_mask_mat;
-//      return canny_output;
       return drawings;
 //      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
 
