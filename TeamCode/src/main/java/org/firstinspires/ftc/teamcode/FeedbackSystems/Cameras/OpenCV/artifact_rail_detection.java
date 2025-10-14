@@ -41,7 +41,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
-   final Scalar detection_limits = new Scalar(0, 320, 0, 180);
+   final Scalar detection_limits = new Scalar(40, 280, 48, 115);
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
@@ -60,7 +60,7 @@ public class artifact_rail_detection extends OpenCvPipeline
 
 
    // must be any odd number > 0
-   public int blur = 3;
+   public int blur = 1;
 
    // edge contour threshold
    public int threshold = 500;
@@ -140,16 +140,14 @@ public class artifact_rail_detection extends OpenCvPipeline
       Imgproc.cvtColor(binary_mask_mat, grey, Imgproc.COLOR_BGR2GRAY);
 //      Imgproc.blur(grey, grey, new Size(blur, blur));
       Imgproc.medianBlur(grey, grey, blur);
-      Mat green_canny_output = new Mat();
-      Mat purple_canny_output = new Mat();
-      Imgproc.Canny(purple_binary_mat, purple_canny_output, threshold, threshold*2);
-      Imgproc.Canny(green_binary_mat, green_canny_output, threshold, threshold*2);
+      Mat canny_output = new Mat();
+      Imgproc.Canny(binary_mask_mat, canny_output, threshold, threshold*2);
+//      Imgproc.Canny(green_binary_mat, green_canny_output, threshold, threshold*2);
 
       // add found edges to an array
       List<MatOfPoint> contours = new ArrayList<>();
       Mat hierarchy = new Mat();
-      Imgproc.findContours(purple_canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-      Imgproc.findContours(green_canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+      Imgproc.findContours(canny_output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
 
       // Find the rotated rectangles and ellipses for each contour
@@ -184,6 +182,7 @@ public class artifact_rail_detection extends OpenCvPipeline
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
+               telemetry.addData("area", minEllipse[i].boundingRect().area());
                // Draw contour
                if (draw_objects.val[0] >= 1)
                {
@@ -225,8 +224,9 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return hsv_mask;
 //      return grey;
 //      return binary_mask_mat;
+//      return canny_output;
       return drawings;
-//      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
+//      Imgproc.cv tColor(input, gray, Imgproc.COLOR_BGR2HSV);
 
 
 
