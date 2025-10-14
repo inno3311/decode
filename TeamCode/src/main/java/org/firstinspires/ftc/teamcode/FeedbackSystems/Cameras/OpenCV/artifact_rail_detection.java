@@ -36,8 +36,6 @@ public class artifact_rail_detection extends OpenCvPipeline
    double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
    double x_degrees_per_pixel = x_fov/x_resolution;
    double y_degrees_per_pixel = y_fov/y_resolution;
-
-
    private Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
@@ -87,6 +85,11 @@ public class artifact_rail_detection extends OpenCvPipeline
       rect_dimensions.add(c);
       rect_dimensions.add(d);
       return(rect_dimensions);
+   }
+
+   public double sloped_line_function(double y_intercept, double slope, double input_x)
+   {
+      return slope*input_x + y_intercept;
    }
 
 
@@ -164,21 +167,30 @@ public class artifact_rail_detection extends OpenCvPipeline
       // Draw detection bounding box
       if (draw_objects.val[3] >= 1)
       {
-         // Bottom left to top left
-         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
+         // Left Bound
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[0], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[0])), green_color);
+         // Right Bound
+         Imgproc.line(drawings, new Point(detection_limits.val[1], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[1])), new Point(detection_limits.val[1], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[1])), green_color);
+
+
+         // Lower diagonal line
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[1])), green_color);
+         // upper diagonal line
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[1])), green_color);
+
+
          // Bottom left to bottom right
-         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
-         // top right to bottom right
-         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
+//         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
          // top right to top left
-         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
+//         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
       }
 
       // Draw contours, elipses, and rectangles
       for (int i = 0; i < contours.size(); i++) {
          Point object_center_point = minEllipse[i].center;
          // check to see if object is within the set margins
-         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && (object_center_point.y >= detection_limits.val[2] && object_center_point.y <= detection_limits.val[3]))
+//         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && (object_center_point.y >= detection_limits.val[2] && object_center_point.y <= detection_limits.val[3]))
+         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && ((object_center_point.y >= sloped_line_function(0, -Math.tan(2.88), object_center_point.x)) && (object_center_point.y <= sloped_line_function(40, -Math.tan(2.88), object_center_point.x))))
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
