@@ -12,7 +12,7 @@ public class FireControl
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0254;//meter
     private final double projectileWeight = 0.07;//kg
-    private final double shooterWheelGearRatio = 2.2857;
+    private final double shooterWheelGearRatio = 1;
     private final double motorMaxRPM = 6000;
     private final double shooterMOI = 0.001;//kg * m^2
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
@@ -155,7 +155,7 @@ public class FireControl
         double motorRPM = shooterWheelRPM / shooterWheelGearRatio;
         double motorVelocity = (motorRPM / 60) * 28;
 
-        telemetry.addData("MotorRPM", motorRPM);
+        telemetry.addData("Target MotorRPM", motorRPM);
         return motorVelocity;
     }
 

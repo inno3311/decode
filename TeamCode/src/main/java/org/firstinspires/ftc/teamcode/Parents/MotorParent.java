@@ -307,7 +307,7 @@ public class MotorParent
 
     protected double getVelocity()
     {
-        return motor.getVelocity(AngleUnit.RADIANS);
+        return motor.getVelocity();
     }
 
     /**

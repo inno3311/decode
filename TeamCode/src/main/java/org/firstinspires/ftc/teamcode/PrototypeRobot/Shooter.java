@@ -39,4 +39,11 @@ public class Shooter extends MotorParent
     {
         super.setPower(power);
     }
+
+    @Override
+    public void telemetry()
+    {
+        super.telemetry();
+    }
+
 }
