@@ -74,7 +74,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
    public double side = 1;
-   public double width_to_object_ratio = 24;
+   public double width_to_object_ratio = 23.9;
 
    double slope = -Math.tan(2.88);
 

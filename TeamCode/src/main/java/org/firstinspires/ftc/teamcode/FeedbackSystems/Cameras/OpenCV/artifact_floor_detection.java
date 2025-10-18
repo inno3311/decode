@@ -26,7 +26,7 @@ public class artifact_floor_detection extends OpenCvPipeline
 
 
    // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm] (x offset), cam-to-arm hinge z_distance[cm] (z offset))
-   public Scalar cam_placement = new Scalar(13.5, 35.5, 0, 0);
+   final Scalar cam_placement = new Scalar(13.5, 35.5, 0, 0);
    //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
    double camera_height = cam_placement.val[0];
    double distance_minimum_camera = cam_placement.val[1];
@@ -59,15 +59,16 @@ public class artifact_floor_detection extends OpenCvPipeline
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
 
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
-   public Scalar purple_1_lower = new Scalar(135, 50, 50);
+   public Scalar purple_1_lower = new Scalar(135, 35, 100);
 
+//   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
 //   public Scalar purple_2_upper = new Scalar(10, 255, 255);
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
 
 
-//   public Scalar green_upper = new Scalar(66, 255, 255);
-//   public Scalar green_lower = new Scalar(34, 44, 40);
+   public Scalar green_upper = new Scalar(70, 255, 255);
+   public Scalar green_lower = new Scalar(32, 35, 32);
 
 
    // must be any odd number > 0
@@ -78,7 +79,8 @@ public class artifact_floor_detection extends OpenCvPipeline
 
 
    private Mat output = new Mat();
-   private Mat binary_mat      = new Mat();
+   private Mat purple_binary_mat = new Mat();
+   private Mat green_binary_mat = new Mat();
    private Mat hsv_mask = new Mat();
    private Mat binary_mask_mat = new Mat();
    private Mat grey = new Mat();
@@ -100,19 +102,23 @@ public class artifact_floor_detection extends OpenCvPipeline
       return(rect_dimensions);
    }
 
-   public ArrayList<Double> calculate_artifact_distance(ArrayList<Double> artifact_pixel_radius_list, double actual_radius, double degrees_per_pixel_x, double offset_scale)
+   public double calculate_artifact_distance(double artifact_radius, double actual_radius, double degrees_per_pixel_x, double offset_scale)
    {
-      ArrayList<Double> artifact_distances = new ArrayList<>();
-      for (int i = 0; i < artifact_pixel_radius_list.size(); i++)
-      {
-         double artifact_pixel_radius = artifact_pixel_radius_list.get(i);
-         double angle = Math.toRadians(artifact_pixel_radius * degrees_per_pixel_x);
-         telemetry.addData("angle_degrees", (artifact_pixel_radius * degrees_per_pixel_x));
+         double angle = Math.toRadians(artifact_radius * degrees_per_pixel_x);
+         telemetry.addData("angle_degrees", (artifact_radius * degrees_per_pixel_x));
          telemetry.addData("angle_radians", (angle));
          double distance = (actual_radius / Math.tan(angle))*offset_scale;
-         artifact_distances.add(distance);
-      }
-      return artifact_distances;
+         return distance;
+   }
+
+   public Point calculate_artifact_relative_position(Point position_in_camera, double distance, double degrees_per_pixel_x, double x_resolution)
+   {
+      double center = x_resolution/2;
+      double x_dist_from_center = center - position_in_camera.x;
+      double angle = degrees_per_pixel_x * x_dist_from_center;
+      double x_distance = distance*Math.sin(Math.toRadians(angle));
+      double z_distance = distance*Math.cos(Math.toRadians(angle));
+      return new Point(x_distance, z_distance);
    }
 
    // relative position resources:
@@ -139,19 +145,19 @@ public class artifact_floor_detection extends OpenCvPipeline
       ArrayList<Point> artifact_points = new ArrayList<>();
       ArrayList<Double> artifact_radii = new ArrayList<>();
 
-
       Imgproc.medianBlur(input, drawings, blur);
       Imgproc.cvtColor(drawings, hsv_mask, Imgproc.COLOR_BGR2HSV);
 
 
       // Color mat. Returns a binary (black/white) matrix.
-      Core.inRange(hsv_mask, purple_1_lower, purple_1_upper, binary_mat);
-//      Core.inRange(hsv_mask, green_lower, green_upper, binary_mat);
+      Core.inRange(hsv_mask, purple_1_lower, purple_1_upper, purple_binary_mat);
+      Core.inRange(hsv_mask, green_lower, green_upper, green_binary_mat);
       binary_mask_mat.release();
 
 
       // overlay binary matrix onto it onto the input
-      Core.bitwise_and(drawings, drawings, binary_mask_mat, binary_mat);
+      Core.bitwise_or(drawings, drawings, binary_mask_mat, green_binary_mat);
+      Core.bitwise_or(drawings, drawings, binary_mask_mat, purple_binary_mat);
 
 
       // Start locating objects
@@ -159,7 +165,8 @@ public class artifact_floor_detection extends OpenCvPipeline
 //      Imgproc.blur(grey, grey, new Size(blur, blur));
       Imgproc.medianBlur(grey, grey, blur);
       Mat canny_output = new Mat();
-      Imgproc.Canny(binary_mat, canny_output, threshold, threshold*2);
+      Imgproc.Canny(binary_mask_mat, canny_output, threshold, threshold*2);
+//      Imgproc.Canny(green_binary_mat, green_canny_output, threshold, threshold*2);
 
       // add found edges to an array
       List<MatOfPoint> contours = new ArrayList<>();
@@ -238,6 +245,17 @@ public class artifact_floor_detection extends OpenCvPipeline
                }
 
 
+               // 320x180 resolution
+               double artifact_distance = calculate_artifact_distance(average_radius, 6.35, x_degrees_per_pixel, 1.08);
+
+               // live camera (640x480)
+               // double artifact_distance = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.8);
+
+               Point relative_position = calculate_artifact_relative_position(object_center_point, artifact_distance, x_degrees_per_pixel, x_resolution);
+
+               telemetry.addData("Artifact Distance", artifact_distance);
+               telemetry.addData("Relative Position", relative_position);
+
                // Draw center points
                if (draw_objects.val[3] >= 1)
                {
@@ -252,16 +270,6 @@ public class artifact_floor_detection extends OpenCvPipeline
 
       this.artifact_points = artifact_points;
       this.artifact_radii = artifact_radii;
-//      telemetry.addData("Artifact Points", artifact_points);
-      telemetry.addData("Artifact Radii", artifact_radii);
-
-      // 320x180 resolution
-      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.6);
-
-      // live camera (640x480)
-//      ArrayList<Double> artifact_distances = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.8);
-
-      telemetry.addData("Artifact Distances", artifact_distances);
       telemetry.update();
 
 
