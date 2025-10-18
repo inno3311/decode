@@ -11,6 +11,7 @@ import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvInternalCamera2;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
@@ -38,8 +39,6 @@ public class artifact_rail_detection extends OpenCvPipeline
    double y_degrees_per_pixel = y_fov/y_resolution;
    private Scalar object_size_limits = new Scalar(200, 20000);
 
-   // x_max, x_min, y_max, y_min
-   final Scalar detection_limits = new Scalar(40, 280, 48, 115);
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
@@ -53,12 +52,12 @@ public class artifact_rail_detection extends OpenCvPipeline
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
 
 
-   public Scalar green_upper = new Scalar(50, 255, 240);
-   public Scalar green_lower = new Scalar(25, 30, 100);
+   private Scalar green_upper = new Scalar(50, 255, 240);
+   private Scalar green_lower = new Scalar(25, 30, 100);
 
 
    // must be any odd number > 0
-   public int blur = 1;
+   public int blur = 3;
 
    // edge contour threshold
    public int threshold = 500;
@@ -72,6 +71,35 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Mat grey = new Mat();
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
+   // 1 is red, -1 is blue
+   public double side = -1;
+
+   double slope = -Math.tan(2.88);
+
+   double bottom_y_intercept;
+   double top_y_intercept;
+   Scalar detection_limits;
+
+
+   public void team_side(double side)
+   {
+      if (side == 1)
+      {
+         // red
+         this.bottom_y_intercept = 40;
+         this.top_y_intercept = 0;
+         // x_max, x_min, y_max, y_min
+         this.detection_limits = new Scalar(70, 280, 48, 115);
+      }
+
+      if (side == -1)
+      {
+         this.bottom_y_intercept = 55;
+         this.top_y_intercept = 30;
+         this.detection_limits = new Scalar(70, 280, 48, 115);
+      }
+   }
+
 
    public ArrayList<Object> get_bounding_box_dimensions(Point[] rectangle_points)
    {
@@ -105,6 +133,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    @Override
    public Mat processFrame(Mat input)
    {
+      team_side(side);
       Scalar white_color = new Scalar(256, 256, 256);
       Scalar blue_color = new Scalar(0, 15, 137); // phthalo blue
       Scalar red_color = new Scalar(255, 0, 0);
@@ -121,7 +150,15 @@ public class artifact_rail_detection extends OpenCvPipeline
       double original_size = 3.5;
       double x_center = x_resolution/2;
 
+      double leftmost_object_point = x_resolution;
+      double rightmost_object_point = 0;
 //      telemetry.addData("pixel angle", pixel_angle);
+
+
+      if (side == -1)
+      {
+         Core.flip(input, input, 1);
+      }
 
 
       Imgproc.medianBlur(input, drawings, blur);
@@ -168,21 +205,22 @@ public class artifact_rail_detection extends OpenCvPipeline
       if (draw_objects.val[3] >= 1)
       {
          // Left Bound
-         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[0], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[0])), green_color);
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(bottom_y_intercept, slope, detection_limits.val[0])), new Point(detection_limits.val[0], sloped_line_function(top_y_intercept, slope, detection_limits.val[0])), green_color);
          // Right Bound
-         Imgproc.line(drawings, new Point(detection_limits.val[1], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[1])), new Point(detection_limits.val[1], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[1])), green_color);
+         Imgproc.line(drawings, new Point(detection_limits.val[1], sloped_line_function(bottom_y_intercept, slope, detection_limits.val[1])), new Point(detection_limits.val[1], sloped_line_function(top_y_intercept, slope, detection_limits.val[1])), green_color);
 
 
          // Lower diagonal line
-         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(40, -Math.tan(2.88), detection_limits.val[1])), green_color);
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(top_y_intercept, slope, detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(top_y_intercept, slope, detection_limits.val[1])), green_color);
          // upper diagonal line
-         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(0, -Math.tan(2.88), detection_limits.val[1])), green_color);
+         Imgproc.line(drawings, new Point(detection_limits.val[0], sloped_line_function(bottom_y_intercept, slope, detection_limits.val[0])), new Point(detection_limits.val[1], sloped_line_function(bottom_y_intercept, slope, detection_limits.val[1])), green_color);
 
 
          // Bottom left to bottom right
 //         Imgproc.line(drawings, new Point(detection_limits.val[0], detection_limits.val[2]), new Point(detection_limits.val[1], detection_limits.val[2]), green_color);
          // top right to top left
 //         Imgproc.line(drawings, new Point(detection_limits.val[1], detection_limits.val[3]), new Point(detection_limits.val[0], detection_limits.val[3]), green_color);
+
       }
 
       // Draw contours, elipses, and rectangles
@@ -190,11 +228,11 @@ public class artifact_rail_detection extends OpenCvPipeline
          Point object_center_point = minEllipse[i].center;
          // check to see if object is within the set margins
 //         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && (object_center_point.y >= detection_limits.val[2] && object_center_point.y <= detection_limits.val[3]))
-         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && ((object_center_point.y >= sloped_line_function(0, -Math.tan(2.88), object_center_point.x)) && (object_center_point.y <= sloped_line_function(40, -Math.tan(2.88), object_center_point.x))))
+         if ((object_center_point.x >= detection_limits.val[0] && object_center_point.x <= detection_limits.val[1]) && ((object_center_point.y >= sloped_line_function(top_y_intercept, slope, object_center_point.x)) && (object_center_point.y <= sloped_line_function(bottom_y_intercept, slope, object_center_point.x))))
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
-               telemetry.addData("area", minEllipse[i].boundingRect().area());
+//               telemetry.addData("area", minEllipse[i].boundingRect().area());
                // Draw contour
                if (draw_objects.val[0] >= 1)
                {
@@ -210,10 +248,20 @@ public class artifact_rail_detection extends OpenCvPipeline
                // Draw rotated rectangle
                Point[] rectPoints = new Point[4];
                minRect[i].points(rectPoints);
+
                if (draw_objects.val[2] >= 1)
                {
                   for (int j = 0; j < 4; j++)
                   {
+                     if (rectPoints[j].x > rightmost_object_point)
+                     {
+                        rightmost_object_point = rectPoints[j].x;
+                     }
+
+                     if (rectPoints[j].x < leftmost_object_point)
+                     {
+                        leftmost_object_point = rectPoints[j].x;
+                     }
                      Imgproc.line(drawings, rectPoints[j], rectPoints[(j + 1) % 4], red_color);
                   }
                }
@@ -224,13 +272,19 @@ public class artifact_rail_detection extends OpenCvPipeline
                   Imgproc.circle(drawings, object_center_point, 1, yellow_color, 2, 8, 0);
                }
                artifact_points.add(object_center_point);
-               telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
+//               telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
             }
          }
       }
-
+      Imgproc.line(drawings, new Point(leftmost_object_point, 0), new Point(leftmost_object_point, y_resolution), red_color);
+      Imgproc.line(drawings, new Point(rightmost_object_point, 0), new Point(rightmost_object_point, y_resolution), red_color);
+      double number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/24);
       this.artifact_points = artifact_points;
       telemetry.addData("Artifact Points", artifact_points);
+      telemetry.addData("left", leftmost_object_point);
+      telemetry.addData("right", rightmost_object_point);
+      telemetry.addData("difference", rightmost_object_point-leftmost_object_point);
+      telemetry.addData("num balls", number_of_objects);
       telemetry.update();
 //      return input;
 //      return hsv_mask;
