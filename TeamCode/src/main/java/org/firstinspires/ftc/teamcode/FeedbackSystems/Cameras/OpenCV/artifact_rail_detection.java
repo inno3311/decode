@@ -40,6 +40,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Scalar object_size_limits = new Scalar(150, 20000);
 
 
+
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
 
@@ -73,7 +74,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
    public double side = 1;
-   public double width_to_object_ratio = 24.3;
+   public double width_to_object_ratio = 24;
 
    double slope = -Math.tan(2.88);
 
@@ -257,6 +258,10 @@ public class artifact_rail_detection extends OpenCvPipeline
                      if (rectPoints[j].x > rightmost_object_point)
                      {
                         rightmost_object_point = rectPoints[j].x;
+                        if (rectPoints[j].x >= detection_limits.val[1])
+                        {
+                           rightmost_object_point = detection_limits.val[1];
+                        }
                      }
 
                      if (rectPoints[j].x < leftmost_object_point)
