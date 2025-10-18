@@ -37,14 +37,14 @@ public class artifact_rail_detection extends OpenCvPipeline
    double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
    double x_degrees_per_pixel = x_fov/x_resolution;
    double y_degrees_per_pixel = y_fov/y_resolution;
-   private Scalar object_size_limits = new Scalar(200, 20000);
+   private Scalar object_size_limits = new Scalar(150, 20000);
 
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
 
-   public Scalar purple_1_upper = new Scalar(179, 255, 255);
-   public Scalar purple_1_lower = new Scalar(135, 35, 100);
+   final Scalar purple_1_upper = new Scalar(179, 255, 255);
+   final Scalar purple_1_lower = new Scalar(135, 35, 100);
 
 //   public Scalar purple_1_lower = new Scalar(143, 51, 93);
 
@@ -52,8 +52,8 @@ public class artifact_rail_detection extends OpenCvPipeline
 //   public Scalar purple_2_lower = new Scalar(10, 50, 50);
 
 
-   private Scalar green_upper = new Scalar(50, 255, 240);
-   private Scalar green_lower = new Scalar(25, 30, 100);
+   final Scalar green_upper = new Scalar(50, 255, 240);
+   final Scalar green_lower = new Scalar(25, 30, 100);
 
 
    // must be any odd number > 0
@@ -72,7 +72,8 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
-   public double side = -1;
+   public double side = 1;
+   public double width_to_object_ratio = 24.3;
 
    double slope = -Math.tan(2.88);
 
@@ -232,7 +233,7 @@ public class artifact_rail_detection extends OpenCvPipeline
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
-//               telemetry.addData("area", minEllipse[i].boundingRect().area());
+               telemetry.addData("area", minEllipse[i].boundingRect().area());
                // Draw contour
                if (draw_objects.val[0] >= 1)
                {
@@ -278,7 +279,7 @@ public class artifact_rail_detection extends OpenCvPipeline
       }
       Imgproc.line(drawings, new Point(leftmost_object_point, 0), new Point(leftmost_object_point, y_resolution), red_color);
       Imgproc.line(drawings, new Point(rightmost_object_point, 0), new Point(rightmost_object_point, y_resolution), red_color);
-      double number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/24);
+      double number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/width_to_object_ratio);
       this.artifact_points = artifact_points;
       telemetry.addData("Artifact Points", artifact_points);
       telemetry.addData("left", leftmost_object_point);
