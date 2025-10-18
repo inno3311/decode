@@ -23,7 +23,7 @@ public class PrototypeRobot extends LinearOpMode
     ElapsedTime time;
     double flag1 = 0;
     double flag2 = 0;
-    double shooterVelocity = 15;
+    double shooterVelocity = 13;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -48,7 +48,7 @@ public class PrototypeRobot extends LinearOpMode
             if (gamepad1.right_bumper)
             {
                 transfer.driveServo(0.7);
-                flag1 = time.seconds() + 1;
+                flag1 = time.seconds() + 0.25;
             }
             else if (flag1 < time.startTime())
             {
@@ -58,42 +58,51 @@ public class PrototypeRobot extends LinearOpMode
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {
                 shooterVelocity++;
-                flag2 = time.seconds() + 1;
+                flag2 = time.seconds() + 0.25;
             }
             else if (gamepad1.dpad_down  && flag2 < time.seconds())
             {
                 shooterVelocity--;
+                flag2 = time.seconds() + 0.25;
             }
 
 
             if (gamepad1.b)
             {
-                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
-                if (65 - fireControl.calculateShallowerAngle(shooterVelocity) > 0)
+                if (65 - fireControl.calculateSteeperAngle(shooterVelocity) > 0)
                 {
-                    hood.driveToAngleTarget(65 - fireControl.calculateShallowerAngle(shooterVelocity));
+                    telemetry.addData("Firing not at 65 degrees","");
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
+                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(shooterVelocity));
                 }
                 else
                 {
+                    telemetry.addData("Firing at 65 degrees","");
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(fireControl.calculateVelocity(65)));
                     hood.driveToAngleTarget(0);
-
                 }
             }
 
             if (gamepad1.y)
             {
-                shooter.setPower(1);
+                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
             }
             else if (gamepad1.x)
             {
                 shooter.setPower(0);
             }
 
-            //            driveController.gamepadController(gamepad1);
+//            driveController.gamepadController(gamepad1);
 
-            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateShallowerAngle(shooterVelocity));
-            telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
+            telemetry.addData("ShooterVelocity", shooterVelocity);
+            fireControl.actualVelocity(shooter.getVelocity());
+//            fireControl.speedTransferPercentage(shooter.getVelocity(), shooterVelocity);
+            fireControl.targetMotorVelocity(shooterVelocity);
+            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
+//            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(shooterVelocity));
+//            telemetry.addData("shooter Power", shooter.getPower());
+            telemetry.addData("Shooter RPM", (-shooter.getVelocity()/28)*60);
+            shooter.currentDraw();
             telemetry.update();
         }
 

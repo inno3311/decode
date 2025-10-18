@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Misc.Logging;
 
 public class MotorParent
@@ -430,6 +431,11 @@ public class MotorParent
     {
         if (hasEncoder) {telemetry.addData(motorName, "Speed: %.2f\n\tEncoder Position: %d", motor.getPower(), motor.getCurrentPosition());}
         else {telemetry.addData(motorName, "Speed: %.2f", motor.getPower());}
+    }
+
+    protected void currentDraw()
+    {
+        telemetry.addData(motorName, "Current Draw: %.2f", motor.getCurrent(CurrentUnit.AMPS));
     }
 
     protected int getMotorPosition()

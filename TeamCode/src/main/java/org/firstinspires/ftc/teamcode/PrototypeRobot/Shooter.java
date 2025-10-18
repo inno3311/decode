@@ -46,4 +46,9 @@ public class Shooter extends MotorParent
         super.telemetry();
     }
 
+    @Override
+    public void currentDraw()
+    {
+        super.currentDraw();
+    }
 }

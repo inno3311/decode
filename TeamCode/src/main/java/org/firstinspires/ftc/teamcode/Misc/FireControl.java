@@ -149,14 +149,37 @@ public class FireControl
      */
     public double targetMotorVelocity(double velocity)
     {
-        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
-        double wheelSurfaceSpeed = velocity / speedTransferPercentage;
+//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
+        double wheelSurfaceSpeed = velocity / 0.16;
         double shooterWheelRPM = wheelSurfaceSpeed / shooterWheelRadius;
-        double motorRPM = shooterWheelRPM / shooterWheelGearRatio;
+        double motorRPM = shooterWheelRPM / 1;
         double motorVelocity = (motorRPM / 60) * 28;
 
-        telemetry.addData("Target MotorRPM", motorRPM);
+        telemetry.addData("Target Motor Velocity", motorRPM);
         return motorVelocity;
+    }
+
+
+
+    public void actualVelocity(double motorVelocity)
+    {
+        double motorRPM = (-motorVelocity / 28) * 60;
+        double wheelSurfaceSpeed = motorRPM * shooterWheelRadius;
+//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
+        double velocity = wheelSurfaceSpeed * 0.16;
+
+        telemetry.addData("actual velocity", velocity);
+    }
+
+
+    public void speedTransferPercentage(double motorVelocity, double targetVelocity)
+    {
+        double motorRPM = (-motorVelocity / 28) * 60;
+        double wheelSurfaceSpeed = motorRPM * shooterWheelRadius;
+        double speedTransferPercentage = targetVelocity / wheelSurfaceSpeed;
+//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
+
+        telemetry.addData("speed Transfer Percentage", speedTransferPercentage);
     }
 
 }
