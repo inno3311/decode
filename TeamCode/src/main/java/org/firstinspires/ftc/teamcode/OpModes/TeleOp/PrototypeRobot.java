@@ -83,6 +83,7 @@ public class PrototypeRobot extends LinearOpMode
                 }
             }
 
+
             if (gamepad1.y)
             {
                 shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
@@ -101,7 +102,7 @@ public class PrototypeRobot extends LinearOpMode
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
 //            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(shooterVelocity));
 //            telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (-shooter.getVelocity()/28)*60);
+            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
             shooter.currentDraw();
             telemetry.update();
         }

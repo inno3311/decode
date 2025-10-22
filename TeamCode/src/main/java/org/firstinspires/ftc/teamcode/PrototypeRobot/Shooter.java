@@ -35,6 +35,12 @@ public class Shooter extends MotorParent
     }
 
     @Override
+    public void encoderControl(int target, double speed, boolean argument)
+    {
+        super.encoderControl(target, speed, argument);
+    }
+
+    @Override
     public void setPower(double power)
     {
         super.setPower(power);

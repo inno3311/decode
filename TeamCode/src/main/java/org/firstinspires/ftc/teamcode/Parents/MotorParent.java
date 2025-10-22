@@ -303,6 +303,7 @@ public class MotorParent
 
     protected void driveToVelocity(double targetVelocity)
     {
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor.setVelocity(targetVelocity);
     }
 

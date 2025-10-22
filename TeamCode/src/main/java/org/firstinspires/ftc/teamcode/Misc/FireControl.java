@@ -10,7 +10,7 @@ public class FireControl
     private final double g = 9.8;//meter/sec
 
     //Fly Wheel Stats
-    private final double shooterWheelRadius = 0.0254;//meter
+    private final double shooterWheelRadius = 0.0508;//meter
     private final double projectileWeight = 0.07;//kg
     private final double shooterWheelGearRatio = 1;
     private final double motorMaxRPM = 6000;
@@ -155,7 +155,7 @@ public class FireControl
         double motorRPM = shooterWheelRPM / 1;
         double motorVelocity = (motorRPM / 60) * 28;
 
-        telemetry.addData("Target Motor Velocity", motorRPM);
+        telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
     }
 
