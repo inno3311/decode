@@ -25,8 +25,9 @@ public class MyClass
             .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
             .build();
 
-        myBot = red1rout(meepMeep);
-        myBot2 = red2rout(meepMeep);
+        myBot = red1other(meepMeep);
+        //myBot = CameraRout(meepMeep);
+        myBot2 = red2us(meepMeep);
         //myBot = zoeRout2(meepMeep);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_LIGHT)
@@ -125,7 +126,7 @@ public class MyClass
 
         return myBot;
     }
-    static public RoadRunnerBotEntity red2rout(MeepMeep meepMeep)
+    static public RoadRunnerBotEntity red2us(MeepMeep meepMeep)
     {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
            // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -133,49 +134,66 @@ public class MyClass
            .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-48, 50,Math.toRadians(126) ))
-                .waitSeconds(3)
                 .setReversed(true)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(135+180))
+                .strafeTo(new Vector2d(-18, 18))
                 .waitSeconds(3)
                 .splineTo(new Vector2d(-12, 30), Math.toRadians(90))
                 .splineTo(new Vector2d(-12, 48), Math.toRadians(90))
                 .strafeTo(new Vector2d(2, 48))
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(2, 55))
+                .waitSeconds(1)
                 .setReversed(true)
                 .splineTo(new Vector2d(10, 24), Math.toRadians(135+180))
                 .setReversed(false)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(135))
+                .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
                 .waitSeconds(3)
-                .splineTo(new Vector2d(12, 24), Math.toRadians(90))
-                .splineTo(new Vector2d(12, 45), Math.toRadians(90))
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(135))
+                .strafeToLinearHeading(new Vector2d(12, 24), Math.toRadians(90))
+                .strafeTo(new Vector2d(12, 50))
                 .waitSeconds(3)
-
-
-
+                .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
+                .waitSeconds(3)
       .build());
 
 
         return myBot;
 
     }
-    static public RoadRunnerBotEntity red1rout(MeepMeep meepMeep)
+    static public RoadRunnerBotEntity red1other(MeepMeep meepMeep)
     {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
             // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
             .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
             .build();
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60,  24, Math.toRadians(180) ))
-            .waitSeconds(6)
-            .splineTo(new Vector2d(0,  10), Math.toRadians(135))
+            .waitSeconds(4)
+            .strafeToLinearHeading(new Vector2d(0,  13), Math.toRadians(135))
             .waitSeconds(3)
-            .strafeTo(new Vector2d(36, 10))
-            .waitSeconds(0.1)
-            .splineTo(new Vector2d(36,  45), Math.toRadians(90))
+            .strafeTo(new Vector2d(36, 13))
+            .strafeToLinearHeading(new Vector2d(36, 45), Math.toRadians(90))
             .waitSeconds(3)
-            .setReversed(true)
-            .splineTo(new Vector2d(36,  10), Math.toRadians(135+180))
-            .setReversed(false)
-            .splineTo(new Vector2d(0,  10), Math.toRadians(135))
+            .strafeToLinearHeading(new Vector2d(36,  13), Math.toRadians(180))
+            .waitSeconds(2)
+            .strafeToLinearHeading(new Vector2d(0,  13), Math.toRadians(135))
+            .waitSeconds(3)
+            .strafeToLinearHeading(new Vector2d(15,  13), Math.toRadians(135))
+
+
+
+            .build());
+
+
+        return myBot;
+
+    }
+    static public RoadRunnerBotEntity CameraRout(MeepMeep meepMeep)
+    {
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+            // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+            .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+            .build();
+
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-48, 50,Math.toRadians(126) ))
             .waitSeconds(3)
 
             .build());
