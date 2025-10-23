@@ -73,9 +73,9 @@ public class ServoParent
      * @param angle The angle you want the servo to drive to in its range (position 0 = o degrees, position 1 = max servoRange)
      * @return a value in between 0-1 to drive the servo to. Must be inputted into drive servo
      */
-    protected double driveToAngleTarget(double angle)
+    protected void driveToAngleTarget(double angle)
     {
-        return angle/servoRange;
+        servo.setPosition(angle/servoRange);
     }
 
     protected double getAngle()
@@ -95,7 +95,7 @@ public class ServoParent
             angle = getAngle() - 5;
         }
 
-        driveServo(driveToAngleTarget(angle));
+        driveToAngleTarget(angle);
     }
 
     public Action action(double target)

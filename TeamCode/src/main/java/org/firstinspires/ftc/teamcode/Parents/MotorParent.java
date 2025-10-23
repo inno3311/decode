@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Misc.Logging;
 
 public class MotorParent
@@ -299,6 +301,17 @@ public class MotorParent
 
     }
 
+    protected void driveToVelocity(double targetVelocity)
+    {
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setVelocity(targetVelocity);
+    }
+
+    protected double getVelocity()
+    {
+        return motor.getVelocity();
+    }
+
     /**
      * @param target Target location that the motor will move to
      * @param speed The speed at which the motor will spin
@@ -406,6 +419,12 @@ public class MotorParent
         return motor.getPower();
     }
 
+    protected void setPower(double power)
+    {
+        motor.setPower(power);
+    }
+
+
     /**
      *     Prints motor telemetry
      */
@@ -413,6 +432,11 @@ public class MotorParent
     {
         if (hasEncoder) {telemetry.addData(motorName, "Speed: %.2f\n\tEncoder Position: %d", motor.getPower(), motor.getCurrentPosition());}
         else {telemetry.addData(motorName, "Speed: %.2f", motor.getPower());}
+    }
+
+    protected void currentDraw()
+    {
+        telemetry.addData(motorName, "Current Draw: %.2f", motor.getCurrent(CurrentUnit.AMPS));
     }
 
     protected int getMotorPosition()

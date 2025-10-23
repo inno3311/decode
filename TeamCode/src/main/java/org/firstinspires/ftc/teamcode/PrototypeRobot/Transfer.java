@@ -8,7 +8,7 @@ public class Transfer extends ServoParent
 {
     public Transfer(LinearOpMode opMode)
     {
-        super("transfer", 0, opMode);
+        super("lift", 0, opMode);
     }
 
     @Override

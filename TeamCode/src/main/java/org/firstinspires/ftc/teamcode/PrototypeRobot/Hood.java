@@ -16,4 +16,10 @@ public class Hood extends ServoParent
     {
         super.driveAngle(iIncrease, iDecrease);
     }
+
+    @Override
+    public void driveToAngleTarget(double angle)
+    {
+        super.driveToAngleTarget(angle);
+    }
 }

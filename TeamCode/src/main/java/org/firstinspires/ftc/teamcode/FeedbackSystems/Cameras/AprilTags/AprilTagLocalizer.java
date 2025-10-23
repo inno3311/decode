@@ -109,16 +109,36 @@ public class AprilTagLocalizer
     public double getTagX()
     {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        AprilTagDetection detection = currentDetections.get(0);
-        return detection.ftcPose.x;
+        if (!currentDetections.isEmpty())
+        {
+            AprilTagDetection detection = currentDetections.get(0);
+            return detection.ftcPose.x;
+        }
+        return 0;
     }
 
     public double getTagY()
     {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        AprilTagDetection detection = currentDetections.get(0);
-        return detection.ftcPose.y;
+        if (!currentDetections.isEmpty())
+        {
+            AprilTagDetection detection = currentDetections.get(0);
+            return detection.ftcPose.y;
+        }
+        return 0;
     }
+
+    public double getTagZ()
+    {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        if (!currentDetections.isEmpty())
+        {
+            AprilTagDetection detection = currentDetections.get(0);
+            return detection.ftcPose.z;
+        }
+        return 0;
+    }
+
 
     public double getTagYaw()
     {

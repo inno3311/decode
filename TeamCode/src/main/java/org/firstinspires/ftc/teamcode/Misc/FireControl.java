@@ -7,14 +7,14 @@ public class FireControl
 {
     AprilTagLocalizer localizer;
     Telemetry telemetry;
-    private final double g = 9.8;
+    private final double g = 9.8;//meter/sec
 
     //Fly Wheel Stats
-    private final double shooterWheelRadius = 2;//in
-    private final double projectileWeight = 1;//g
-    private final double shooterWheelGearRatio = 2.2857;
+    private final double shooterWheelRadius = 0.0508;//meter
+    private final double projectileWeight = 0.07;//kg
+    private final double shooterWheelGearRatio = 1;
     private final double motorMaxRPM = 6000;
-    private final double shooterMOI = 1.164;//
+    private final double shooterMOI = 0.001;//kg * m^2
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
 
 
@@ -33,7 +33,7 @@ public class FireControl
     {
         double velocity = velocityMag(velocityX(flightTime), velocityY(flightTime));
         if (velocity > maxVelocity) {velocity = maxVelocity;}
-        double angle = calculateAngle(velocity);
+        double angle = calculateSteeperAngle(velocity);
 
         return new double[] {velocity, angle};
     }
@@ -81,19 +81,45 @@ public class FireControl
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
-    public double calculateAngle(double velocity)
+    public double calculateSteeperAngle(double velocity)
     {
-        double targetX = localizer.getTagX();
-        double targetY = localizer.getTagY();
+        double targetY = localizer.getTagY() * 2.54 / 100;
+        double targetZ = 1.1;
 
-        double numeratorX = g * Math.pow((2 * targetX), 2);
-        double numeratorY = 4 * (targetY) * Math.pow(velocity, 2);
-        double numeratorRoot = Math.sqrt(Math.pow(velocity, 4) - g * (numeratorX + numeratorY));
+        double numeratorY = g * Math.pow((2 * targetY), 2);
+        double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
+        double numeratorRoot = Math.sqrt(Math.pow(velocity, 4) - g * (numeratorY + numeratorZ));
         double numerator = Math.pow(velocity, 2) + numeratorRoot;
-        double denominator = g * 2 * targetX;
+        double denominator = g * 2 * targetY;
         double launchAngle = Math.atan(numerator/denominator);
 
-        telemetry.addData("Launch Angle", launchAngle);
+        telemetry.addData("Launch Angle", Math.toDegrees(launchAngle));
+        telemetry.addData("Y", localizer.getTagY()  * 2.54 / 100);
+        telemetry.addData("Z", localizer.getTagZ()  * 2.54 / 100);
+        return Math.toDegrees(launchAngle);
+    }
+
+    /**
+     * @targetX The plane distance to the target in meters
+     * @targetY The height of target in meters
+     * @param velocity The exit velocity of the artifact from the launcher in meters/second
+     * @return The angle of launch in degrees
+     */
+    public double calculateShallowerAngle(double velocity)
+    {
+        double targetY = localizer.getTagY() * 2.54 / 100;
+        double targetZ = 1.1;
+
+        double numeratorY = g * Math.pow((2 * targetY), 2);
+        double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
+        double numeratorRoot = Math.sqrt(Math.pow(velocity, 4) - g * (numeratorY + numeratorZ));
+        double numerator = Math.pow(velocity, 2) - numeratorRoot;
+        double denominator = g * 2 * targetY;
+        double launchAngle = Math.atan(numerator/denominator);
+
+        telemetry.addData("Launch Angle", Math.toDegrees(launchAngle));
+        telemetry.addData("Y", localizer.getTagY()  * 2.54 / 100);
+        telemetry.addData("Z", localizer.getTagZ()  * 2.54 / 100);
         return Math.toDegrees(launchAngle);
     }
 
@@ -104,12 +130,12 @@ public class FireControl
      */
     public double calculateVelocity(double angle)
     {
-        double targetX = localizer.getTagX();
-        double targetY = localizer.getTagY();
+        double targetY = localizer.getTagY() * 2.54 / 100;
+        double targetZ = 1.1;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
-        double numerator = -g * targetX * numeratorParth;
-        double denominator = 2 * (targetY - targetX * Math.tan(Math.toRadians(angle)));
+        double numerator = -g * targetY * numeratorParth;
+        double denominator = 2 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
 
@@ -117,19 +143,29 @@ public class FireControl
         return launchVelocity;
     }
 
+
     /**
      * @param velocity at which the tha ball will be launched.
      * @return the motor RPM at which to fire the ball
+     * I have no idea how this math is right but I have no care in the world. It does
      */
-    public double targetMotorRPM(double velocity)
+    public double targetMotorVelocity(double velocity)
     {
-        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
-        double wheelSurfaceSpeed = velocity / speedTransferPercentage;
-        double shooterWheelRPM = wheelSurfaceSpeed / shooterWheelRadius;
-        double motorRPM = shooterWheelRPM/shooterWheelGearRatio;
 
-        telemetry.addData("MotorRPM", motorRPM);
-        return motorRPM;
+        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28;
+
+        telemetry.addData("Target Motor Velocity2", motorVelocity);
+        return motorVelocity;
+    }
+
+    public void speedTransferPercentage(double motorVelocity, double targetVelocity)
+    {
+        double motorRPM = (-motorVelocity / 28) * 60;
+        double wheelSurfaceSpeed = motorRPM * shooterWheelRadius;
+        double speedTransferPercentage = targetVelocity / wheelSurfaceSpeed;
+//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
+
+        telemetry.addData("speed Transfer Percentage", speedTransferPercentage);
     }
 
 }

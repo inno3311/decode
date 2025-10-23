@@ -7,12 +7,54 @@ public class Shooter extends MotorParent
 {
     public Shooter(LinearOpMode opMode)
     {
-        super("shooter", false, false, opMode);
+        super("shooter", false, true, opMode);
     }
 
     @Override
     public void toggleDrive(double speed, boolean argument)
     {
         super.toggleDrive(speed, argument);
+    }
+
+    @Override
+    public void driveToVelocity(double targetVelocity)
+    {
+        super.driveToVelocity(targetVelocity);
+    }
+
+    @Override
+    public double getVelocity()
+    {
+        return super.getVelocity();
+    }
+
+    @Override
+    public double getPower()
+    {
+        return super.getPower();
+    }
+
+    @Override
+    public void encoderControl(int target, double speed, boolean argument)
+    {
+        super.encoderControl(target, speed, argument);
+    }
+
+    @Override
+    public void setPower(double power)
+    {
+        super.setPower(power);
+    }
+
+    @Override
+    public void telemetry()
+    {
+        super.telemetry();
+    }
+
+    @Override
+    public void currentDraw()
+    {
+        super.currentDraw();
     }
 }

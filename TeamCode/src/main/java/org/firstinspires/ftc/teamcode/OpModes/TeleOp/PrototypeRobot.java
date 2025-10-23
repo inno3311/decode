@@ -8,7 +8,8 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 @TeleOp(name = "prototype")
 public class PrototypeRobot extends LinearOpMode
@@ -18,9 +19,11 @@ public class PrototypeRobot extends LinearOpMode
     Hood hood;
     Transfer transfer;
     DriveController driveController;
+    FireControl fireControl;
     ElapsedTime time;
-    double flag = 0;
     double flag1 = 0;
+    double flag2 = 0;
+    double initialTargetVelocity = 13;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -32,37 +35,75 @@ public class PrototypeRobot extends LinearOpMode
         time = new ElapsedTime();
 
         driveController = new DriveController(hardwareMap);
+        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
 
         waitForStart();
-
         time.startTime();
 
         while (opModeIsActive())
         {
+
+            driveController.gamepadController(gamepad1);
+
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
-
-            if (flag1 < time.seconds())
-            {
-                shooter.toggleDrive(1, gamepad1.b);
-                if (gamepad1.b)
-                {
-                    flag1 = time.seconds() + 0.5;
-                }
-            }
-
-            hood.driveAngle(gamepad1.dpad_up, gamepad1.dpad_down);
 
             if (gamepad1.right_bumper)
             {
                 transfer.driveServo(0.7);
-                flag = time.seconds() + 1;
+                flag1 = time.seconds() + 0.25;
             }
-            else if (flag < time.startTime())
+            else if (flag1 < time.startTime())
             {
                 transfer.driveServo(1);
             }
 
-            driveController.gamepadController(gamepad1);
+            if (gamepad1.dpad_up && flag2 < time.seconds())
+            {
+                initialTargetVelocity++;
+                flag2 = time.seconds() + 0.25;
+            }
+            else if (gamepad1.dpad_down  && flag2 < time.seconds())
+            {
+                initialTargetVelocity--;
+                flag2 = time.seconds() + 0.25;
+            }
+
+
+            if (gamepad1.b)
+            {
+                if (65 - fireControl.calculateShallowerAngle(initialTargetVelocity) > 0)
+                {
+                    telemetry.addData("Firing not at 65 degrees","");
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(initialTargetVelocity));
+                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(initialTargetVelocity));
+                }
+                else
+                {
+                    telemetry.addData("Firing at 65 degrees","");
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(fireControl.calculateSteeperAngle(65)));
+                    hood.driveToAngleTarget(0);
+                }
+            }
+
+
+            if (gamepad1.y)
+            {
+                shooter.driveToVelocity(fireControl.targetMotorVelocity(initialTargetVelocity));
+            }
+            else if (gamepad1.x)
+            {
+                shooter.setPower(0);
+            }
+
+
+            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
+            fireControl.targetMotorVelocity(initialTargetVelocity);
+            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(initialTargetVelocity));
+            telemetry.addData("shooter Power", shooter.getPower());
+            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
+            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
+            shooter.currentDraw();
+            telemetry.update();
         }
 
     }
