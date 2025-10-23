@@ -23,7 +23,7 @@ public class PrototypeRobot extends LinearOpMode
     ElapsedTime time;
     double flag1 = 0;
     double flag2 = 0;
-    double shooterVelocity = 13;
+    double initialTargetVelocity = 13;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -43,6 +43,8 @@ public class PrototypeRobot extends LinearOpMode
         while (opModeIsActive())
         {
 
+            driveController.gamepadController(gamepad1);
+
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
             if (gamepad1.right_bumper)
@@ -57,28 +59,28 @@ public class PrototypeRobot extends LinearOpMode
 
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {
-                shooterVelocity++;
+                initialTargetVelocity++;
                 flag2 = time.seconds() + 0.25;
             }
             else if (gamepad1.dpad_down  && flag2 < time.seconds())
             {
-                shooterVelocity--;
+                initialTargetVelocity--;
                 flag2 = time.seconds() + 0.25;
             }
 
 
             if (gamepad1.b)
             {
-                if (65 - fireControl.calculateSteeperAngle(shooterVelocity) > 0)
+                if (65 - fireControl.calculateShallowerAngle(initialTargetVelocity) > 0)
                 {
                     telemetry.addData("Firing not at 65 degrees","");
-                    shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
-                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(shooterVelocity));
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(initialTargetVelocity));
+                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(initialTargetVelocity));
                 }
                 else
                 {
                     telemetry.addData("Firing at 65 degrees","");
-                    shooter.driveToVelocity(fireControl.targetMotorVelocity(fireControl.calculateVelocity(65)));
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(fireControl.calculateSteeperAngle(65)));
                     hood.driveToAngleTarget(0);
                 }
             }
@@ -86,23 +88,20 @@ public class PrototypeRobot extends LinearOpMode
 
             if (gamepad1.y)
             {
-                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
+                shooter.driveToVelocity(fireControl.targetMotorVelocity(initialTargetVelocity));
             }
             else if (gamepad1.x)
             {
                 shooter.setPower(0);
             }
 
-//            driveController.gamepadController(gamepad1);
 
-            telemetry.addData("ShooterVelocity", shooterVelocity);
-            fireControl.actualVelocity(shooter.getVelocity());
-//            fireControl.speedTransferPercentage(shooter.getVelocity(), shooterVelocity);
-            fireControl.targetMotorVelocity(shooterVelocity);
-            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(shooterVelocity));
-//            telemetry.addData("shooter Power", shooter.getPower());
+            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
+            fireControl.targetMotorVelocity(initialTargetVelocity);
+            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(initialTargetVelocity));
+            telemetry.addData("shooter Power", shooter.getPower());
             telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
+            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             shooter.currentDraw();
             telemetry.update();
         }

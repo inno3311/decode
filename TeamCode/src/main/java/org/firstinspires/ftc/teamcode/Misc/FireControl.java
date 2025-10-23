@@ -143,34 +143,20 @@ public class FireControl
         return launchVelocity;
     }
 
+
     /**
      * @param velocity at which the tha ball will be launched.
      * @return the motor RPM at which to fire the ball
+     * I have no idea how this math is right but I have no care in the world. It does
      */
     public double targetMotorVelocity(double velocity)
     {
-//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
-        double wheelSurfaceSpeed = velocity / 0.16;
-        double shooterWheelRPM = wheelSurfaceSpeed / shooterWheelRadius;
-        double motorRPM = shooterWheelRPM / 1;
-        double motorVelocity = (motorRPM / 60) * 28;
 
-        telemetry.addData("Target Motor Velocity", motorVelocity);
+        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28;
+
+        telemetry.addData("Target Motor Velocity2", motorVelocity);
         return motorVelocity;
     }
-
-
-
-    public void actualVelocity(double motorVelocity)
-    {
-        double motorRPM = (-motorVelocity / 28) * 60;
-        double wheelSurfaceSpeed = motorRPM * shooterWheelRadius;
-//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
-        double velocity = wheelSurfaceSpeed * 0.16;
-
-        telemetry.addData("actual velocity", velocity);
-    }
-
 
     public void speedTransferPercentage(double motorVelocity, double targetVelocity)
     {
