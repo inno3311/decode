@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Auto;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -13,6 +13,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //import org.firstinspires.ftc.teamcode.initialization.Initialization;
 
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
 @Autonomous(name="ZoeRun1", group="Linear OpMode")
@@ -21,11 +28,19 @@ public final class ZoeRedRun1 extends LinearOpMode
 
     //Initialization initialization;
 
+    Shooter shooter;
+    Intake intake;
+    Transfer transfer;
+    Hood hood;
+    FireControl fireControl;
+    ActionsBackpack actionsBackpack;
 
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Transfer(this), new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry));
+
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
 

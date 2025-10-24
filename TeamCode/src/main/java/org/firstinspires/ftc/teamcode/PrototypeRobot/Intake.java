@@ -16,4 +16,16 @@ public class Intake extends MotorParent
     {
         super.simpleDrive(speed, argument);
     }
+
+    @Override
+    public void setPower(double power)
+    {
+        super.setPower(power);
+    }
+
+    @Override
+    public boolean isBusy()
+    {
+        return super.isBusy();
+    }
 }

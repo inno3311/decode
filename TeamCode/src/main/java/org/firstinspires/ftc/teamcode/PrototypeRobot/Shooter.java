@@ -57,4 +57,11 @@ public class Shooter extends MotorParent
     {
         super.currentDraw();
     }
+
+    @Override
+    public boolean isBusy()
+    {
+        return super.isBusy();
+    }
+
 }

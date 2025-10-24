@@ -16,4 +16,10 @@ public class Transfer extends ServoParent
     {
         super.driveServo(target);
     }
+
+    @Override
+    public double getPosition()
+    {
+        return super.getPosition();
+    }
 }
