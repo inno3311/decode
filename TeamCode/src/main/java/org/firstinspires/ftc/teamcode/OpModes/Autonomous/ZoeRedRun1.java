@@ -28,11 +28,6 @@ public final class ZoeRedRun1 extends LinearOpMode
 
     //Initialization initialization;
 
-    Shooter shooter;
-    Intake intake;
-    Transfer transfer;
-    Hood hood;
-    FireControl fireControl;
     ActionsBackpack actionsBackpack;
 
 
@@ -42,7 +37,7 @@ public final class ZoeRedRun1 extends LinearOpMode
         actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Transfer(this), new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry));
 
         // ZOE update with starting location
-        Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
+        Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(165));
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
@@ -54,9 +49,15 @@ public final class ZoeRedRun1 extends LinearOpMode
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
                 // Zoe, your path starts here!   GO FORTH AND CODE!!!!!!!
-                .strafeToLinearHeading(new Vector2d(0, 0), Math.toRadians(225), new TranslationalVelConstraint(30))
+                //.strafeToLinearHeading(new Vector2d(0, 0), Math.toRadians(225), new TranslationalVelConstraint(30))
+                //.turnTo(Math.toRadians(135))
+                .afterTime(0, actionsBackpack.fireBall(10))
+                .waitSeconds(10)
+                .afterTime(0,actionsBackpack.intakeBall(1))
+                .splineTo(new Vector2d(0,0),Math.toRadians(180),new TranslationalVelConstraint(20))
                 .waitSeconds(1)
-                .waitSeconds(1)
+                .afterTime(0, actionsBackpack.intakeBall(0))
+
                 ; //do not remove ;
 
             Action redRun = yellow_drop

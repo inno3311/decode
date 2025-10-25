@@ -38,28 +38,33 @@ public class ActionsBackpack
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
             {
-                boolean flag = false;
+                boolean flag = true;
                 if (!initialized)
                 {
-                    hood.driveToAngleTarget(fireControl.calculateSteeperAngle(velocity));
-                    shooter.driveToVelocity(fireControl.calculateSteeperAngle(velocity));
+                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(velocity));
+                    shooter.driveToVelocity(fireControl.targetMotorVelocity(velocity));
                     initialized = true;
                 }
 
                 // I don't know if this while loop is necessary. If problems remove it
-                while (!flag)
+                if (shooter.getVelocity() > fireControl.targetMotorVelocity(velocity) - 100)
                 {
-                    if (shooter.getVelocity() < fireControl.calculateSteeperAngle(velocity) - 50)
-                    {
-                        transfer.driveServo(0.7);
-                    }
+                    transfer.driveServo(0.7);
+                }
 
-                    if (transfer.getPosition() == 0.7)
+                if (transfer.getPosition() == 0.7)
+                {
+                    try
                     {
-                        transfer.driveServo(1);
-                        shooter.setPower(0);
-                        flag = true;
+                        Thread.sleep(1000);
                     }
+                    catch (InterruptedException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    transfer.driveServo(1);
+                    shooter.setPower(0);
+                    flag = false;
                 }
 
                 return flag;
@@ -78,7 +83,6 @@ public class ActionsBackpack
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
             {
-                boolean flag = false;
                 if (!initialized)
                 {
                     intake.setPower(speed);
