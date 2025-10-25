@@ -1,0 +1,75 @@
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
+
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+
+//import org.firstinspires.ftc.teamcode.initialization.Initialization;
+
+import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
+import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
+import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
+
+@Autonomous(name="ZoeRun1", group="Linear OpMode")
+public final class ZoeRedRun1 extends LinearOpMode
+{
+
+    //Initialization initialization;
+
+    ActionsBackpack actionsBackpack;
+
+
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
+        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Lift(this), new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry));
+
+        // ZOE update with starting location
+        Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(165));
+
+        if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
+        {
+            MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+
+            waitForStart();
+
+
+            TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
+
+                // Zoe, your path starts here!   GO FORTH AND CODE!!!!!!!
+                //.strafeToLinearHeading(new Vector2d(0, 0), Math.toRadians(225), new TranslationalVelConstraint(30))
+                //.turnTo(Math.toRadians(135))
+                .afterTime(0, actionsBackpack.fireBall(10))
+                .waitSeconds(10)
+                .afterTime(0,actionsBackpack.intakeBall(1))
+                .splineTo(new Vector2d(0,0),Math.toRadians(180),new TranslationalVelConstraint(20))
+                .waitSeconds(1)
+                .afterTime(0, actionsBackpack.intakeBall(0))
+
+                ; //do not remove ;
+
+            Action redRun = yellow_drop
+                .build();
+
+            Actions.runBlocking(redRun);
+
+        }
+        else
+        {
+            throw new RuntimeException();
+        }
+    }
+}
+

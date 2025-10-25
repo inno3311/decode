@@ -44,8 +44,6 @@ public class IMU
 //        teamDetection = new TeamDetection(hardwareMap);
 //        driveController = new DriveController(hardwareMap);
 
-
-
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode                = IMU;
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
