@@ -34,6 +34,7 @@ public class ActionsBackpack
         return new Action()
         {
             private boolean initialized = false;
+            private double[] shooterParameters;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
@@ -41,27 +42,22 @@ public class ActionsBackpack
                 boolean flag = true;
                 if (!initialized)
                 {
-                    hood.driveToAngleTarget(65 - fireControl.calculateSteeperAngle(velocity));
-                    shooter.driveToVelocity(fireControl.targetMotorVelocity(velocity));
+                    shooterParameters = fireControl.firingSuite(velocity);
+
+                    hood.driveToAngleTarget(shooterParameters[0]);
+                    shooter.driveToVelocity(shooterParameters[1]);
                     initialized = true;
                 }
 
                 // I don't know if this while loop is necessary. If problems remove it
-                if (shooter.getVelocity() > fireControl.targetMotorVelocity(velocity) - 100)
+                if (shooter.getVelocity() > shooterParameters[1] - 75)
                 {
                     transfer.driveServo(0.7);
                 }
 
                 if (transfer.getPosition() == 0.7)
                 {
-                    try
-                    {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
+                    try {Thread.sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
                     transfer.driveServo(1);
                     shooter.setPower(0);
                     flag = false;

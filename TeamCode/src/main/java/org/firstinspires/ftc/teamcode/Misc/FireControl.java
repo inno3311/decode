@@ -11,11 +11,8 @@ public class FireControl
 
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0508;//meter
-    private final double projectileWeight = 0.07;//kg
-    private final double shooterWheelGearRatio = 1;
-    private final double motorMaxRPM = 6000;
-    private final double shooterMOI = 0.001;//kg * m^2
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
+    private final double maxLaunchAngle = 65;
 
 
 
@@ -81,7 +78,7 @@ public class FireControl
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
-    public double calculateSteeperAngle(double velocity)
+    private double calculateSteeperAngle(double velocity)
     {
         double targetY = localizer.getTagY() * 2.54 / 100;
         double targetZ = 1.1;
@@ -93,9 +90,6 @@ public class FireControl
         double denominator = g * 2 * targetY;
         double launchAngle = Math.atan(numerator/denominator);
 
-        telemetry.addData("Launch Angle", Math.toDegrees(launchAngle));
-        telemetry.addData("Y", localizer.getTagY()  * 2.54 / 100);
-        telemetry.addData("Z", localizer.getTagZ()  * 2.54 / 100);
         return Math.toDegrees(launchAngle);
     }
 
@@ -105,7 +99,7 @@ public class FireControl
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
-    public double calculateShallowerAngle(double velocity)
+    private double calculateShallowerAngle(double velocity)
     {
         double targetY = localizer.getTagY() * 2.54 / 100;
         double targetZ = 1.1;
@@ -117,9 +111,6 @@ public class FireControl
         double denominator = g * 2 * targetY;
         double launchAngle = Math.atan(numerator/denominator);
 
-        telemetry.addData("Launch Angle", Math.toDegrees(launchAngle));
-        telemetry.addData("Y", localizer.getTagY()  * 2.54 / 100);
-        telemetry.addData("Z", localizer.getTagZ()  * 2.54 / 100);
         return Math.toDegrees(launchAngle);
     }
 
@@ -128,7 +119,7 @@ public class FireControl
      * @targetY The height of target in meters
      * @param angle The angle at which the ball exits the shooter in degrees
      */
-    public double calculateVelocity(double angle)
+    private double calculateVelocity(double angle)
     {
         double targetY = localizer.getTagY() * 2.54 / 100;
         double targetZ = 1.1;
@@ -138,18 +129,15 @@ public class FireControl
         double denominator = 2 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
-
-        telemetry.addData("Launch Velocity", launchVelocity);
         return launchVelocity;
     }
-
 
     /**
      * @param velocity at which the tha ball will be launched.
      * @return the motor RPM at which to fire the ball
      * I have no idea how this math is right but I have no care in the world. It does
      */
-    public double targetMotorVelocity(double velocity)
+    private double targetMotorVelocity(double velocity)
     {
 
         double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28;
@@ -158,14 +146,27 @@ public class FireControl
         return motorVelocity;
     }
 
-    public void speedTransferPercentage(double motorVelocity, double targetVelocity)
+    public double[] firingSuite(double velocity)
     {
-        double motorRPM = (-motorVelocity / 28) * 60;
-        double wheelSurfaceSpeed = motorRPM * shooterWheelRadius;
-        double speedTransferPercentage = targetVelocity / wheelSurfaceSpeed;
-//        double speedTransferPercentage = 20 * shooterMOI / (7 * projectileWeight * Math.pow((shooterWheelRadius / 2), 2) + 40 * shooterMOI);
+        double targetAngle;
 
-        telemetry.addData("speed Transfer Percentage", speedTransferPercentage);
+        double targetY = localizer.getTagY() * 2.54 / 100;
+        telemetry.addData("Plan Distance", targetY);
+
+        if (targetY > 2.5)
+        {
+            targetAngle = 65 - calculateShallowerAngle(velocity);
+        }
+        else
+        {
+            targetAngle = 65 - maxLaunchAngle;
+            velocity = calculateVelocity(maxLaunchAngle);
+        }
+
+        telemetry.addData("Target Velocity", velocity);
+        telemetry.addData("Taget Angle", targetAngle);
+
+        return new double[] {targetAngle, targetMotorVelocity(velocity)};
     }
 
 }
