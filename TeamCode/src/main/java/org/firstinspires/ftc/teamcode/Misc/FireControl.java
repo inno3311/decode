@@ -157,6 +157,10 @@ public class FireControl
         {
             targetAngle = 65 - calculateShallowerAngle(velocity);
         }
+        else if (maxLaunchAngle > 65 - calculateSteeperAngle(velocity))
+        {
+            targetAngle = 65 - calculateSteeperAngle(velocity);
+        }
         else
         {
             targetAngle = 65 - maxLaunchAngle;
