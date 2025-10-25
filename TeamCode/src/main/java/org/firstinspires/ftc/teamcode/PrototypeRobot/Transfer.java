@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Parents.CRServoParent;
 
 public class Transfer extends CRServoParent
 {
-    public Transfer( LinearOpMode opMode)
+    public Transfer(LinearOpMode opMode)
     {
         super("transfer", opMode);
     }

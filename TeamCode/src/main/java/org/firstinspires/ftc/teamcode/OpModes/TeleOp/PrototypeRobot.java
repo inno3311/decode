@@ -19,13 +19,13 @@ public class PrototypeRobot extends LinearOpMode
     Shooter shooter;
     Hood hood;
     Lift lift;
-    Transfer  transfer;
+    Transfer transfer;
     DriveController driveController;
     FireControl fireControl;
     ElapsedTime time;
     double flag1 = 0;
     double flag2 = 0;
-    double initialTargetVelocity = 11.5;
+    double initialTargetVelocity = 12;
     double[] shooterParameters;
 
     @Override
