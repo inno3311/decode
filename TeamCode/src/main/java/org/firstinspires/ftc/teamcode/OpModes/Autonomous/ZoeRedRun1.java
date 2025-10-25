@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
@@ -34,7 +34,7 @@ public final class ZoeRedRun1 extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Transfer(this), new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry));
+        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Lift(this), new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry));
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(165));

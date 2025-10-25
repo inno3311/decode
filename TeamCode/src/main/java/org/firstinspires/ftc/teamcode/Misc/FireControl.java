@@ -170,7 +170,7 @@ public class FireControl
         telemetry.addData("Target Velocity", velocity);
         telemetry.addData("Taget Angle", targetAngle);
 
-        return new double[] {targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {65 - targetAngle, targetMotorVelocity(velocity)};
     }
 
 }

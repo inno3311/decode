@@ -93,24 +93,11 @@ public class CRServoParent
         {
             driveBackward();
         }
-//        else
-//        {
-//            stop();
-//        }
     }
 
-    public Action action(double target)
+    protected void driveServo(double speed)
     {
-        return new Action()
-        {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket)
-            {
-                driveForward();
-                return false;
-            }
-        };
+       servo.setPower(speed);
     }
-
 
 }

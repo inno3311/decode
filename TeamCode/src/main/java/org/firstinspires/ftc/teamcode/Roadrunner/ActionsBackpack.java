@@ -9,17 +9,17 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
 
 public class ActionsBackpack
 {
     Shooter shooter;
     Intake intake;
-    Transfer transfer;
+    Lift transfer;
     Hood hood;
     FireControl fireControl;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Transfer transfer, Hood hood, FireControl fireControl)
+    public ActionsBackpack(Shooter shooter, Intake intake, Lift transfer, Hood hood, FireControl fireControl)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -30,7 +30,6 @@ public class ActionsBackpack
 
     public Action fireBall(double velocity)
     {
-
         return new Action()
         {
             private boolean initialized = false;
@@ -66,12 +65,10 @@ public class ActionsBackpack
                 return flag;
             }
         };
-
     }
 
     public Action intakeBall(double speed)
     {
-
         return new Action()
         {
             private boolean initialized = false;
@@ -88,6 +85,25 @@ public class ActionsBackpack
                 return !intake.isBusy();
             }
         };
+    }
 
+    public Action transferBall(double speed)
+    {
+        return new Action()
+        {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                if (!initialized)
+                {
+                    transfer.driveServo(speed);
+                    initialized = true;
+                }
+
+                return false;
+            }
+        };
     }
 }
