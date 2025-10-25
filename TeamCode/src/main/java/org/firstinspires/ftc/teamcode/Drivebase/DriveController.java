@@ -22,8 +22,9 @@ public class DriveController
     public double speed = 0;
 
     int driveDir = 1;
-    int strafeDir = 1;
-    int turnDir = 1;
+    int strafeDir = -1;
+    int turnDir = -1;
+
 
     final double  COUNTS_PER_INCH = (8192 * 1) / (2 * 3.1415); // 1,303.835747254496
     private double heading = 0;
