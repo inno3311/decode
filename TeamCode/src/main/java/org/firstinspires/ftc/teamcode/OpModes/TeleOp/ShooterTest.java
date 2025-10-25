@@ -48,7 +48,7 @@ public class ShooterTest extends LinearOpMode
 
             if (gamepad1.b)
             {
-                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
+//                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
             }
 
 
@@ -61,8 +61,7 @@ public class ShooterTest extends LinearOpMode
 
             telemetry.addData("ShooterVelocity", shooterVelocity);
 //            fireControl.actualVelocity(shooter.getVelocity());
-            fireControl.speedTransferPercentage(shooter.getVelocity(), shooterVelocity);
-            fireControl.targetMotorVelocity(shooterVelocity);
+//            fireControl.targetMotorVelocity(shooterVelocity);
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
 //            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(shooterVelocity));
 //            telemetry.addData("shooter Power", shooter.getPower());

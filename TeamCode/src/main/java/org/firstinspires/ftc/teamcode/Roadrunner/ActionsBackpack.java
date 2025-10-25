@@ -61,29 +61,33 @@ public class ActionsBackpack
                     shooter.driveToVelocity(shooterParameters[1]);
                 }
 
-                if (fireHold + 4 < time.seconds())
+                if (fireHold + 3 < time.seconds())
                 {
                     transfer.driveServo(0);
                     lift.driveServo(0.7);
-                    shotsFired++;
                 }
 
-                if (fireHold + 4.5 < time.seconds() && numberOfShots != shotsFired)
+                if (numberOfShots == shotsFired)
                 {
                     shooterParameters[1] = 0;
                     shooterStop = true;
                 }
 
-                if (fireHold + 5 < time.seconds())
+                if (fireHold + 4 < time.seconds())
                 {
-                    fireHold = time.seconds() + 2;
 
                     lift.driveServo(1);
                     transfer.driveServo(1);
 
                     if (numberOfShots == shotsFired)
                     {
+                        shooter.setPower(0);
                         flag = false;
+                    }
+                    else
+                    {
+                        shotsFired++;
+                        fireHold = time.seconds() - 1;
                     }
                 }
 

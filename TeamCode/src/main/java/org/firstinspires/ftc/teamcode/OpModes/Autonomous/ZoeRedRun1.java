@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
-@Autonomous(name="ZoeRun1", group="Linear OpMode")
-public final class ZoeRedRun1 extends LinearOpMode
+@Autonomous(name="Autonomous 4 balls in goal", group="Linear OpMode")
+public class ZoeRedRun1 extends LinearOpMode
 {
 
     //Initialization initialization;
@@ -59,15 +59,17 @@ public final class ZoeRedRun1 extends LinearOpMode
                 //.splineTo(new Vector2d(0,0),Math.toRadians(180),new TranslationalVelConstraint(20))
                 //.waitSeconds(1)
                 //.afterTime(0, actionsBackpack.intakeBall(0))
-                .turnTo(Math.toRadians(160))
-                .afterTime(0, actionsBackpack.fireBall(12))
-                .waitSeconds(6)
+                .turnTo(Math.toRadians(155))
+                .afterTime(0, actionsBackpack.fireBall(12, 2))
+                .waitSeconds(10)
                 .afterTime(0, actionsBackpack.transferBall(1))
                 .afterTime(0,actionsBackpack.intakeBall(1))
                 .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
+                .afterTime(0, actionsBackpack.transferBall(0))
                 .afterTime(0,actionsBackpack.intakeBall(0))
-                //.strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
-                //.strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(135), new TranslationalVelConstraint(30))
+                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
+                .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(135), new TranslationalVelConstraint(30))
+                .afterTime(0, actionsBackpack.fireBall(8, 2))
                 ; //do not remove ;
 
             Action redRun = yellow_drop
