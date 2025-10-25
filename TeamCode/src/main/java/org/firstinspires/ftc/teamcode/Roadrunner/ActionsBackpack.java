@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
@@ -36,14 +35,15 @@ public class ActionsBackpack
         time.startTime();
     }
 
-    public Action fireBall(double velocity)
+    public Action fireBall(double velocity, double numberOfShots)
     {
         return new Action()
         {
             private double[] shooterParameters;
             boolean flag = true;
-            private double spinUpTime;
+            private double fireHold;
             private boolean shooterStop = false;
+            private double shotsFired = 0;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
@@ -52,7 +52,7 @@ public class ActionsBackpack
                 if (shooter.getVelocity() < 10 && !shooterStop)
                 {
                     shooterParameters = fireControl.firingSuite(velocity);
-                    spinUpTime = time.seconds();
+                    fireHold = time.seconds();
                 }
 
                 if (flag)
@@ -61,20 +61,30 @@ public class ActionsBackpack
                     shooter.driveToVelocity(shooterParameters[1]);
                 }
 
-                if (spinUpTime + 4 < time.seconds())
+                if (fireHold + 4 < time.seconds())
                 {
+                    transfer.driveServo(0);
                     lift.driveServo(0.7);
+                    shotsFired++;
                 }
-                if (spinUpTime + 4.5 < time.seconds())
+
+                if (fireHold + 4.5 < time.seconds() && numberOfShots != shotsFired)
                 {
                     shooterParameters[1] = 0;
                     shooterStop = true;
                 }
-                if (spinUpTime + 5 < time.seconds())
+
+                if (fireHold + 5 < time.seconds())
                 {
+                    fireHold = time.seconds() + 2;
+
                     lift.driveServo(1);
-                    shooter.setPower(0);
-                    flag = false;
+                    transfer.driveServo(1);
+
+                    if (numberOfShots == shotsFired)
+                    {
+                        flag = false;
+                    }
                 }
 
                 return flag;
