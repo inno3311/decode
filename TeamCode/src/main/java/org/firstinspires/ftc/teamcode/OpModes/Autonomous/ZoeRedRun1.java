@@ -69,7 +69,7 @@ public class ZoeRedRun1 extends LinearOpMode
                 .afterTime(0,actionsBackpack.intakeBall(0))
                 .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
                 .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(135), new TranslationalVelConstraint(30))
-                .afterTime(0, actionsBackpack.fireBall(8, 2))
+                .afterTime(0, actionsBackpack.fireBall(12, 2))
                 ; //do not remove ;
 
             Action redRun = yellow_drop

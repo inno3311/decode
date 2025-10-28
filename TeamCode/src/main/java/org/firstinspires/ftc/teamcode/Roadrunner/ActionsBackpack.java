@@ -81,6 +81,8 @@ public class ActionsBackpack
 
                     if (numberOfShots == shotsFired)
                     {
+                        lift.driveServo(0);
+                        transfer.driveServo(0);
                         shooter.setPower(0);
                         flag = false;
                     }
@@ -127,6 +129,7 @@ public class ActionsBackpack
             {
                 if (!initialized)
                 {
+                    intake.setPower(speed);
                     transfer.driveServo(speed);
                     initialized = true;
                 }

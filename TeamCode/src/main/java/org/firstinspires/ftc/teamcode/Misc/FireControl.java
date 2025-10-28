@@ -101,8 +101,8 @@ public class FireControl
      */
     private double calculateShallowerAngle(double velocity)
     {
-        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.1;
-        double targetZ = 1.2;
+        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.05;
+        double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetY), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -121,11 +121,11 @@ public class FireControl
      */
     private double calculateVelocity(double angle)
     {
-        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.2;
-        double targetZ = 1.3;
+        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.3;
+        double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
-        double numerator = -g * targetY * numeratorParth;
+        double numerator = -g * Math.pow(targetY,2) * numeratorParth;
         double denominator = 2 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
