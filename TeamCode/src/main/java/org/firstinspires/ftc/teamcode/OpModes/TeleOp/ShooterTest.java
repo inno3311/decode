@@ -60,7 +60,6 @@ public class ShooterTest extends LinearOpMode
 
 
             telemetry.addData("ShooterVelocity", shooterVelocity);
-            fireControl.actualVelocity(shooter.getVelocity());
             fireControl.speedTransferPercentage(shooter.getVelocity(), shooterVelocity);
             fireControl.targetMotorVelocity(shooterVelocity);
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
