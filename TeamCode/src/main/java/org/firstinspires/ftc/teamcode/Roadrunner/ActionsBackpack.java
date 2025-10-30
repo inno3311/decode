@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
@@ -23,6 +24,8 @@ public class ActionsBackpack
     FireControl fireControl;
     ElapsedTime time;
 
+    CsvLogger logger;
+
     public ActionsBackpack(Shooter shooter, Intake intake, Lift lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
     {
         this.shooter = shooter;
@@ -33,6 +36,12 @@ public class ActionsBackpack
         this.fireControl = fireControl;
         this.time = time;
         time.startTime();
+
+        logger = CsvLogger.getInstance();
+        logger.start("robot_data");
+
+        // Write CSV header
+        logger.log("power,vel,hood angle");
     }
 
     public Action fireBall(double velocity, double numberOfShots)
@@ -92,6 +101,14 @@ public class ActionsBackpack
                         fireHold = time.seconds() - 1;
                     }
                 }
+
+                // Log CSV line
+                double t = time.seconds();
+                double power = shooter.getPower();
+                double vel = shooter.getVelocity();
+                double hoodAngle = 0;
+                logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
+
 
                 return flag;
             }
