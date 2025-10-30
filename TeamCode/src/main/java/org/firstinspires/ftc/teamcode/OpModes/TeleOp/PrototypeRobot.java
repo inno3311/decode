@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 @TeleOp(name = "prototype")
+@Disabled
 public class PrototypeRobot extends LinearOpMode
 {
     Intake intake;

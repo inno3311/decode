@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 
 @TeleOp(name = "Basic Drive", group = "OpMOde")
-@Disabled
+//@Disabled
 public class BasicDrive extends OpMode
 {
     DriveController driveController;

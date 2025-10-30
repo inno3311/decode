@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.IMU.IMU;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 
-@TeleOp(name = "Centric Command *Don't run this one*", group = "FieldCentric")
-@Disabled
+@TeleOp(name = "Centric Command", group = "FieldCentric")
+//@Disabled
 public class CentricCommand extends OpMode
 {
     MecanumDrive drive;
