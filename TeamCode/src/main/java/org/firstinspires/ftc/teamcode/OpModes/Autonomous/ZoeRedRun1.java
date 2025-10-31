@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
@@ -59,18 +60,30 @@ public class ZoeRedRun1 extends LinearOpMode
                 //.splineTo(new Vector2d(0,0),Math.toRadians(180),new TranslationalVelConstraint(20))
                 //.waitSeconds(1)
                 //.afterTime(0, actionsBackpack.intakeBall(0))
-                .turnTo(Math.toRadians(155))
-                .afterTime(0, actionsBackpack.fireBall(12, 2))
+
+
+//                .turnTo(Math.toRadians(155))
+                .afterTime(0, actionsBackpack.fireball(10))
+                .afterTime(4, actionsBackpack.trigger(0.7))
+//                .afterTime(5, actionsBackpack.transferBall(1))
+//                .afterTime(5, actionsBackpack.trigger(1))
+//                .afterTime(7, actionsBackpack.trigger(0.7))
+//                .afterTime(7, actionsBackpack.transferBall(0))
+//                .afterTime(8, actionsBackpack.trigger(1))
+//                .afterTime(8, actionsBackpack.fireball(0))
                 .waitSeconds(10)
-                .afterTime(0, actionsBackpack.transferBall(1))
-                .afterTime(0,actionsBackpack.intakeBall(1))
-                .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
-                .afterTime(0, actionsBackpack.transferBall(0))
-                .afterTime(0,actionsBackpack.intakeBall(0))
-                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
-                .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(135), new TranslationalVelConstraint(30))
-                .afterTime(0, actionsBackpack.fireBall(12, 2))
+
+
+//                .waitSeconds(10)
+//                .afterTime(0,actionsBackpack.intakeBall(1))
+//                .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
+//                .afterTime(0,actionsBackpack.intakeBall(0))
+//                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
+//                .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(130), new TranslationalVelConstraint(30))
+//                .afterTime(0, actionsBackpack.fireBall(12, 2))
                 ; //do not remove ;
+
+            CsvLogger.getInstance().close();
 
             Action redRun = yellow_drop
                 .build();

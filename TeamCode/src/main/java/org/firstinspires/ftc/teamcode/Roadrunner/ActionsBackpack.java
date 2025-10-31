@@ -13,9 +13,12 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ActionsBackpack
 {
+    private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
     Lift lift;
@@ -44,73 +47,78 @@ public class ActionsBackpack
         logger.log("power,vel,hood angle");
     }
 
-    public Action fireBall(double velocity, double numberOfShots)
+
+//    public Action fireball(double velocity)
+//    {
+//
+//        return new Action()
+//        {
+//            private boolean initialized = false;
+//            private double[] shooterParameters;
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+//            {
+//
+//                shooterParameters = fireControl.firingSuite(velocity);
+//                shooter.driveToVelocity(shooterParameters[1]);
+//                hood.driveToAngleTarget(shooterParameters[0]);
+//
+//
+//                double t = time.seconds();
+//                double power = shooter.getPower();
+//                double vel = shooter.getVelocity();
+//                double hoodAngle = 0;
+//                logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
+//
+//                return !shooter.isBusy();
+//            }
+//        };
+//    }
+
+public Action fireball(double velocity)
+{
+
+    return new Action()
+    {
+        private boolean initialized = false;
+        private double[] shooterParameters;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket)
+        {
+            shooterParameters = fireControl.firingSuite(velocity);
+            shooter.driveToVelocity(shooterParameters[1]);
+            hood.driveToAngleTarget(shooterParameters[0]);
+
+
+            double t = time.seconds();
+            double power = shooter.getPower();
+            double vel = shooter.getVelocity();
+            double hoodAngle = 0;
+            logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
+
+            return !shooter.isBusy();
+        }
+    };
+}
+
+    public Action trigger(double position)
     {
         return new Action()
         {
-            private double[] shooterParameters;
-            boolean flag = true;
-            private double fireHold;
-            private boolean shooterStop = false;
-            private double shotsFired = 0;
+            private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
             {
-
-                if (shooter.getVelocity() < 10 && !shooterStop)
+                if (!initialized)
                 {
-                    shooterParameters = fireControl.firingSuite(velocity);
-                    fireHold = time.seconds();
+                    initialized = true;
+                    lift.driveServo(position);
                 }
 
-                if (flag)
-                {
-                    hood.driveToAngleTarget(shooterParameters[0]);
-                    shooter.driveToVelocity(shooterParameters[1]);
-                }
-
-                if (fireHold + 3 < time.seconds())
-                {
-                    transfer.driveServo(0);
-                    lift.driveServo(0.7);
-                }
-
-                if (numberOfShots == shotsFired)
-                {
-                    shooterParameters[1] = 0;
-                    shooterStop = true;
-                }
-
-                if (fireHold + 4 < time.seconds())
-                {
-
-                    lift.driveServo(1);
-                    transfer.driveServo(1);
-
-                    if (numberOfShots == shotsFired)
-                    {
-                        lift.driveServo(0);
-                        transfer.driveServo(0);
-                        shooter.setPower(0);
-                        flag = false;
-                    }
-                    else
-                    {
-                        shotsFired++;
-                        fireHold = time.seconds() - 1;
-                    }
-                }
-
-                // Log CSV line
-                double t = time.seconds();
-                double power = shooter.getPower();
-                double vel = shooter.getVelocity();
-                double hoodAngle = 0;
-                logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
-
-
-                return flag;
+                return false;
             }
         };
     }
@@ -134,6 +142,7 @@ public class ActionsBackpack
             }
         };
     }
+
 
     public Action transferBall(double speed)
     {

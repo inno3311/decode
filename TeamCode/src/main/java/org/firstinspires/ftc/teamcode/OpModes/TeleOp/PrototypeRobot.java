@@ -89,7 +89,7 @@ public class PrototypeRobot extends LinearOpMode
                 shooter.setPower(0);
             }
 
-
+            fireControl.firingSuite(12);
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
             telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
