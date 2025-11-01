@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Hippo Outreach", group = "outreach")
-@Disabled
+//@Disabled
 public class HippoTeleOp extends LinearOpMode
 {
     DriveHippo drive;
