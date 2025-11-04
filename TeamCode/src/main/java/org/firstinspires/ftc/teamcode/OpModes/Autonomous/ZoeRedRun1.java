@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
+import org.firstinspires.ftc.teamcode.Roadrunner.LogTestAction;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
 @Autonomous(name="Autonomous 4 balls in goal", group="Linear OpMode")
@@ -47,6 +48,8 @@ public class ZoeRedRun1 extends LinearOpMode
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+            CsvLogger.getInstance().start("stupidLogger");
+
             waitForStart();
 
 
@@ -61,10 +64,14 @@ public class ZoeRedRun1 extends LinearOpMode
                 //.waitSeconds(1)
                 //.afterTime(0, actionsBackpack.intakeBall(0))
 
+                //  .afterTime(0, new LogTestAction())
+             //     .afterTime(0, actionsBackpack.mezRampUp(10))
+             //     .afterTime(0.1, actionsBackpack.mezFire(1))
 
+                  .afterTime(0, actionsBackpack.mezAction(10))
 //                .turnTo(Math.toRadians(155))
-                .afterTime(0, actionsBackpack.fireball(10))
-                .afterTime(4, actionsBackpack.trigger(0.7))
+                //.afterTime(0, actionsBackpack.fireball(10))
+                //.afterTime(4, actionsBackpack.trigger(0.7))
 //                .afterTime(5, actionsBackpack.transferBall(1))
 //                .afterTime(5, actionsBackpack.trigger(1))
 //                .afterTime(7, actionsBackpack.trigger(0.7))
@@ -83,12 +90,16 @@ public class ZoeRedRun1 extends LinearOpMode
 //                .afterTime(0, actionsBackpack.fireBall(12, 2))
                 ; //do not remove ;
 
-            CsvLogger.getInstance().close();
+
 
             Action redRun = yellow_drop
                 .build();
 
             Actions.runBlocking(redRun);
+
+            CsvLogger.getInstance().log("ending opmode");
+            CsvLogger.getInstance().close();
+            sleep(1000);
 
         }
         else

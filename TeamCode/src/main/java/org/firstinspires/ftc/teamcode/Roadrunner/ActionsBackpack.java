@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
+
 public class ActionsBackpack
 {
     private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
@@ -27,7 +29,20 @@ public class ActionsBackpack
     FireControl fireControl;
     ElapsedTime time;
 
-    CsvLogger logger;
+    private enum FireState {
+        INIT,
+        SPINUP,
+        FIRE,
+        FIRE_DOWN,
+        TRANSFER_START,
+        TRANSFER_STOP,
+        RESET,
+        DONE
+    }
+
+    private double m_targetVelocity = 0;
+
+    CsvLogger svgLogger;
 
     public ActionsBackpack(Shooter shooter, Intake intake, Lift lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
     {
@@ -40,11 +55,110 @@ public class ActionsBackpack
         this.time = time;
         time.startTime();
 
-        logger = CsvLogger.getInstance();
-        logger.start("robot_data");
+//        svgLogger = CsvLogger.getInstance();
+//        svgLogger.start("robot_data");
+//
+//        // Write CSV header
+//        svgLogger.log("power,vel,hood angle");
+    }
 
-        // Write CSV header
-        logger.log("power,vel,hood angle");
+    public Action mezAction(double velocity)
+    {
+
+        return new Action()
+        {
+            private boolean initialized = false;
+            private double[] shooterParameters;
+
+            double fireTime;
+            double transTime;
+            double currentTime;
+
+            FireState state = FireState.INIT;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+                switch (state)
+                {
+                    case INIT:
+                        shooterParameters = fireControl.firingSuite(velocity);
+                        m_targetVelocity = 1100;//shooterParameters[1];
+                        shooter.driveToVelocity(m_targetVelocity);
+                        hood.driveToAngleTarget(shooterParameters[0]);
+                        state = FireState.SPINUP;
+                        packet.put("1_target Vel",m_targetVelocity);
+                        packet.put("STATE","INIT");
+                        break;
+                    case SPINUP:
+                        double vel = shooter.getVelocity();
+                        boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 50;
+                        if (notAtSpeed == false)
+                        {
+                            state = FireState.FIRE;
+                        }
+                        packet.put("vel",vel);
+                        packet.put("STATE","SPINUP");
+                        break;
+                    case FIRE:
+                        fireTime = time.seconds();
+                        lift.driveServo(.7);
+                        state = FireState.FIRE_DOWN;
+                        packet.put("STATE","FIRE");
+                        break;
+                    case FIRE_DOWN:
+                        currentTime = time.seconds();
+                        if (currentTime - fireTime > 1)
+                        {
+                            lift.driveServo(1);
+                            state = FireState.TRANSFER_START;
+                        }
+                        packet.put("fire seconds",currentTime - fireTime);
+                        packet.put("STATE","FIRE");
+                        break;
+                    case TRANSFER_START:
+                        intake.setPower(1);
+                        transfer.driveServo(1);
+                        transTime = time.seconds();
+                        state = FireState.TRANSFER_STOP;
+                        packet.put("STATE","TRANSFER");
+                        break;
+                    case TRANSFER_STOP:
+                        if (time.seconds() - transTime > 2)
+                        {
+                            intake.setPower(0);
+                            transfer.driveServo(0);
+                            state = FireState.FIRE;
+                        }
+                        break;
+                    case DONE:
+                        {
+                            shooter.driveToVelocity(0);
+                            shooter.setPower(0);
+                            packet.put("STATE","DONE");
+                            return false;
+                        }
+
+
+
+                }
+
+//                shooterParameters = fireControl.firingSuite(velocity);
+//                m_targetVelocity = shooterParameters[1];
+//                shooter.driveToVelocity(m_targetVelocity);
+//
+//                hood.driveToAngleTarget(shooterParameters[0]);
+//                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
+//                packet.put("1_Angle", shooterParameters[0]);
+
+//                double t = time.seconds();
+//                double power = shooter.getPower();
+//                double vel = shooter.getVelocity();
+//                double hoodAngle = 0;
+
+                return true;
+            }
+        };
     }
 
 
@@ -76,7 +190,73 @@ public class ActionsBackpack
 //        };
 //    }
 
-public Action fireball(double velocity)
+    public Action mezRampUp(double velocity)
+    {
+
+        return new Action()
+        {
+            private boolean initialized = false;
+            private double[] shooterParameters;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+
+                shooterParameters = fireControl.firingSuite(velocity);
+                m_targetVelocity = shooterParameters[1];
+                shooter.driveToVelocity(m_targetVelocity);
+
+                hood.driveToAngleTarget(shooterParameters[0]);
+                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
+                packet.put("1_Angle", shooterParameters[0]);
+
+//                double t = time.seconds();
+//                double power = shooter.getPower();
+//                double vel = shooter.getVelocity();
+//                double hoodAngle = 0;
+
+                return false;
+            }
+        };
+    }
+
+    public Action mezFire(double velocity)
+    {
+
+
+        return new Action()
+        {
+
+
+            private boolean initialized = false;
+            private double[] shooterParameters;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+                //shooter.getVelocity();
+                //hood.driveToAngleTarget(shooterParameters[0]);
+
+                double t = time.seconds();
+                double power = shooter.getPower();
+                double vel = shooter.getVelocity();
+                double hoodAngle = 0;
+
+                packet.put("m_targetVelocity", m_targetVelocity);
+                packet.put("Velocity:", vel);
+                packet.put("Time: ", t);
+
+                boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 50;
+
+                if (notAtSpeed == false)
+                    lift.driveServo(.7);
+
+                return notAtSpeed;
+            }
+        };
+    }
+
+    public Action fireball(double velocity)
 {
 
     return new Action()
@@ -96,7 +276,7 @@ public Action fireball(double velocity)
             double power = shooter.getPower();
             double vel = shooter.getVelocity();
             double hoodAngle = 0;
-            logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
+            svgLogger.log(String.format(Locale.US,"%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
 
             return !shooter.isBusy();
         }
