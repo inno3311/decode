@@ -50,7 +50,10 @@ public class CsvLogger
 
    /** Log a line of text (adds newline automatically) */
    public void log(String line) {
-      if (!isActive || writer == null) return;
+      if (!isActive || writer == null)
+      {
+         return;
+      }
       try {
          writer.write(line);
          writer.newLine();
@@ -73,6 +76,7 @@ public class CsvLogger
    public void close() {
       if (!isActive || writer == null) return;
       try {
+         writer.write("\nclosing file");
          writer.flush();
          writer.close();
          isActive = false;

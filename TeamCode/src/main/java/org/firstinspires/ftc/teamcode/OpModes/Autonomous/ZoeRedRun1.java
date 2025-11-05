@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
-import org.firstinspires.ftc.teamcode.Roadrunner.LogTestAction;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
 @Autonomous(name="Autonomous 4 balls in goal", group="Linear OpMode")
@@ -48,8 +47,6 @@ public class ZoeRedRun1 extends LinearOpMode
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-            CsvLogger.getInstance().start("stupidLogger");
-
             waitForStart();
 
 
@@ -68,8 +65,9 @@ public class ZoeRedRun1 extends LinearOpMode
              //     .afterTime(0, actionsBackpack.mezRampUp(10))
              //     .afterTime(0.1, actionsBackpack.mezFire(1))
 
-                  .afterTime(0, actionsBackpack.mezAction(10))
-//                .turnTo(Math.toRadians(155))
+
+                .turnTo(Math.toRadians(155))
+                .afterTime(0, actionsBackpack.mezAction(12, 2))
                 //.afterTime(0, actionsBackpack.fireball(10))
                 //.afterTime(4, actionsBackpack.trigger(0.7))
 //                .afterTime(5, actionsBackpack.transferBall(1))
@@ -79,15 +77,17 @@ public class ZoeRedRun1 extends LinearOpMode
 //                .afterTime(8, actionsBackpack.trigger(1))
 //                .afterTime(8, actionsBackpack.fireball(0))
                 .waitSeconds(10)
+                .waitSeconds(.1)
 
 
-//                .waitSeconds(10)
-//                .afterTime(0,actionsBackpack.intakeBall(1))
-//                .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
-//                .afterTime(0,actionsBackpack.intakeBall(0))
-//                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
-//                .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(130), new TranslationalVelConstraint(30))
-//                .afterTime(0, actionsBackpack.fireBall(12, 2))
+                //.afterTime(0, actionsBackpack.transferBall(1))
+                .afterTime(0,actionsBackpack.intakeBall(1))
+                .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
+                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
+                //.afterTime(4, actionsBackpack.transferBall(0))
+                //.afterTime(4,actionsBackpack.intakeBall(0))
+                .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(130), new TranslationalVelConstraint(30))
+                .afterTime(0, actionsBackpack.mezAction(12, 2))
                 ; //do not remove ;
 
 
@@ -96,10 +96,6 @@ public class ZoeRedRun1 extends LinearOpMode
                 .build();
 
             Actions.runBlocking(redRun);
-
-            CsvLogger.getInstance().log("ending opmode");
-            CsvLogger.getInstance().close();
-            sleep(1000);
 
         }
         else

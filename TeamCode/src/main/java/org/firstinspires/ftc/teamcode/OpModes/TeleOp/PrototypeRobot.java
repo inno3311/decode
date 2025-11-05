@@ -11,10 +11,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @TeleOp(name = "prototype")
 public class PrototypeRobot extends LinearOpMode
 {
+    private static final Logger log = LoggerFactory.getLogger(PrototypeRobot.class);
     Intake intake;
     Shooter shooter;
     Hood hood;
@@ -28,6 +32,8 @@ public class PrototypeRobot extends LinearOpMode
     double initialTargetVelocity = 12;
     double[] shooterParameters;
 
+    CsvLogger logger;
+
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -36,6 +42,12 @@ public class PrototypeRobot extends LinearOpMode
         hood = new Hood(this);
         lift = new Lift(this);
         transfer = new Transfer(this);
+
+        logger = CsvLogger.getInstance();
+        logger.start("test_log");
+        logger.log("time_sec,motorPower,heading");
+        //logger.log(String.format("%.3f,%.3f,%.3f", t, pwr, heading));
+        //logger.close();
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
@@ -96,7 +108,11 @@ public class PrototypeRobot extends LinearOpMode
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             shooter.currentDraw();
             telemetry.update();
+
+            logger.log("This is at test");
+            logger.flush();
         }
+        logger.close();
 
     }
 }

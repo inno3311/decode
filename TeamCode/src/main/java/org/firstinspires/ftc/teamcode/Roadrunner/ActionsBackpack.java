@@ -62,7 +62,7 @@ public class ActionsBackpack
 //        svgLogger.log("power,vel,hood angle");
     }
 
-    public Action mezAction(double velocity)
+    public Action mezAction(double velocity, int numRounds)
     {
 
         return new Action()
@@ -74,6 +74,8 @@ public class ActionsBackpack
             double transTime;
             double currentTime;
 
+            int timesFired;
+
             FireState state = FireState.INIT;
 
             @Override
@@ -82,15 +84,20 @@ public class ActionsBackpack
                 switch (state)
                 {
                     case INIT:
+                        timesFired = 0;
                         shooterParameters = fireControl.firingSuite(velocity);
-                        m_targetVelocity = 1100;//shooterParameters[1];
+                        m_targetVelocity = shooterParameters[1];
+                        if (m_targetVelocity > 1500)
+                            m_targetVelocity = 1500;
                         shooter.driveToVelocity(m_targetVelocity);
-                        hood.driveToAngleTarget(shooterParameters[0]);
+                        hood.driveToAngleTarget(15);
                         state = FireState.SPINUP;
-                        packet.put("1_target Vel",m_targetVelocity);
+                        packet.put("targetVel",m_targetVelocity);
+                        packet.put("Angle",shooterParameters[0]);
                         packet.put("STATE","INIT");
                         break;
                     case SPINUP:
+
                         double vel = shooter.getVelocity();
                         boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 50;
                         if (notAtSpeed == false)
@@ -112,8 +119,9 @@ public class ActionsBackpack
                         {
                             lift.driveServo(1);
                             state = FireState.TRANSFER_START;
+                            timesFired++;
                         }
-                        packet.put("fire seconds",currentTime - fireTime);
+                        packet.put("fireSeconds",currentTime - fireTime);
                         packet.put("STATE","FIRE");
                         break;
                     case TRANSFER_START:
@@ -128,7 +136,15 @@ public class ActionsBackpack
                         {
                             intake.setPower(0);
                             transfer.driveServo(0);
-                            state = FireState.FIRE;
+
+                            if (timesFired == numRounds)
+                            {
+                                state = FireState.DONE;
+                            }
+                            else
+                            {
+                                state = FireState.FIRE;
+                            }
                         }
                         break;
                     case DONE:
@@ -138,10 +154,11 @@ public class ActionsBackpack
                             packet.put("STATE","DONE");
                             return false;
                         }
-
-
-
                 }
+
+                packet.put("targetVel",m_targetVelocity);
+                packet.put("Angle",shooterParameters[0]);
+
 
 //                shooterParameters = fireControl.firingSuite(velocity);
 //                m_targetVelocity = shooterParameters[1];
@@ -318,7 +335,7 @@ public class ActionsBackpack
                     initialized = true;
                 }
 
-                return !intake.isBusy();
+                return false;
             }
         };
     }
