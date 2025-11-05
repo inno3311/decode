@@ -5,9 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 
 @TeleOp(name = "Shooter")
 @Disabled

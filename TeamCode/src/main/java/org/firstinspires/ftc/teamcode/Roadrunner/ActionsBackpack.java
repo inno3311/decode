@@ -8,11 +8,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class ActionsBackpack
     private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
-    Lift lift;
+    Trigger lift;
     Hood hood;
     Transfer transfer;
     FireControl fireControl;
@@ -44,7 +44,7 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Lift lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
+    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
     {
         this.shooter = shooter;
         this.intake = intake;

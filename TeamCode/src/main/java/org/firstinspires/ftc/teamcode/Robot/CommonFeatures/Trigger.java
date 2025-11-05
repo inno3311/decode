@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.PrototypeRobot;
+package org.firstinspires.ftc.teamcode.Robot.CommonFeatures;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Parents.ServoParent;
 
-public class Lift extends ServoParent
+public class Trigger extends ServoParent
 {
-    public Lift(LinearOpMode opMode)
+    public Trigger(LinearOpMode opMode)
     {
         super("lift", 0, opMode);
     }
