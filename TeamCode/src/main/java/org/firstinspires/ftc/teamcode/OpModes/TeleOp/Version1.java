@@ -2,27 +2,23 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
-import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@TeleOp(name = "prototype")
-public class PrototypeRobot extends LinearOpMode
+@TeleOp(name = "Version1")
+public class Version1 extends LinearOpMode
 {
-    private static final Logger log = LoggerFactory.getLogger(PrototypeRobot.class);
     Intake intake;
     Shooter shooter;
     Hood hood;
-    Lift lift;
+    Trigger trigger;
     Transfer transfer;
     DriveController driveController;
     FireControl fireControl;
@@ -32,22 +28,14 @@ public class PrototypeRobot extends LinearOpMode
     double initialTargetVelocity = 12;
     double[] shooterParameters;
 
-    CsvLogger logger;
-
     @Override
     public void runOpMode() throws InterruptedException
     {
         intake = new Intake(this);
         shooter = new Shooter(this);
         hood = new Hood(this);
-        lift = new Lift(this);
+        trigger = new Trigger(this);
         transfer = new Transfer(this);
-
-        logger = CsvLogger.getInstance();
-        logger.start("test_log");
-        logger.log("time_sec,motorPower,heading");
-        //logger.log(String.format("%.3f,%.3f,%.3f", t, pwr, heading));
-        //logger.close();
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
@@ -69,12 +57,12 @@ public class PrototypeRobot extends LinearOpMode
 
             if (gamepad1.right_bumper)
             {
-                lift.driveServo(0.7);
+                trigger.driveServo(0.7);
                 flag1 = time.seconds() + 0.25;
             }
             else if (flag1 < time.startTime())
             {
-                lift.driveServo(1);
+                trigger.driveServo(1);
                 transfer.driveServo(1);
             }
 
@@ -108,11 +96,7 @@ public class PrototypeRobot extends LinearOpMode
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             shooter.currentDraw();
             telemetry.update();
-
-            logger.log("This is at test");
-            logger.flush();
         }
-        logger.close();
 
     }
 }

@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,11 +15,11 @@ import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Hood;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Intake;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Shooter;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Lift;
-import org.firstinspires.ftc.teamcode.PrototypeRobot.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
@@ -37,7 +35,7 @@ public class ZoeRedRun1 extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Lift(this),
+        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Trigger(this),
             new Hood(this), new Transfer(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime());
 
         // ZOE update with starting location
