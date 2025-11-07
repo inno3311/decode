@@ -50,19 +50,25 @@ public class Version1 extends LinearOpMode
             driveController.gamepadController(gamepad1);
 
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
-            if (gamepad1.right_trigger > 0.25)
-            {
-                transfer.driveServo(0);
-            }
+
+
 
             if (gamepad1.right_bumper)
             {
                 trigger.driveServo(0.7);
-                flag1 = time.seconds() + 0.25;
+                flag1 = time.seconds() + 0.5;
             }
-            else if (flag1 < time.startTime())
+            else if (flag1 < time.startTime() && flag1 + 5 > time.seconds())
             {
                 trigger.driveServo(1);
+                transfer.driveServo(1);
+            }
+            else if (gamepad1.right_trigger > 0.25)
+            {
+                transfer.driveServo(1);
+            }
+            else
+            {
                 transfer.driveServo(0);
             }
 
