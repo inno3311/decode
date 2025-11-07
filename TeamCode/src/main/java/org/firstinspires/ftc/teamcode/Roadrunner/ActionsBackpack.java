@@ -115,7 +115,7 @@ public class ActionsBackpack
                         break;
                     case FIRE_DOWN:
                         currentTime = time.seconds();
-                        if (currentTime - fireTime > 1)
+                        if (currentTime - fireTime > .7)
                         {
                             lift.driveServo(1);
                             state = FireState.TRANSFER_START;
@@ -132,7 +132,7 @@ public class ActionsBackpack
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
-                        if (time.seconds() - transTime > 2)
+                        if (time.seconds() - transTime > 1.5)
                         {
                             intake.setPower(0);
                             transfer.driveServo(0);
@@ -151,6 +151,8 @@ public class ActionsBackpack
                         {
                             shooter.driveToVelocity(0);
                             shooter.setPower(0);
+                            transfer.driveServo(0);
+                            intake.setPower(0);
                             packet.put("STATE","DONE");
                             return false;
                         }
@@ -158,6 +160,7 @@ public class ActionsBackpack
 
                 packet.put("targetVel",m_targetVelocity);
                 packet.put("Angle",shooterParameters[0]);
+                packet.put("power",shooter.getPower());
 
 
 //                shooterParameters = fireControl.firingSuite(velocity);
@@ -174,6 +177,39 @@ public class ActionsBackpack
 //                double hoodAngle = 0;
 
                 return true;
+            }
+        };
+    }
+
+    public Action target(double velocity)
+    {
+
+        return new Action()
+        {
+            private boolean initialized = false;
+            private double[] shooterParameters;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+
+                shooterParameters = fireControl.firingSuite(velocity);
+                //shooter.driveToVelocity(shooterParameters[1]);
+                //hood.driveToAngleTarget(shooterParameters[0]);
+
+
+                double t = time.seconds();
+                double power = shooter.getPower();
+                double targetVel = shooterParameters[1];
+                double hoodAngle = shooterParameters[0];
+
+                //packet.put("targetVel",m_targetVelocity);
+                packet.put("Angle",hoodAngle);
+                packet.put("Vel",targetVel);
+                packet.put("power",power);
+
+
+                return false;
             }
         };
     }
@@ -207,30 +243,30 @@ public class ActionsBackpack
 //        };
 //    }
 
-    public Action mezRampUp(double velocity)
+    public Action mezRampUp(double power)
     {
 
         return new Action()
         {
-            private boolean initialized = false;
-            private double[] shooterParameters;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet)
             {
 
-                shooterParameters = fireControl.firingSuite(velocity);
-                m_targetVelocity = shooterParameters[1];
-                shooter.driveToVelocity(m_targetVelocity);
-
-                hood.driveToAngleTarget(shooterParameters[0]);
-                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
-                packet.put("1_Angle", shooterParameters[0]);
+//                shooterParameters = fireControl.firingSuite(velocity);
+//                m_targetVelocity = shooterParameters[1];
+//                shooter.driveToVelocity(m_targetVelocity);
+//
+//                hood.driveToAngleTarget(shooterParameters[0]);
+//                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
+//                packet.put("1_Angle", shooterParameters[0]);
 
 //                double t = time.seconds();
 //                double power = shooter.getPower();
 //                double vel = shooter.getVelocity();
 //                double hoodAngle = 0;
+
+                shooter.setPower(power);
 
                 return false;
             }
@@ -324,16 +360,16 @@ public class ActionsBackpack
     {
         return new Action()
         {
-            private boolean initialized = false;
+            //private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
             {
-                if (!initialized)
-                {
+                //if (!initialized)
+                //{
                     intake.setPower(speed);
-                    initialized = true;
-                }
+                    //initialized = true;
+                //}
 
                 return false;
             }

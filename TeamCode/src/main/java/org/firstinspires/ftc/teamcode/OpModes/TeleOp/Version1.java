@@ -63,7 +63,7 @@ public class Version1 extends LinearOpMode
             else if (flag1 < time.startTime())
             {
                 trigger.driveServo(1);
-                transfer.driveServo(1);
+                transfer.driveServo(0);
             }
 
             if (gamepad1.dpad_up && flag2 < time.seconds())
