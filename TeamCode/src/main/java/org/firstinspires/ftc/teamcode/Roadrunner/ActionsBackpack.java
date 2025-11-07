@@ -8,11 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.Hood;
+import org.firstinspires.ftc.teamcode.Robot.Intake;
+import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,6 @@ public class ActionsBackpack
     Intake intake;
     Trigger lift;
     Hood hood;
-    Transfer transfer;
     FireControl fireControl;
     ElapsedTime time;
 
@@ -44,13 +42,12 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
+    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, FireControl fireControl, ElapsedTime time)
     {
         this.shooter = shooter;
         this.intake = intake;
         this.lift = lift;
         this.hood = hood;
-        this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
         time.startTime();
@@ -118,7 +115,6 @@ public class ActionsBackpack
                         break;
                     case TRANSFER_START:
                         intake.setPower(1);
-                        transfer.driveServo(1);
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
                         packet.put("STATE","TRANSFER");
@@ -127,7 +123,6 @@ public class ActionsBackpack
                         if (time.seconds() - transTime > 2)
                         {
                             intake.setPower(0);
-                            transfer.driveServo(0);
                             state = FireState.FIRE;
                         }
                         break;
@@ -336,7 +331,6 @@ public class ActionsBackpack
                 if (!initialized)
                 {
                     intake.setPower(speed);
-                    transfer.driveServo(speed);
                     initialized = true;
                 }
 

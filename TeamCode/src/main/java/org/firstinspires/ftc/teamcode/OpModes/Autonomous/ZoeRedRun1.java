@@ -15,11 +15,10 @@ import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.Hood;
+import org.firstinspires.ftc.teamcode.Robot.Intake;
+import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.Trigger;
 import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 
@@ -36,7 +35,7 @@ public class ZoeRedRun1 extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
         actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Trigger(this),
-            new Hood(this), new Transfer(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime());
+            new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime());
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));

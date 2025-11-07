@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.CommonFeatures;
+package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 

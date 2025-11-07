@@ -12,7 +12,7 @@ public class FireControl
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0508;//meter
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
-    private final double maxLaunchAngle = 65;
+    private final double maxLaunchAngle = 85;
 
 
 
@@ -170,7 +170,7 @@ public class FireControl
         telemetry.addData("Target Velocity", velocity);
         telemetry.addData("Taget Angle", targetAngle);
 
-        return new double[] {65 - targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
 }

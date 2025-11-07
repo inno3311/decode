@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.CommonFeatures;
+package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Parents.ServoParent;
@@ -8,7 +8,7 @@ public class Hood extends ServoParent
 
     public Hood(LinearOpMode opMode)
     {
-        super("hood", 270 * 5/16, opMode);
+        super("hood", 270 * (10/32), opMode);
     }
 
     @Override
@@ -23,5 +23,9 @@ public class Hood extends ServoParent
         super.driveToAngleTarget(angle);
     }
 
-
+    @Override
+    public double getPosition()
+    {
+        return super.getPosition();
+    }
 }
