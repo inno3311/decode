@@ -40,6 +40,7 @@ public class Version2 extends LinearOpMode
     int numberOfBallsScored = 0;
 
 
+
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -49,8 +50,11 @@ public class Version2 extends LinearOpMode
         trigger = new Trigger(this);
         sorterLeft = new SorterLeft(this);
         sorterRight = new SorterRight(this);
-        
         colorSorter = new ColorSorter(this);
+
+        int storage_left = 0;
+        int storage_right = 0;
+        int lift_toggle = 0;
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
@@ -105,13 +109,48 @@ public class Version2 extends LinearOpMode
 
             if (gamepad1.right_bumper)
             {
-                trigger.driveServo(0.7);
+                lift_toggle += 1;
+                if (lift_toggle%2 == 0)
+                {
+                    trigger.driveServo(0.7);
+                }
+                else
+                {
+                    trigger.driveServo(0.0);
+                }
                 flag1 = time.seconds() + 0.25;
             }
-            else if (flag1 < time.startTime())
+
+            if (gamepad2.x)
             {
-                trigger.driveServo(1);
+                storage_left += 1;
+                if (storage_left%2 == 0)
+                {
+                    sorterLeft.driveServo(1);
+                }
+                else
+                {
+                    sorterLeft.driveServo(0);
+                }
             }
+
+            if (gamepad2.b)
+            {
+                storage_right += 1;
+                if (storage_right%2 == 0)
+                {
+                    sorterRight.driveServo(0);
+                }
+                else
+                {
+                    sorterRight.driveServo(1);
+                }
+            }
+
+//            else if (flag1 < time.startTime())
+//            {
+//                trigger.driveServo(1);
+//            }
 
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {

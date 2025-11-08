@@ -63,7 +63,7 @@ public final class MecanumDrive
     private double leftPowerBack = 0;
     private double speed = 0;
 
-    private int driveDir = 1;
+    private int driveDir = -1;
     private int strafeDir = 1;
     private int turnDir = 1;
 

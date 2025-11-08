@@ -50,7 +50,11 @@ public class FireControl
      */
     private double velocityY(double time)
     {
-        return (localizer.getTagY() + 4.9 * Math.pow(time, 2)) / time;
+        try{
+            return (localizer.getTagY() + 4.9 * Math.pow(time, 2)) / time;
+        } catch(Exception e){
+            return(9);
+        }
     }
 
     /**
@@ -80,7 +84,12 @@ public class FireControl
      */
     private double calculateSteeperAngle(double velocity)
     {
-        double targetY = (localizer.getTagY() * 2.54 / 100) + 1;
+        double targetY = 2;
+        try{
+            targetY = (localizer.getTagY() * 2.54 / 100) + 1;
+        } catch(Exception e){
+            targetY = 2;
+        }
         double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetY), 2);
@@ -101,7 +110,12 @@ public class FireControl
      */
     private double calculateShallowerAngle(double velocity)
     {
-        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.5;
+        double targetY = 2;
+        try{
+            targetY = (localizer.getTagY() * 2.54 / 100) + 0.5;
+        } catch(Exception e){
+            targetY = 2;
+        }
         double targetZ = 1.5;
 
         double numeratorY = g * Math.pow((2 * targetY), 2);
@@ -121,7 +135,12 @@ public class FireControl
      */
     private double calculateVelocity(double angle)
     {
-        double targetY = (localizer.getTagY() * 2.54 / 100) + 0.75;
+        double targetY = 2;
+        try{
+            targetY = (localizer.getTagY() * 2.54 / 100) + 0.75;
+        } catch(Exception e){
+            targetY = 2;
+        }
         double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
@@ -149,8 +168,12 @@ public class FireControl
     public double[] firingSuite(double velocity)
     {
         double targetAngle;
-
-        double targetY = localizer.getTagY() * 2.54 / 100;
+        double targetY = 2;
+        try{
+            targetY = localizer.getTagY() * 2.54 / 100;
+        } catch(Exception e){
+            targetY = 2;
+        }
         telemetry.addData("Plan Distance", targetY);
 
         if (targetY > 2.5)

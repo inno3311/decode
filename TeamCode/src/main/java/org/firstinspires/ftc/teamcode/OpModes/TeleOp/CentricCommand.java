@@ -27,8 +27,8 @@ public class CentricCommand extends OpMode
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-            RevHubOrientationOnRobot.UsbFacingDirection.UP
+            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+            RevHubOrientationOnRobot.UsbFacingDirection.LEFT
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
@@ -44,12 +44,12 @@ public class CentricCommand extends OpMode
             imu.resetYaw();
         }
         centricDrive.drive(
-                gamepad1.left_stick_x,
-                gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.left_stick_y,
                 imu.getRobotYawPitchRollAngles().getYaw(),
 //                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
                 gamepad1.right_trigger,
-                gamepad1.right_stick_x
+                -gamepad1.right_stick_x
         );
     }
 }
