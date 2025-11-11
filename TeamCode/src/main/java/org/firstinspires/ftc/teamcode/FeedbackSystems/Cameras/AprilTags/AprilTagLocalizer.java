@@ -167,6 +167,14 @@ public class AprilTagLocalizer
         return -1;
     }
 
+    // --- REPLACE THESE VALUES WITH YOUR CALIBRATED INTRINSICS ---
+    // These values were obtained from the 3DF Zephyr software.
+    private static final double CAMERA_FX = 645.007233223; // Example value, replace with yours
+    private static final double CAMERA_FY = 645.007233223; // Example value, replace with yours
+    private static final double CAMERA_CX = 305.461061618; // Example value, replace with yours
+    private static final double CAMERA_CY = 240.824762841; // Example value, replace with yours
+    // -----------------------------------------------------------
+
 
     /**
      * Initialize the AprilTag processor.
@@ -181,6 +189,12 @@ public class AprilTagLocalizer
                 // to load a predefined calibration for your camera.
                 //.setLensIntrinsics(3358.01, 3358.01, 873.268, 563.507)
                 // ... these parameters are fx, fy, cx, cy.
+                  .setLensIntrinsics(
+                        CAMERA_FX,  // fx
+                        CAMERA_FY,  // fy
+                        CAMERA_CX,  // cx
+                        CAMERA_CY   // cy
+                  )
                 .build();
 
         // Create the vision portal the easy way.

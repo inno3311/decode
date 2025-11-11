@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 @Autonomous(name = "AprilTagLoc")
-@Disabled
+//@Disabled
 public class AprilTagLoc extends LinearOpMode
 {
     AprilTagLocalizer aprilTagLocalizer;
