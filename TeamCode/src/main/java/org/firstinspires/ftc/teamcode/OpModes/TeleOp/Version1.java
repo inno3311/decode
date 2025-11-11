@@ -52,7 +52,6 @@ public class Version1 extends LinearOpMode
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
 
-
             if (gamepad1.right_bumper)
             {
                 trigger.driveServo(0.7);

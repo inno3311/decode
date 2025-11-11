@@ -273,43 +273,9 @@ public class ActionsBackpack
         };
     }
 
-    public Action mezFire(double velocity)
-    {
 
 
-        return new Action()
-        {
-
-
-            private boolean initialized = false;
-            private double[] shooterParameters;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet)
-            {
-                //shooter.getVelocity();
-                //hood.driveToAngleTarget(shooterParameters[0]);
-
-                double t = time.seconds();
-                double power = shooter.getPower();
-                double vel = shooter.getVelocity();
-                double hoodAngle = 0;
-
-                packet.put("m_targetVelocity", m_targetVelocity);
-                packet.put("Velocity:", vel);
-                packet.put("Time: ", t);
-
-                boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 50;
-
-                if (notAtSpeed == false)
-                    lift.driveServo(.7);
-
-                return notAtSpeed;
-            }
-        };
-    }
-
-    public Action fireball(double velocity)
+public Action fireball(double velocity)
 {
 
     return new Action()
