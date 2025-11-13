@@ -28,8 +28,8 @@ public class CentricCommandBetterVersion extends OpMode
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(com.qualcomm.robotcore.hardware.IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP
+                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         drive = new MecanumDrive(hardwareMap, null);

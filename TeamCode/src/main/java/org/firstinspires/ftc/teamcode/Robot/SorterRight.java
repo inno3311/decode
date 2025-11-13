@@ -16,4 +16,10 @@ public class SorterRight extends ServoParent
     {
         super.driveServo(target);
     }
+
+    @Override
+    public double getPosition()
+    {
+        return super.getPosition();
+    }
 }

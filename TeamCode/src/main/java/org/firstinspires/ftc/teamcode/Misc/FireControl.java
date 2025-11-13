@@ -125,8 +125,8 @@ public class FireControl
         double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
-        double numerator = -g * Math.pow(targetY,2) * numeratorParth;
-        double denominator = 2 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
+        double numerator = -g * Math.pow(2 * targetY,2) * numeratorParth;
+        double denominator = 4 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
         return launchVelocity;
@@ -140,7 +140,7 @@ public class FireControl
     private double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 1.05;
+        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 10/14 * 28 * 1.05;
 
         telemetry.addData("Target Motor Velocity2", motorVelocity);
         return motorVelocity;
@@ -151,7 +151,7 @@ public class FireControl
         double targetAngle;
 
         double targetY = localizer.getTagY() * 2.54 / 100;
-        telemetry.addData("Plan Distance", targetY);
+        telemetry.addData("Distance", targetY);
 
         if (targetY > 2.5)
         {
@@ -170,7 +170,7 @@ public class FireControl
         telemetry.addData("Target Velocity", velocity);
         telemetry.addData("Taget Angle", targetAngle);
 
-        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {targetAngle, targetMotorVelocity(velocity)};
     }
 
 }
