@@ -109,7 +109,7 @@ public class ActionsBackpack
                         break;
                     case FIRE:
                         fireTime = time.seconds();
-                        lift.driveServo(.7);
+                        lift.driveServo(.78);
                         state = FireState.FIRE_DOWN;
                         packet.put("STATE","FIRE");
                         break;

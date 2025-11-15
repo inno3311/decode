@@ -62,7 +62,7 @@ public class ZoeRedRun1 extends LinearOpMode
                 //.afterTime(0, actionsBackpack.transferBall(1))
                 .afterTime(0,actionsBackpack.intakeBall(1))
                 .waitSeconds(.1)
-                .splineTo(new Vector2d(36,51),Math.toRadians(90),new TranslationalVelConstraint(20))
+                .splineTo(new Vector2d(36,48),Math.toRadians(90),new TranslationalVelConstraint(20))
                 .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(30))
                 .afterTime(0, actionsBackpack.mezRampUp(.7))
                 .strafeToLinearHeading(new Vector2d(-12, 15), Math.toRadians(130), new TranslationalVelConstraint(30))

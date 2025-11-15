@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@TeleOp(name = "Version_1")
-public class Version1 extends LinearOpMode
+@TeleOp(name = "Version_1_Centric")
+public class Version_1_fieldcentric extends LinearOpMode
 {
     Intake intake;
     Shooter shooter;
@@ -75,7 +75,18 @@ public class Version1 extends LinearOpMode
 
         while (opModeIsActive())
         {
-            driveController.gamepadController(gamepad1);
+            if (gamepad1.dpad_left)
+            {
+                imu.resetYaw();
+            }
+            centricDrive.drive(
+                gamepad1.left_stick_x,
+                gamepad1.left_stick_y,
+                imu.getRobotYawPitchRollAngles().getYaw(),
+//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+                gamepad1.right_trigger,
+                gamepad1.right_stick_x
+            );
 
             intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
             intake.simpleDrive(-1, gamepad1.left_trigger > 0.25);
@@ -102,6 +113,7 @@ public class Version1 extends LinearOpMode
 
 
             intake.simpleDrive(-1, gamepad1.left_trigger > 0.25);
+            intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {
@@ -172,8 +184,8 @@ public class Version1 extends LinearOpMode
 //            if (gamepad1.x)
 //            {
 //                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-            telemetry.addData("__Hood target Angle", target_angle);
-            telemetry.addData("__Target Velocity", target_velocity);
+                telemetry.addData("__Hood target Angle", target_angle);
+                telemetry.addData("__Target Velocity", target_velocity);
 //            }
 
             //fireControl.firingSuite(12);
