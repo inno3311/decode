@@ -144,8 +144,8 @@ public class FireControl
         double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
-        double numerator = -g * Math.pow(targetY,2) * numeratorParth;
-        double denominator = 2 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
+        double numerator = -g * Math.pow(2 * targetY,2) * numeratorParth;
+        double denominator = 4 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
         return launchVelocity;
