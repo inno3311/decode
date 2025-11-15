@@ -176,18 +176,22 @@ public class FireControl
         }
         telemetry.addData("Plan Distance", targetY);
 
-        if (targetY > 2.5)
+        if (targetY > 1.65)
         {
             targetAngle = calculateShallowerAngle(velocity);
+            telemetry.addData("shallow angle", targetAngle);
         }
         else if (maxLaunchAngle > calculateSteeperAngle(velocity))
         {
             targetAngle = calculateSteeperAngle(velocity);
+            telemetry.addData("steep angle", targetAngle);
         }
         else
         {
             targetAngle = maxLaunchAngle;
             velocity = calculateVelocity(maxLaunchAngle);
+            telemetry.addData("other angle", targetAngle);
+            telemetry.addData("steep angle", calculateSteeperAngle(velocity));
         }
 
         telemetry.addData("Target Velocity", velocity);
