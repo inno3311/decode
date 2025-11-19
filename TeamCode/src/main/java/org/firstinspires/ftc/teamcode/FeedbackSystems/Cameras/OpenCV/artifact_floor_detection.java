@@ -23,17 +23,18 @@ import java.lang.Math;
 public class artifact_floor_detection extends OpenCvPipeline
 {
    Telemetry telemetry;
+   public boolean object_found = false;
 
 
-   // cam_placement scalar format Scalar(camera height[cm], minimum distance visible from cam[cm], cam-to-arm x_distance[cm] (x offset), cam-to-arm hinge z_distance[cm] (z offset))
-   final Scalar cam_placement = new Scalar(13.5, 35.5, 0, 0);
+   // All measurements are in cm and with the intake center being the origin. {x_dist, y_dist, z_dist, camera pitch, camera yaw}
+   final double[] cam_placement = new double[] {16, 14.5, 3.5, 0, 0};
    //public Scalar cam_placement = new Scalar(8, 5.75, 3.7, 2.5);
-   double camera_height = cam_placement.val[0];
-   double distance_minimum_camera = cam_placement.val[1];
-   double camera_x_offset = cam_placement.val[2];
-   double camera_z_offset = cam_placement.val[3];
-   double range_limiter = 9999; //larger = farther range detection
+   double camera_x_offset = cam_placement[1];
+   double camera_y_offset = cam_placement[2];
+   double camera_z_offset = cam_placement[3];
 
+   // Color_search determines which ball color to search for. 0 is both, 1 is purple, 2 is green
+   double color_search = 0;
    double x_resolution = 320;
    double y_resolution = 180;
 
@@ -44,16 +45,15 @@ public class artifact_floor_detection extends OpenCvPipeline
    double x_fov = 82.1;
    double object_radius = 12.7;
 
-   double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
    double x_degrees_per_pixel = x_fov/x_resolution;
    double y_degrees_per_pixel = y_fov/y_resolution;
 
 
-   private Scalar object_size_limits = new Scalar(700, 20000);
+   private Scalar object_size_limits = new Scalar(150, 5000);
 //   private Scalar object_size_limits = new Scalar(20000, 200000000);
 
    // x_max, x_min, y_max, y_min
-   private Scalar detection_limits = new Scalar(0, x_resolution, 0, y_resolution);
+   private Scalar detection_limits = new Scalar(0, x_resolution, y_resolution*0.55, y_resolution);
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
@@ -87,6 +87,8 @@ public class artifact_floor_detection extends OpenCvPipeline
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    private ArrayList<Double> artifact_radii = new ArrayList<>();
+   private ArrayList<Point> relative_artifact_locations = new ArrayList<>();
+
 
    public ArrayList<Object> get_bounding_box_dimensions(Point[] rectangle_points)
    {
@@ -111,13 +113,13 @@ public class artifact_floor_detection extends OpenCvPipeline
          return distance;
    }
 
-   public Point calculate_artifact_relative_position(Point position_in_camera, double distance, double degrees_per_pixel_x, double x_resolution)
+   public Point calculate_artifact_relative_position(Point position_in_camera, double distance, double degrees_per_pixel_x, double x_resolution, double cam_rel_x, double cam_rel_z)
    {
       double center = x_resolution/2;
       double x_dist_from_center = center - position_in_camera.x;
       double angle = degrees_per_pixel_x * x_dist_from_center;
-      double x_distance = distance*Math.sin(Math.toRadians(angle));
-      double z_distance = distance*Math.cos(Math.toRadians(angle));
+      double x_distance = distance*Math.sin(-Math.toRadians(angle)) + cam_rel_x;
+      double z_distance = distance*Math.cos(Math.toRadians(angle)) + cam_rel_z;
       return new Point(x_distance, z_distance);
    }
 
@@ -144,6 +146,7 @@ public class artifact_floor_detection extends OpenCvPipeline
       Scalar purple_color = new Scalar(85, 45, 111);
       ArrayList<Point> artifact_points = new ArrayList<>();
       ArrayList<Double> artifact_radii = new ArrayList<>();
+      ArrayList<Point> relative_artifact_locations = new ArrayList<>();
 
       Imgproc.medianBlur(input, drawings, blur);
       Imgproc.cvtColor(drawings, hsv_mask, Imgproc.COLOR_BGR2HSV);
@@ -154,10 +157,20 @@ public class artifact_floor_detection extends OpenCvPipeline
       Core.inRange(hsv_mask, green_lower, green_upper, green_binary_mat);
       binary_mask_mat.release();
 
-
-      // overlay binary matrix onto it onto the input
-      Core.bitwise_or(drawings, drawings, binary_mask_mat, green_binary_mat);
-      Core.bitwise_or(drawings, drawings, binary_mask_mat, purple_binary_mat);
+      if (color_search == 1)
+      {
+         Core.bitwise_or(drawings, drawings, binary_mask_mat, purple_binary_mat);
+      }
+      else if (color_search == 2)
+      {
+         Core.bitwise_or(drawings, drawings, binary_mask_mat, green_binary_mat);
+      }
+      else
+      {
+         // overlay binary matrix onto it onto the input
+         Core.bitwise_or(drawings, drawings, binary_mask_mat, green_binary_mat);
+         Core.bitwise_or(drawings, drawings, binary_mask_mat, purple_binary_mat);
+      }
 
 
       // Start locating objects
@@ -251,7 +264,10 @@ public class artifact_floor_detection extends OpenCvPipeline
                // live camera (640x480)
                // double artifact_distance = calculate_artifact_distance(artifact_radii, 6.35, x_degrees_per_pixel, 1.8);
 
-               Point relative_position = calculate_artifact_relative_position(object_center_point, artifact_distance, x_degrees_per_pixel, x_resolution);
+               Point relative_position = calculate_artifact_relative_position(object_center_point, artifact_distance, x_degrees_per_pixel, x_resolution, camera_x_offset, camera_z_offset);
+               object_found = true;
+
+
 
                telemetry.addData("Artifact Distance", artifact_distance);
                telemetry.addData("Relative Position", relative_position);
@@ -270,6 +286,7 @@ public class artifact_floor_detection extends OpenCvPipeline
 
       this.artifact_points = artifact_points;
       this.artifact_radii = artifact_radii;
+      this.relative_artifact_locations = relative_artifact_locations;
       telemetry.update();
 
 
@@ -298,4 +315,22 @@ public class artifact_floor_detection extends OpenCvPipeline
 //      Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2HSV);
 
    }
+
+   public boolean isObject_found()
+   {
+      return object_found;
+   }
+
+   public ArrayList<Point> getRelative_artifact_locations()
+   {
+      return relative_artifact_locations;
+   }
+
+   public double change_color_search()
+   {
+      // should cycle values from 0-2
+      color_search = (color_search += 1)%3;
+      return color_search;
+   }
+
 }
