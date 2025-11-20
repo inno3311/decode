@@ -24,6 +24,7 @@ public class artifact_floor_detection extends OpenCvPipeline
 {
    Telemetry telemetry;
    public boolean object_found = false;
+   public boolean telemetry_on = false;
 
 
    // All measurements are in cm and with the intake center being the origin. {x_dist, y_dist, z_dist, camera pitch, camera yaw}
@@ -49,14 +50,14 @@ public class artifact_floor_detection extends OpenCvPipeline
    double y_degrees_per_pixel = y_fov/y_resolution;
 
 
-   private Scalar object_size_limits = new Scalar(150, 5000);
+   private Scalar object_size_limits = new Scalar(80, 10000);
 //   private Scalar object_size_limits = new Scalar(20000, 200000000);
 
    // x_max, x_min, y_max, y_min
    private Scalar detection_limits = new Scalar(0, x_resolution, y_resolution*0.55, y_resolution);
 
    // contours, ellipses, rectangles, center dots&bounding box
-   public Scalar draw_objects = new Scalar(1, 1, 1, 1);
+   public Scalar draw_objects = new Scalar(0, 0, 0, 1);
 
    public Scalar purple_1_upper = new Scalar(179, 255, 255);
    public Scalar purple_1_lower = new Scalar(135, 35, 100);
@@ -77,6 +78,8 @@ public class artifact_floor_detection extends OpenCvPipeline
    // edge contour threshold
    public int threshold = 500;
 
+   // Used to help remove/determine if a detection is too wide/thin
+   public double width_error_threshold = 0.4;
 
    private Mat output = new Mat();
    private Mat purple_binary_mat = new Mat();
@@ -107,8 +110,11 @@ public class artifact_floor_detection extends OpenCvPipeline
    public double calculate_artifact_distance(double artifact_radius, double actual_radius, double degrees_per_pixel_x, double offset_scale)
    {
          double angle = Math.toRadians(artifact_radius * degrees_per_pixel_x);
+         if (telemetry_on)
+         {
          telemetry.addData("angle_degrees", (artifact_radius * degrees_per_pixel_x));
          telemetry.addData("angle_radians", (angle));
+         }
          double distance = (actual_radius / Math.tan(angle))*offset_scale;
          return distance;
    }
@@ -212,6 +218,7 @@ public class artifact_floor_detection extends OpenCvPipeline
       }
 
       // Draw contours, elipses, and rectangles
+      object_found = false;
       for (int i = 0; i < contours.size(); i++) {
          Point object_center_point = minEllipse[i].center;
          // check to see if object is within the set margins
@@ -219,7 +226,9 @@ public class artifact_floor_detection extends OpenCvPipeline
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
-               telemetry.addData("area", minEllipse[i].boundingRect().area());
+               if (telemetry_on) {
+                  telemetry.addData("area", minEllipse[i].boundingRect().area());
+               }
                // Draw contour
                if (draw_objects.val[0] >= 1)
                {
@@ -249,6 +258,14 @@ public class artifact_floor_detection extends OpenCvPipeline
                {
                   Imgproc.line(drawings, new Point(0, y_resolution/2), new Point(x_resolution, y_resolution/2), white_color, (int) y_resolution/180);
                   Imgproc.line(drawings, new Point(x_resolution/2, 0), new Point(x_resolution/2, y_resolution), white_color, (int) y_resolution/180);
+                  double width_error = Math.abs(1 - (((double) get_bounding_box_dimensions(rectPoints).get(0))/((double) get_bounding_box_dimensions(rectPoints).get(1))));
+                  if (telemetry_on) {
+                     telemetry.addData("width_error", width_error);
+                  }
+                  if (width_error >= width_error_threshold)
+                  {
+                     continue;
+                  }
                   for (int k = 0; k < 4; k++)
                   {
                      average_radius += (double) get_bounding_box_dimensions(rectPoints).get(k) / 2;
@@ -268,10 +285,10 @@ public class artifact_floor_detection extends OpenCvPipeline
                object_found = true;
 
 
-
-               telemetry.addData("Artifact Distance", artifact_distance);
+               if (telemetry_on) {
+                  telemetry.addData("Artifact Distance", artifact_distance);
+               }
                telemetry.addData("Relative Position", relative_position);
-
                // Draw center points
                if (draw_objects.val[3] >= 1)
                {
@@ -279,7 +296,9 @@ public class artifact_floor_detection extends OpenCvPipeline
                }
                artifact_points.add(object_center_point);
                artifact_radii.add(average_radius);
-               telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
+               if (telemetry_on) {
+                  telemetry.addData("Dimensions", get_bounding_box_dimensions(rectPoints));
+               }
             }
          }
       }
