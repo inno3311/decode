@@ -53,25 +53,24 @@ public class ZoeRedRun1 extends LinearOpMode
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                //.afterTime(0, actionsBackpack.mezRampUp(1))
-
-                .afterTime(0, actionsBackpack.mezAction(13, 2, 1450, 8))
-                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
-                //.turnTo(Math.toRadians(155))
-                .waitSeconds(1)
-
+                .afterTime(0, actionsBackpack.mezRampUp(1))
+                .afterTime(0, actionsBackpack.mezAction(13, 2, 1450, 8)) //shooting 1st time
+                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155)) //shooting 1st time from back triangle
                 .waitSeconds(6.5)
-
-                //.afterTime(0, actionsBackpack.transferBall(1))
-
                 .afterTime(1,actionsBackpack.intakeBall(1))
-                .splineTo(new Vector2d(36,45),Math.toRadians(90),new TranslationalVelConstraint(20))
-                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40))
-                .afterTime(0, actionsBackpack.mezRampUp(.7))
+                .splineTo(new Vector2d(36,45),Math.toRadians(90),new TranslationalVelConstraint(20)) //1st set pickup
+                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
+                //.afterTime(0, actionsBackpack.mezRampUp(.7))
                 .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(130), new TranslationalVelConstraint(40))
-                .afterTime(0, actionsBackpack.mezAction(12, 2, 1150, 8))
+                .afterTime(0, actionsBackpack.mezAction(12, 2, 1150, 8)) //shooting 2nd time
                 .waitSeconds(5)
-                .strafeToLinearHeading(new Vector2d(36, 36), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
+                .afterTime(.1,actionsBackpack.intakeBall(1))
+                .strafeTo(new Vector2d(-12, 45), new TranslationalVelConstraint(40))
+                .afterTime(0, actionsBackpack.mezAction(12, 2, 1150, 8)) //shooting 3rd time
+                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(130), new TranslationalVelConstraint(40))
+
+                .waitSeconds(5)
                 ; //do not remove ;
 
 
