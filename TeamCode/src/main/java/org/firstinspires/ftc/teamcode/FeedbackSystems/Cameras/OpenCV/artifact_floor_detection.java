@@ -88,6 +88,7 @@ public class artifact_floor_detection extends OpenCvPipeline
    private Mat binary_mask_mat = new Mat();
    private Mat grey = new Mat();
    private Mat drawings = new Mat();
+   public double counter = 0;
    private ArrayList<Point> artifact_points = new ArrayList<>();
    private ArrayList<Double> artifact_radii = new ArrayList<>();
    private ArrayList<Point> relative_artifact_locations = new ArrayList<>();
@@ -144,6 +145,7 @@ public class artifact_floor_detection extends OpenCvPipeline
    @Override
    public Mat processFrame(Mat input)
    {
+      counter += 1;
       Scalar white_color = new Scalar(256, 256, 256);
       Scalar blue_color = new Scalar(0, 15, 137); // phthalo blue
       Scalar red_color = new Scalar(255, 0, 0);
@@ -288,7 +290,8 @@ public class artifact_floor_detection extends OpenCvPipeline
                if (telemetry_on) {
                   telemetry.addData("Artifact Distance", artifact_distance);
                }
-               telemetry.addData("Relative Position", relative_position);
+               relative_artifact_locations.add(relative_position);
+//               telemetry.addData("Relative Position", relative_position);
                // Draw center points
                if (draw_objects.val[3] >= 1)
                {
@@ -306,6 +309,7 @@ public class artifact_floor_detection extends OpenCvPipeline
       this.artifact_points = artifact_points;
       this.artifact_radii = artifact_radii;
       this.relative_artifact_locations = relative_artifact_locations;
+      telemetry.addData("rel pos", relative_artifact_locations);
       telemetry.update();
 
 
@@ -350,6 +354,11 @@ public class artifact_floor_detection extends OpenCvPipeline
       // should cycle values from 0-2
       color_search = (color_search += 1)%3;
       return color_search;
+   }
+
+   public double getCounter()
+   {
+      return counter;
    }
 
 }
