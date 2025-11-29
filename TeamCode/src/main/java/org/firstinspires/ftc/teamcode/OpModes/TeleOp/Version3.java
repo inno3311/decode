@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
+//import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+//import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
@@ -17,115 +19,155 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
+import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 
-@TeleOp(name = "Version_1_Centric")
-public class Version_1_fieldcentric extends LinearOpMode
+@TeleOp(name = "Version3")
+public class Version3 extends LinearOpMode
 {
     Intake intake;
     Shooter shooter;
     Hood hood;
     Trigger trigger;
-    Transfer transfer;
-
+    SorterLeft sorterLeft;
+    SorterRight sorterRight;
+    Intake_sort intakeSort;
+    Turret turret;
     DriveController driveController;
-    FireControl fireControl;
-    ElapsedTime time;
-    double flag1 = 0;
-    double flag2 = 0;
-    double initialTargetVelocity = 12;
-    double[] shooterParameters;
     MecanumDrive drive;
     TurnToHeading turnToHeading;
     CentricDrive centricDrive;
     IMU imu;
+    AprilTagLocalizer aprilTagLocalizer;
     PIDController pid;
-
+    FireControl fireControl;
+    ElapsedTime time;
+    double initialTargetVelocity = 12;
+    double[] shooterParameters;
+    double obeliskTag = 22;
+    int numberOfBallsScored = 0;
+    int drive_mode = 0;
+    double drive_mode_flag = 1;
     double target_velocity;
     double target_angle;
+
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
+
         intake = new Intake(this);
+        intakeSort = new Intake_sort(this);
         shooter = new Shooter(this);
         hood = new Hood(this);
         trigger = new Trigger(this);
-        transfer = new Transfer(this);
+        sorterLeft = new SorterLeft(this);
+        sorterRight = new SorterRight(this);
+        turret = new Turret(aprilTagLocalizer, this);
+
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
-        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+//        fireControl = new FireControl(aprilTagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-            RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
 
-
-
-
         waitForStart();
         time.startTime();
 
         while (opModeIsActive())
         {
-            if (gamepad1.dpad_left)
+            if (drive_mode % 2 == 1)
             {
-                imu.resetYaw();
-            }
-            centricDrive.drive(
-                gamepad1.left_stick_x,
-                gamepad1.left_stick_y,
-                imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                gamepad1.right_trigger,
-                gamepad1.right_stick_x
-            );
-
-            if (gamepad1.right_bumper || gamepad2.right_bumper)
-            {
-                trigger.driveServo(0.78);
-                flag1 = time.seconds() + 0.5;
-            }
-            else if (flag1 < time.startTime() && flag1 + 5 > time.seconds())
-            {
-                trigger.driveServo(1);
-                transfer.driveServo(1);
-            }
-            else if (gamepad1.right_trigger > 0.25)
-            {
-                transfer.driveServo(1);
+                driveController.gamepadController(gamepad1);
             }
             else
             {
-                transfer.driveServo(0);
+                if (gamepad1.dpad_left)
+                {
+                    imu.resetYaw();
+                }
+                centricDrive.drive(
+                        -gamepad1.left_stick_x,
+                        -gamepad1.left_stick_y,
+                        imu.getRobotYawPitchRollAngles().getYaw(),
+//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+                        gamepad1.right_trigger,
+                        -gamepad1.right_stick_x
+                );
             }
 
-
-            intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
-            if (gamepad1.left_trigger > 0.25)
+            if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
             {
-                intake.setPower(-1.0);
+                drive_mode_flag += time.seconds() + 0.25;
+                drive_mode += 1;
             }
 
 
-            if (gamepad1.dpad_up && flag2 < time.seconds())
+            if (gamepad1.right_trigger > 0.1)
             {
-                initialTargetVelocity++;
-                flag2 = time.seconds() + 0.25;
+                intake.setPower(-1);
+                intakeSort.driveServo(1);
             }
-            else if (gamepad1.dpad_down  && flag2 < time.seconds())
+            else if (gamepad1.left_trigger > 0.1)
             {
-                initialTargetVelocity--;
-                flag2 = time.seconds() + 0.25;
+                intake.setPower(-1);
+                intakeSort.driveServo(-1);
+            }
+            else if (gamepad1.b)
+            {
+                intake.setPower(1);
+            }
+            else
+            {
+                intake.setPower(0);
             }
 
+            if (gamepad1.right_trigger <= 0.1 && gamepad1.left_trigger <= 0.1)
+            {
+                intakeSort.driveServo(0);
+            }
+
+            if (gamepad1.left_bumper && !gamepad1.a)
+            {
+                sorterLeft.driveServo(-1);
+            }
+            else
+            {
+                sorterLeft.driveServo(0);
+
+            }
+
+            if (gamepad1.right_bumper && !gamepad1.a)
+            {
+                sorterRight.driveServo(1);
+            }
+            else
+            {
+                sorterRight.driveServo(0);
+            }
+
+            if (gamepad1.a)
+            {
+                trigger.driveServo(1);
+                sorterRight.driveServo(0);
+                sorterLeft.driveServo(0);
+            }
+            else
+            {
+                trigger.driveServo(0);
+            }
 
             if (gamepad2.x)
             {
@@ -178,28 +220,11 @@ public class Version_1_fieldcentric extends LinearOpMode
                 shooter.setPower(0);
             }
 
+            turret.trackTarget(gamepad2);
+            turret.telemetry(telemetry);
 
-
-
-//            if (gamepad1.x)
-//            {
-//                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                telemetry.addData("__Hood target Angle", target_angle);
-                telemetry.addData("__Target Velocity", target_velocity);
-//            }
-
-            //fireControl.firingSuite(12);
-            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
-            telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
-            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Trigger pos", trigger.getPosition());
-            shooter.currentDraw();
             telemetry.update();
         }
 
     }
-
-
-
 }

@@ -21,9 +21,9 @@ public class DriveController
     public double leftPowerBack   = 0;
     public double speed = 0;
 
-    int driveDir = -1;
-    int strafeDir = 1;
-    int turnDir = 1;
+    int driveDir = 1;
+    int strafeDir = -1;
+    int turnDir = -1;
 
 
     final double  COUNTS_PER_INCH = (8192 * 1) / (2 * 3.1415); // 1,303.835747254496
@@ -107,7 +107,7 @@ public class DriveController
         double turn = turnDir * gamepad.right_stick_x;
         double strafe = strafeDir * gamepad.left_stick_x;
         speed = 1 - gamepad.right_trigger * 0.175;
-        driveMotors(drive, turn, strafe, speed);
+        driveMotors(-drive, -turn, -strafe, speed);
     }
 
     /**
