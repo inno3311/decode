@@ -147,6 +147,13 @@ public class AprilTagLocalizer
         return detection.ftcPose.yaw;
     }
 
+    public double getTagYaw(int tag)
+    {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        AprilTagDetection detection = currentDetections.get(0);
+        return detection.ftcPose.yaw;
+    }
+
     public double getTagBearing()
     {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -197,8 +204,10 @@ public class AprilTagLocalizer
                   )
                 .build();
 
+
         // Create the vision portal the easy way.
         VisionPortal visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+
     }
 
 }

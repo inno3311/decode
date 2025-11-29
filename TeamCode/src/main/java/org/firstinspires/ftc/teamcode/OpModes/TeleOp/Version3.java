@@ -12,62 +12,66 @@ import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 //import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 //import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v3.intake_sort;
+import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
+import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 
 @TeleOp(name = "Version3")
 public class Version3 extends LinearOpMode
 {
     Intake intake;
-//    Shooter shooter;
-//    Hood hood;
+    Shooter shooter;
+    Hood hood;
     Trigger trigger;
     SorterLeft sorterLeft;
     SorterRight sorterRight;
-    intake_sort intakeSort;
+    Intake_sort intakeSort;
+    Turret turret;
     DriveController driveController;
     MecanumDrive drive;
     TurnToHeading turnToHeading;
     CentricDrive centricDrive;
     IMU imu;
+    AprilTagLocalizer aprilTagLocalizer;
     PIDController pid;
-//    FireControl fireControl;
+    FireControl fireControl;
     ElapsedTime time;
-    double flag1 = 0;
-    double flag2 = 0;
-    double flag3 = 0;
-    double flag4 = 0;
-    double flag5 = 0;
-    boolean sort = false;
     double initialTargetVelocity = 12;
     double[] shooterParameters;
     double obeliskTag = 22;
     int numberOfBallsScored = 0;
     int drive_mode = 0;
     double drive_mode_flag = 1;
+    double target_velocity;
+    double target_angle;
 
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
+
         intake = new Intake(this);
-        intakeSort = new intake_sort(this);
-//        shooter = new Shooter(this);
-//        hood = new Hood(this);
+        intakeSort = new Intake_sort(this);
+        shooter = new Shooter(this);
+        hood = new Hood(this);
         trigger = new Trigger(this);
         sorterLeft = new SorterLeft(this);
         sorterRight = new SorterRight(this);
+        turret = new Turret(aprilTagLocalizer, this);
 
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
-//        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+//        fireControl = new FireControl(aprilTagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
@@ -87,7 +91,8 @@ public class Version3 extends LinearOpMode
             if (drive_mode % 2 == 1)
             {
                 driveController.gamepadController(gamepad1);
-            } else
+            }
+            else
             {
                 if (gamepad1.dpad_left)
                 {
@@ -114,19 +119,17 @@ public class Version3 extends LinearOpMode
             {
                 intake.setPower(-1);
                 intakeSort.driveServo(1);
-            } else
-            {
-                intake.setPower(0);
             }
-
-            if (gamepad1.left_trigger > 0.1) {
+            else if (gamepad1.left_trigger > 0.1)
+            {
                 intake.setPower(-1);
                 intakeSort.driveServo(-1);
             }
             else if (gamepad1.b)
             {
                 intake.setPower(1);
-            } else
+            }
+            else
             {
                 intake.setPower(0);
             }
@@ -139,7 +142,8 @@ public class Version3 extends LinearOpMode
             if (gamepad1.left_bumper && !gamepad1.a)
             {
                 sorterLeft.driveServo(-1);
-            } else
+            }
+            else
             {
                 sorterLeft.driveServo(0);
 
@@ -162,8 +166,62 @@ public class Version3 extends LinearOpMode
             }
             else
             {
-                trigger.driveServo(0.0);
+                trigger.driveServo(0);
             }
+
+            if (gamepad2.x)
+            {
+                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+                target_velocity = shooterParameters[1];
+                target_angle = shooterParameters[0];
+            }
+
+            if (gamepad2.y)
+            {
+                // Obelisk
+                telemetry.addData("__location", "obelisk");
+                target_velocity = 1150;
+                target_angle = 8;
+            }
+
+
+            if (gamepad2.a)
+            {
+                // Far
+                telemetry.addData("__location", "far");
+                target_velocity = 1500;
+                target_angle = 8;
+            }
+
+            if (gamepad2.dpad_up)
+            {
+                target_velocity += 10;
+            }
+            if (gamepad2.dpad_down)
+            {
+                target_velocity -= 10;
+            }
+            if (gamepad2.dpad_left)
+            {
+                target_angle -= 1;
+            }
+            if (gamepad2.dpad_right)
+            {
+                target_angle += 1;
+            }
+
+            hood.driveToAngleTarget(target_angle);
+            if (gamepad1.b || gamepad2.b)
+            {
+                shooter.driveToVelocity(target_velocity);
+            }
+            else if (gamepad1.a || gamepad2.a)
+            {
+                shooter.setPower(0);
+            }
+
+            turret.trackTarget(gamepad2);
+            turret.telemetry(telemetry);
 
             telemetry.update();
         }
