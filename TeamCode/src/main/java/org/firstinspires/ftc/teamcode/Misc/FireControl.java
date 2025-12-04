@@ -11,9 +11,9 @@ public class FireControl
 
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0508;//meter
-    private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
-    private final double maxLaunchAngle = 65;
-
+    private final double maxVelocity = 20;//The max velocity at which we will fire the artifact in m/s
+    private final double maxLaunchAngle = 90;
+    private final double minimumAngle = 65;
 
 
     public FireControl(AprilTagLocalizer localizer, Telemetry telemetry)
@@ -51,7 +51,7 @@ public class FireControl
     private double velocityY(double time)
     {
         try{
-            return (localizer.getTagY() + 4.9 * Math.pow(time, 2)) / time;
+            return (localizer.getTagRange() + 4.9 * Math.pow(time, 2)) / time;
         } catch(Exception e){
             return(9);
         }
@@ -84,19 +84,19 @@ public class FireControl
      */
     private double calculateSteeperAngle(double velocity)
     {
-        double targetY = 2;
+        double targetRange = 2;
         try{
-            targetY = (localizer.getTagY() * 2.54 / 100) + 1;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
         } catch(Exception e){
-            targetY = 2;
+            targetRange = 2;
         }
-        double targetZ = 1.3;
+        double targetZ = 1.4;
 
-        double numeratorY = g * Math.pow((2 * targetY), 2);
+        double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
         double numeratorRoot = Math.sqrt(Math.pow(velocity, 4) - g * (numeratorY + numeratorZ));
         double numerator = Math.pow(velocity, 2) + numeratorRoot;
-        double denominator = g * 2 * targetY;
+        double denominator = g * 2 * targetRange;
         double launchAngle = Math.atan(numerator/denominator);
 
         return Math.toDegrees(launchAngle);
@@ -110,19 +110,19 @@ public class FireControl
      */
     private double calculateShallowerAngle(double velocity)
     {
-        double targetY = 2;
+        double targetRange = 2;
         try{
-            targetY = (localizer.getTagY() * 2.54 / 100) + 0.5;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
         } catch(Exception e){
-            targetY = 2;
+            targetRange = 2;
         }
         double targetZ = 1.5;
 
-        double numeratorY = g * Math.pow((2 * targetY), 2);
+        double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
         double numeratorRoot = Math.sqrt(Math.pow(velocity, 4) - g * (numeratorY + numeratorZ));
         double numerator = Math.pow(velocity, 2) - numeratorRoot;
-        double denominator = g * 2 * targetY;
+        double denominator = g * 2 * targetRange;
         double launchAngle = Math.atan(numerator/denominator);
 
         return Math.toDegrees(launchAngle);
@@ -135,17 +135,17 @@ public class FireControl
      */
     private double calculateVelocity(double angle)
     {
-        double targetY = 2;
+        double targetRange = 2;
         try{
-            targetY = (localizer.getTagY() * 2.54 / 100) + 0.75;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
         } catch(Exception e){
-            targetY = 2;
+            targetRange = 2;
         }
         double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
-        double numerator = -g * Math.pow(2 * targetY,2) * numeratorParth;
-        double denominator = 4 * (targetZ - targetY * Math.tan(Math.toRadians(angle)));
+        double numerator = -g * Math.pow(2 * targetRange,2) * numeratorParth;
+        double denominator = 4 * (targetZ - targetRange * Math.tan(Math.toRadians(angle)));
         double launchVelocity = Math.sqrt(numerator / denominator);
 
         return launchVelocity;
@@ -159,45 +159,43 @@ public class FireControl
     private double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 1.05;
+        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 1.05 * 0.625;
 
-        telemetry.addData("Target Motor Velocity2", motorVelocity);
+        telemetry.addData("Target Motor Velocity TPS", motorVelocity);
         return motorVelocity;
     }
 
     public double[] firingSuite(double velocity)
     {
         double targetAngle;
-        double targetY = 2;
+        double targetRange = 2;
         try{
-            targetY = localizer.getTagY() * 2.54 / 100;
+            targetRange = localizer.getTagRange() * 2.54 / 100;
         } catch(Exception e){
-            targetY = 2;
+            targetRange = 2;
         }
-        telemetry.addData("Plan Distance", targetY);
 
-        if (targetY > 1.65)
-        {
-            targetAngle = calculateShallowerAngle(velocity);
-            telemetry.addData("shallow angle", targetAngle);
-        }
-        else if (maxLaunchAngle > calculateSteeperAngle(velocity))
+        telemetry.addData("Target Range", targetRange);
+
+
+        if (targetRange < 2.25 && maxLaunchAngle > calculateSteeperAngle(velocity) && minimumAngle < calculateSteeperAngle(velocity))
         {
             targetAngle = calculateSteeperAngle(velocity);
-            telemetry.addData("steep angle", targetAngle);
         }
-        else
+        else// if (targetRange > 2.5)
         {
-            targetAngle = maxLaunchAngle;
-            velocity = calculateVelocity(maxLaunchAngle);
-            telemetry.addData("other angle", targetAngle);
-            telemetry.addData("steep angle", calculateSteeperAngle(velocity));
+            targetAngle = minimumAngle;
+            velocity = calculateVelocity(65);
         }
+//        else
+//        {
+//            targetAngle = maxLaunchAngle;
+//            velocity = calculateVelocity(maxLaunchAngle);
+//        }
 
-        telemetry.addData("Target Velocity", velocity);
         telemetry.addData("Taget Angle", targetAngle);
 
-        return new double[] {65 - targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {targetAngle, targetMotorVelocity(velocity)};
     }
 
 }

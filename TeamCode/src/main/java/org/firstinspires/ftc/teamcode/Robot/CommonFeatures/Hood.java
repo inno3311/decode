@@ -8,7 +8,7 @@ public class Hood extends ServoParent
 
     public Hood(LinearOpMode opMode)
     {
-        super("hood", 270 * 5/16, opMode);
+        super("hood", 25, opMode);
     }
 
     @Override
@@ -23,5 +23,10 @@ public class Hood extends ServoParent
         super.driveToAngleTarget(angle);
     }
 
+    @Override
+    public double getAngle()
+    {
+        return super.getAngle();
+    }
 
 }

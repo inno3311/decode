@@ -44,14 +44,14 @@ public class Version3 extends LinearOpMode
     PIDController pid;
     FireControl fireControl;
     ElapsedTime time;
-    double initialTargetVelocity = 12;
+    double initialTargetVelocity = 10;
     double[] shooterParameters;
     double obeliskTag = 22;
     int numberOfBallsScored = 0;
     int drive_mode = 0;
     double drive_mode_flag = 1;
-    double target_velocity;
-    double target_angle;
+    double flag2 = 0;
+
 
 
     @Override
@@ -71,7 +71,7 @@ public class Version3 extends LinearOpMode
 
         time = new ElapsedTime();
         driveController = new DriveController(hardwareMap);
-//        fireControl = new FireControl(aprilTagLocalizer, telemetry);
+        fireControl = new FireControl(aprilTagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
@@ -118,12 +118,12 @@ public class Version3 extends LinearOpMode
             if (gamepad1.right_trigger > 0.1)
             {
                 intake.setPower(-1);
-                intakeSort.driveServo(1);
+                intakeSort.setPower(-1);
             }
             else if (gamepad1.left_trigger > 0.1)
             {
                 intake.setPower(-1);
-                intakeSort.driveServo(-1);
+                intakeSort.setPower(1);
             }
             else if (gamepad1.b)
             {
@@ -132,12 +132,9 @@ public class Version3 extends LinearOpMode
             else
             {
                 intake.setPower(0);
+                intakeSort.setPower(0);
             }
 
-            if (gamepad1.right_trigger <= 0.1 && gamepad1.left_trigger <= 0.1)
-            {
-                intakeSort.driveServo(0);
-            }
 
             if (gamepad1.left_bumper && !gamepad1.a)
             {
@@ -146,7 +143,6 @@ public class Version3 extends LinearOpMode
             else
             {
                 sorterLeft.driveServo(0);
-
             }
 
             if (gamepad1.right_bumper && !gamepad1.a)
@@ -169,60 +165,39 @@ public class Version3 extends LinearOpMode
                 trigger.driveServo(0);
             }
 
-            if (gamepad2.x)
-            {
-                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                target_velocity = shooterParameters[1];
-                target_angle = shooterParameters[0];
-            }
 
-            if (gamepad2.y)
+            if (gamepad1.dpad_up && flag2 < time.seconds())
             {
-                // Obelisk
-                telemetry.addData("__location", "obelisk");
-                target_velocity = 1150;
-                target_angle = 8;
+                initialTargetVelocity++;
+                flag2 = time.seconds() + 0.25;
+            }
+            else if (gamepad1.dpad_down  && flag2 < time.seconds())
+            {
+                initialTargetVelocity--;
+                flag2 = time.seconds() + 0.25;
             }
 
 
-            if (gamepad2.a)
-            {
-                // Far
-                telemetry.addData("__location", "far");
-                target_velocity = 1500;
-                target_angle = 8;
-            }
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
 
-            if (gamepad2.dpad_up)
-            {
-                target_velocity += 10;
-            }
-            if (gamepad2.dpad_down)
-            {
-                target_velocity -= 10;
-            }
-            if (gamepad2.dpad_left)
-            {
-                target_angle -= 1;
-            }
-            if (gamepad2.dpad_right)
-            {
-                target_angle += 1;
-            }
+            hood.driveToAngleTarget(90-shooterParameters[0]);
 
-            hood.driveToAngleTarget(target_angle);
-            if (gamepad1.b || gamepad2.b)
+            if (gamepad1.x)
             {
-                shooter.driveToVelocity(target_velocity);
+                shooter.driveToVelocity(shooterParameters[1]);
             }
-            else if (gamepad1.a || gamepad2.a)
+            else if (gamepad1.y)
             {
                 shooter.setPower(0);
             }
 
-            turret.trackTarget(gamepad2);
-            turret.telemetry(telemetry);
+//            turret.trackTarget(gamepad2);
+//            turret.telemetry(telemetry);
 
+            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
+            telemetry.addData("shooter Power", shooter.getPower());
+            telemetry.addData("Motor Velocity:", shooter.getVelocity());
+            telemetry.addData("hood angle", hood.getAngle());
             telemetry.update();
         }
 

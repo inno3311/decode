@@ -105,6 +105,16 @@ public class AprilTagLocalizer
 
     }   // end method telemetryAprilTag()
 
+    public double getTagRange()
+    {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        if (!currentDetections.isEmpty())
+        {
+            AprilTagDetection detection = currentDetections.get(0);
+            return detection.ftcPose.range;
+        }
+        return 0;
+    }
 
     public double getTagX()
     {

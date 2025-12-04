@@ -256,12 +256,12 @@ public class MotorParent
         if (argument1)
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            run(speed);
+            setPower(speed);
         }
         else if (argument2)
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            run(-speed);
+            setPower(-speed);
         }
         else {motor.setPower(0);}
     }
@@ -275,7 +275,7 @@ public class MotorParent
         if (argument)
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            run(speed);
+            setPower(speed);
         }
         else {motorBreak();}
     }
@@ -395,14 +395,6 @@ public class MotorParent
         if (reset) {resetEncoder();}
     }
 
-    /**
-     * for motors that just need to spin call break to stop
-     * @param speed speed you want the motor to spin
-     */
-    protected void run(double speed)
-    {
-        motor.setPower(speed);
-    }
 
     /**
      *     Breaking method also sets power to zero

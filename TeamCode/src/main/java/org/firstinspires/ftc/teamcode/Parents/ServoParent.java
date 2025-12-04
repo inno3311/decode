@@ -51,14 +51,7 @@ public class ServoParent
 
     protected void driveServo(double target)
     {
-//        if (servo.getPosition() != target)
-//        {
             servo.setPosition(target);
-//        }
-//        else
-//        {
-//            servo.setPosition(servo.getPosition());
-//        }
     }
 
     protected void driveServo(double target, boolean argument)
@@ -83,7 +76,7 @@ public class ServoParent
      */
     protected void driveToAngleTarget(double angle)
     {
-        servo.setPosition(angle/servoRange);
+        servo.setPosition(1-(angle/servoRange));
     }
 
     protected double getAngle()

@@ -12,8 +12,8 @@ public class HippoShooter extends MotorParent
     }
 
     @Override
-    protected void run(double speed)
+    protected void setPower(double speed)
     {
-        super.run(speed);
+        super.setPower(speed);
     }
 }

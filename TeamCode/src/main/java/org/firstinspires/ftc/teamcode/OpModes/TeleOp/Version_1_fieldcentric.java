@@ -42,7 +42,7 @@ public class Version_1_fieldcentric extends LinearOpMode
     PIDController pid;
 
     double target_velocity;
-    double target_angle;
+    double target_angle = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -66,8 +66,6 @@ public class Version_1_fieldcentric extends LinearOpMode
         imu.resetYaw();
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
-
-
 
 
         waitForStart();
@@ -114,7 +112,6 @@ public class Version_1_fieldcentric extends LinearOpMode
                 intake.setPower(-1.0);
             }
 
-
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {
                 initialTargetVelocity++;
@@ -126,46 +123,11 @@ public class Version_1_fieldcentric extends LinearOpMode
                 flag2 = time.seconds() + 0.25;
             }
 
-
-            if (gamepad2.x)
+            if (gamepad1.x)
             {
                 shooterParameters = fireControl.firingSuite(initialTargetVelocity);
                 target_velocity = shooterParameters[1];
                 target_angle = shooterParameters[0];
-            }
-
-            if (gamepad2.y)
-            {
-                // Obelisk
-                telemetry.addData("__location", "obelisk");
-                target_velocity = 1150;
-                target_angle = 8;
-            }
-
-
-            if (gamepad2.a)
-            {
-                // Far
-                telemetry.addData("__location", "far");
-                target_velocity = 1500;
-                target_angle = 8;
-            }
-
-            if (gamepad2.dpad_up)
-            {
-                target_velocity += 10;
-            }
-            if (gamepad2.dpad_down)
-            {
-                target_velocity -= 10;
-            }
-            if (gamepad2.dpad_left)
-            {
-                target_angle -= 1;
-            }
-            if (gamepad2.dpad_right)
-            {
-                target_angle += 1;
             }
 
             hood.driveToAngleTarget(target_angle);
@@ -178,23 +140,11 @@ public class Version_1_fieldcentric extends LinearOpMode
                 shooter.setPower(0);
             }
 
-
-
-
-//            if (gamepad1.x)
-//            {
-//                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                telemetry.addData("__Hood target Angle", target_angle);
-                telemetry.addData("__Target Velocity", target_velocity);
-//            }
-
-            //fireControl.firingSuite(12);
+            fireControl.firingSuite(initialTargetVelocity);
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Trigger pos", trigger.getPosition());
-            shooter.currentDraw();
+            telemetry.addData("hood angle", hood.getAngle());
             telemetry.update();
         }
 

@@ -101,7 +101,7 @@ public class HippoTeleOp extends LinearOpMode
                     drive.stop();
                     hippoIntake.motorBreak();
                     //start the wheel
-                    hippoShooter.run(firepower);
+                    hippoShooter.setPower(firepower);
                     //execute 1 second into the loop
                     if (time.seconds() > flag + 1.5)
                     {
@@ -110,7 +110,7 @@ public class HippoTeleOp extends LinearOpMode
                     }
                 }
                 //stop the firing wheel
-                hippoShooter.run(0);
+                hippoShooter.setPower(0);
                 // resets the trigger
                 hippoTrigger.driveServo(0);
             }

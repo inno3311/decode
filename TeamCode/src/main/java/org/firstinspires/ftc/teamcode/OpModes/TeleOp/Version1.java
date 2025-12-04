@@ -33,7 +33,7 @@ public class Version1 extends LinearOpMode
     ElapsedTime time;
     double flag1 = 0;
     double flag2 = 0;
-    double initialTargetVelocity = 12;
+    double initialTargetVelocity = 10;
     double[] shooterParameters;
     MecanumDrive drive;
     TurnToHeading turnToHeading;
@@ -103,7 +103,6 @@ public class Version1 extends LinearOpMode
                 intake.setPower(-1.0);
             }
 
-
             if (gamepad1.dpad_up && flag2 < time.seconds())
             {
                 initialTargetVelocity++;
@@ -115,47 +114,9 @@ public class Version1 extends LinearOpMode
                 flag2 = time.seconds() + 0.25;
             }
 
-
-            if (gamepad2.x)
-            {
-                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                target_velocity = shooterParameters[1];
-                target_angle = shooterParameters[0];
-            }
-
-            if (gamepad2.y)
-            {
-                // Obelisk
-                telemetry.addData("__location", "obelisk");
-                target_velocity = 1150;
-                target_angle = 8;
-            }
-
-
-            if (gamepad2.a)
-            {
-                // Far
-                telemetry.addData("__location", "far");
-                target_velocity = 1500;
-                target_angle = 8;
-            }
-
-            if (gamepad2.dpad_up)
-            {
-                target_velocity += 10;
-            }
-            if (gamepad2.dpad_down)
-            {
-                target_velocity -= 10;
-            }
-            if (gamepad2.dpad_left)
-            {
-                target_angle -= 1;
-            }
-            if (gamepad2.dpad_right)
-            {
-                target_angle += 1;
-            }
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+            target_velocity = shooterParameters[1];
+            target_angle = shooterParameters[0];
 
             hood.driveToAngleTarget(target_angle);
             if (gamepad1.b || gamepad2.b)
@@ -167,23 +128,11 @@ public class Version1 extends LinearOpMode
                 shooter.setPower(0);
             }
 
-
-
-
-//            if (gamepad1.x)
-//            {
-//                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-            telemetry.addData("__Hood target Angle", target_angle);
-            telemetry.addData("__Target Velocity", target_velocity);
-//            }
-
-            //fireControl.firingSuite(12);
+            fireControl.firingSuite(initialTargetVelocity);
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Trigger pos", trigger.getPosition());
-            shooter.currentDraw();
+            telemetry.addData("hood angle", hood.getAngle());
             telemetry.update();
         }
 
