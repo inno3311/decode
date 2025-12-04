@@ -117,13 +117,13 @@ public class Version3 extends LinearOpMode
 
             if (gamepad1.right_trigger > 0.1)
             {
-                intake.setPower(-1);
-                intakeSort.driveServo(1);
+                intake.setPower(-.8);
+                intakeSort.setPower(1);
             }
             else if (gamepad1.left_trigger > 0.1)
             {
-                intake.setPower(-1);
-                intakeSort.driveServo(-1);
+                intake.setPower(-.8);
+                intakeSort.setPower(-1);
             }
             else if (gamepad1.b)
             {
@@ -134,9 +134,10 @@ public class Version3 extends LinearOpMode
                 intake.setPower(0);
             }
 
+            //if both triggers are pulled, don't try to sort.  But bad things can happen.
             if (gamepad1.right_trigger <= 0.1 && gamepad1.left_trigger <= 0.1)
             {
-                intakeSort.driveServo(0);
+                intakeSort.setPower(0);
             }
 
             if (gamepad1.left_bumper && !gamepad1.a)
@@ -158,6 +159,8 @@ public class Version3 extends LinearOpMode
                 sorterRight.driveServo(0);
             }
 
+
+            //Fire the ball!  Ensure sorters are off.
             if (gamepad1.a)
             {
                 trigger.driveServo(1);
@@ -195,6 +198,7 @@ public class Version3 extends LinearOpMode
 
             if (gamepad2.dpad_up)
             {
+                //trigger.driveServo(1);
                 target_velocity += 10;
             }
             if (gamepad2.dpad_down)

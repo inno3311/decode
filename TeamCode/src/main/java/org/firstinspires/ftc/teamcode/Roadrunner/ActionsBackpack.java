@@ -116,7 +116,8 @@ public class ActionsBackpack
                     case FIRE_DOWN:
                         currentTime = time.seconds();
                         if (currentTime - fireTime > .7)
-                        {
+                        {transfer.driveServo(-1);
+                            transfer.driveServo(0);
                             lift.driveServo(1);
                             state = FireState.TRANSFER_START;
                             timesFired++;
@@ -135,7 +136,7 @@ public class ActionsBackpack
                         if (time.seconds() - transTime > 1.5)
                         {
                             intake.setPower(0);
-                            transfer.driveServo(0);
+                            transfer.driveServo(-1);
 
                             if (timesFired == numRounds)
                             {
@@ -316,6 +317,24 @@ public Action fireball(double velocity)
                     initialized = true;
                     lift.driveServo(position);
                 }
+
+                return false;
+            }
+        };
+    }
+
+    public Action setHood(double position)
+    {
+        return new Action()
+        {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+
+                hood.driveToAngleTarget(position);
+
 
                 return false;
             }

@@ -43,6 +43,8 @@ public class Version1 extends LinearOpMode
 
     double target_velocity;
     double target_angle;
+    double drive_mode = 1;
+    double drive_mode_flag = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -54,7 +56,7 @@ public class Version1 extends LinearOpMode
         transfer = new Transfer(this);
 
         time = new ElapsedTime();
-        driveController = new DriveController(hardwareMap);
+        driveController = new DriveController(hardwareMap,-1,1,1);
         fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
@@ -75,8 +77,31 @@ public class Version1 extends LinearOpMode
 
         while (opModeIsActive())
         {
-            driveController.gamepadController(gamepad1);
+            if (drive_mode % 2 == 1)
+            {
+                driveController.gamepadController(gamepad1);
+            }
+            else
+            {
+                if (gamepad1.dpad_left)
+                {
+                    imu.resetYaw();
+                }
+                centricDrive.drive(
+                    -gamepad1.left_stick_x,
+                    -gamepad1.left_stick_y,
+                    imu.getRobotYawPitchRollAngles().getYaw(),
+//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+                    gamepad1.right_trigger,
+                    -gamepad1.right_stick_x
+                );
+            }
 
+            if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
+            {
+                drive_mode_flag += time.seconds() + 0.25;
+                drive_mode += 1;
+            }
             if (gamepad1.right_bumper || gamepad2.right_bumper)
             {
                 trigger.driveServo(0.78);
@@ -89,19 +114,23 @@ public class Version1 extends LinearOpMode
             }
             else if (gamepad1.right_trigger > 0.25)
             {
+                intake.setPower(1.0);
                 transfer.driveServo(1);
+            }
+            else if (gamepad1.left_trigger > 0.25)
+            {
+                intake.setPower(-1.0);
+                transfer.driveServo(-1);
             }
             else
             {
+                intake.setPower(0);
                 transfer.driveServo(0);
             }
 
+            //intake.simpleDrive(-1, gamepad1.left_trigger > 0.25);
+            //intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
 
-            intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
-            if (gamepad1.left_trigger > 0.25)
-            {
-                intake.setPower(-1.0);
-            }
 
 
             if (gamepad1.dpad_up && flag2 < time.seconds())

@@ -50,7 +50,7 @@ public class ZoeBlueRun1 extends LinearOpMode
 
                 //.afterTime(0, actionsBackpack.mezRampUp(1))
 
-                .afterTime(0, actionsBackpack.mezAction(13, 2, 1450, 8))
+                .afterTime(0, actionsBackpack.mezAction(13, 2, 1400, 35))
                 .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205))
                 //.turnTo(Math.toRadians(155))
                 .waitSeconds(1)

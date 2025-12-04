@@ -49,18 +49,39 @@ public class TestAuto extends LinearOpMode
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
 
-
+//                .afterTime(0, actionsBackpack.setHood(30))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.setHood(0))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.setHood(30))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.setHood(0))
+//                .waitSeconds(3)
 
                 //.turnTo(Math.toRadians(155))
                 //.afterTime(0, actionsBackpack.mezAction(12, 2))
-                .afterTime(0, actionsBackpack.target(12))
-                .waitSeconds(3)
-                .afterTime(0, actionsBackpack.target(12))
-                .waitSeconds(3)
-                .afterTime(0, actionsBackpack.target(12))
-                .waitSeconds(3)
-                .afterTime(0, actionsBackpack.target(12))
-                .waitSeconds(3)
+                .afterTime(0, actionsBackpack.mezAction(13,3,800,50))
+                .waitSeconds(15)
+
+
+//                .afterTime(0, actionsBackpack.trigger(1))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.trigger(0))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.trigger(1))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.trigger(0))
+//                .waitSeconds(3)
+
+
+
+//                .afterTime(0, actionsBackpack.target(12))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.target(12))
+//                .waitSeconds(3)
+//                .afterTime(0, actionsBackpack.target(12))
+//                .waitSeconds(3)
+
 
 
                 ; //do not remove ;
