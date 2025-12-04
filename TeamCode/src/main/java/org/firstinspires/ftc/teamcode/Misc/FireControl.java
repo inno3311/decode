@@ -182,16 +182,16 @@ public class FireControl
         {
             targetAngle = calculateSteeperAngle(velocity);
         }
-        else// if (targetRange > 2.5)
+        else if (targetRange == 0)
         {
             targetAngle = minimumAngle;
-            velocity = calculateVelocity(65);
+            velocity = targetMotorVelocity(14);
         }
-//        else
-//        {
-//            targetAngle = maxLaunchAngle;
-//            velocity = calculateVelocity(maxLaunchAngle);
-//        }
+        else
+        {
+            targetAngle = maxLaunchAngle;
+            velocity = calculateVelocity(maxLaunchAngle);
+        }
 
         telemetry.addData("Taget Angle", targetAngle);
 

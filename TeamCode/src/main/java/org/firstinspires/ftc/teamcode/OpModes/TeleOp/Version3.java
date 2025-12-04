@@ -44,7 +44,7 @@ public class Version3 extends LinearOpMode
     PIDController pid;
     FireControl fireControl;
     ElapsedTime time;
-    double initialTargetVelocity = 10;
+    double initialTargetVelocity = 11;
     double[] shooterParameters;
     double obeliskTag = 22;
     int numberOfBallsScored = 0;
@@ -88,13 +88,16 @@ public class Version3 extends LinearOpMode
 
         while (opModeIsActive())
         {
+
+            // Drive Code
+//==================================================================================================================================================================================================
             if (drive_mode % 2 == 1)
             {
                 driveController.gamepadController(gamepad1);
             }
             else
             {
-                if (gamepad1.dpad_left)
+                if (gamepad1.dpad_up)
                 {
                     imu.resetYaw();
                 }
@@ -108,13 +111,15 @@ public class Version3 extends LinearOpMode
                 );
             }
 
-            if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
+            // Change drive type
+            if (gamepad1.back && drive_mode_flag <= time.seconds())
             {
                 drive_mode_flag += time.seconds() + 0.25;
                 drive_mode += 1;
             }
 
-
+            // Intake Code
+//==================================================================================================================================================================================================
             if (gamepad1.right_trigger > 0.1)
             {
                 intake.setPower(-1);
@@ -135,8 +140,9 @@ public class Version3 extends LinearOpMode
                 intakeSort.setPower(0);
             }
 
-
-            if (gamepad1.left_bumper && !gamepad1.a)
+            //Load Ball Code
+//==================================================================================================================================================================================================
+            if (gamepad1.dpad_left || gamepad2.dpad_left)
             {
                 sorterLeft.driveServo(-1);
             }
@@ -145,7 +151,7 @@ public class Version3 extends LinearOpMode
                 sorterLeft.driveServo(0);
             }
 
-            if (gamepad1.right_bumper && !gamepad1.a)
+            if (gamepad1.dpad_right || gamepad2.dpad_right)
             {
                 sorterRight.driveServo(1);
             }
@@ -154,7 +160,9 @@ public class Version3 extends LinearOpMode
                 sorterRight.driveServo(0);
             }
 
-            if (gamepad1.a)
+            // Trigger Code
+//==================================================================================================================================================================================================
+            if (gamepad1.y)
             {
                 trigger.driveServo(1);
                 sorterRight.driveServo(0);
@@ -165,35 +173,40 @@ public class Version3 extends LinearOpMode
                 trigger.driveServo(0);
             }
 
-
-            if (gamepad1.dpad_up && flag2 < time.seconds())
+            // Target velocity code
+//==================================================================================================================================================================================================
+            if (gamepad2.dpad_up && flag2 < time.seconds())
             {
                 initialTargetVelocity++;
                 flag2 = time.seconds() + 0.25;
             }
-            else if (gamepad1.dpad_down  && flag2 < time.seconds())
+            else if (gamepad2.dpad_down  && flag2 < time.seconds())
             {
                 initialTargetVelocity--;
                 flag2 = time.seconds() + 0.25;
             }
 
-
+            //Shooter and hood code
+//==================================================================================================================================================================================================
             shooterParameters = fireControl.firingSuite(initialTargetVelocity);
 
             hood.driveToAngleTarget(90-shooterParameters[0]);
 
-            if (gamepad1.x)
+            if (gamepad1.x || gamepad2.x)
             {
                 shooter.driveToVelocity(shooterParameters[1]);
             }
-            else if (gamepad1.y)
+            else if (gamepad1.a || gamepad2.a)
             {
                 shooter.setPower(0);
             }
 
+            // Turret Code
 //            turret.trackTarget(gamepad2);
 //            turret.telemetry(telemetry);
 
+            // Telemetry
+//==================================================================================================================================================================================================
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
             telemetry.addData("Motor Velocity:", shooter.getVelocity());
