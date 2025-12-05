@@ -50,14 +50,14 @@ public class ZoeBlue2 extends LinearOpMode
 
                 //.afterTime(0, actionsBackpack.mezRampUp(1))
 
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 55))
+                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 30))
                 .strafeToLinearHeading(new Vector2d(-14, -16), Math.toRadians(230), new TranslationalVelConstraint(40))  //drive to middle and shoot 3 balls.
                 .waitSeconds(8)
                 .turnTo(Math.toRadians(280))
                 .afterTime(.1,actionsBackpack.intakeBall(1))
                 .strafeToLinearHeading(new Vector2d(-14, -60), Math.toRadians(280), new TranslationalVelConstraint(20))
                 .afterTime(.1,actionsBackpack.intakeBall(0))
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 55))
+                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 30))
                 .strafeToLinearHeading(new Vector2d(-14, -16), Math.toRadians(230), new TranslationalVelConstraint(40))
 
                 //.strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205))
