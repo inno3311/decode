@@ -138,8 +138,8 @@ public class Version_1_fieldcentric extends LinearOpMode
             {
                 // Obelisk
                 telemetry.addData("__location", "obelisk");
-                target_velocity = 1150;
-                target_angle = 8;
+                target_velocity = 1100;
+                target_angle = 35;
             }
 
 
@@ -147,8 +147,8 @@ public class Version_1_fieldcentric extends LinearOpMode
             {
                 // Far
                 telemetry.addData("__location", "far");
-                target_velocity = 1500;
-                target_angle = 8;
+                target_velocity = 1100;
+                target_angle = 23;
             }
 
             if (gamepad2.dpad_up)
