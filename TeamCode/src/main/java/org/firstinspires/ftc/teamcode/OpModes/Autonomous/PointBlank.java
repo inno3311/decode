@@ -53,6 +53,7 @@ public class PointBlank extends LinearOpMode
                 .waitSeconds(7)
                 .afterTime(0.1,actionsBackpack.intakeBall(1))
                 .turnTo(Math.toRadians(90))
+                .afterTime(0.1,actionsBackpack.intakeBall(1))
                 .strafeToLinearHeading(new Vector2d(-11, 50), Math.toRadians(90),  new TranslationalVelConstraint(20))
                 .afterTime(2,actionsBackpack.intakeBall(0))
                 .strafeToLinearHeading(new Vector2d(-12, 10), Math.toRadians(135))
