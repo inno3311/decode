@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 
 @TeleOp(name = "Centric Command *Don't run this one*", group = "FieldCentric")
-//@Disabled
+@Disabled
 public class CentricCommand extends OpMode
 {
     MecanumDrive drive;

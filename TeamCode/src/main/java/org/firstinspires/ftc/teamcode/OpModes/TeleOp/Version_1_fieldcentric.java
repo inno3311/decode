@@ -28,6 +28,7 @@ public class Version_1_fieldcentric extends LinearOpMode
     Trigger trigger;
     Transfer transfer;
 
+    AprilTagLocalizer tagLocalizer;
     DriveController driveController;
     FireControl fireControl;
     ElapsedTime time;
@@ -54,8 +55,10 @@ public class Version_1_fieldcentric extends LinearOpMode
         transfer = new Transfer(this);
 
         time = new ElapsedTime();
+
+        tagLocalizer = new AprilTagLocalizer(hardwareMap);
         driveController = new DriveController(hardwareMap);
-        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+        fireControl = new FireControl(tagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
@@ -88,7 +91,7 @@ public class Version_1_fieldcentric extends LinearOpMode
                 gamepad1.right_stick_x
             );
 
-            if (gamepad1.right_bumper || gamepad2.right_bumper)
+            if (gamepad1.back || gamepad2.right_bumper)
             {
                 trigger.driveServo(0.78);
                 flag1 = time.seconds() + 0.5;
@@ -98,7 +101,7 @@ public class Version_1_fieldcentric extends LinearOpMode
                 trigger.driveServo(1);
                 transfer.driveServo(1);
             }
-            else if (gamepad1.right_trigger > 0.25)
+            else if (gamepad1.right_bumper)
             {
                 transfer.driveServo(1);
             }
@@ -108,93 +111,94 @@ public class Version_1_fieldcentric extends LinearOpMode
             }
 
 
-            intake.simpleDrive(1, gamepad1.right_trigger > 0.25);
-            if (gamepad1.left_trigger > 0.25)
+            intake.simpleDrive(1, gamepad1.right_bumper);
+
+            if (gamepad1.left_bumper)
             {
                 intake.setPower(-1.0);
+                transfer.driveServo(-1);
             }
 
 
-            if (gamepad1.dpad_up && flag2 < time.seconds())
+            if (gamepad2.dpad_up && flag2 < time.seconds())
             {
-                initialTargetVelocity++;
+                initialTargetVelocity += 0.5;
                 flag2 = time.seconds() + 0.25;
             }
-            else if (gamepad1.dpad_down  && flag2 < time.seconds())
+            else if (gamepad2.dpad_down  && flag2 < time.seconds())
             {
-                initialTargetVelocity--;
+                initialTargetVelocity -= 0.5;
                 flag2 = time.seconds() + 0.25;
             }
+            else if (gamepad2.right_bumper)
+            {
+                initialTargetVelocity = 9.5;
+            }
+            else if (gamepad2.right_trigger > 0.5)
+            {
+                initialTargetVelocity = 11.5;
+            }
 
+//            if (gamepad2.y)
+//            {
+//                // Obelisk
+//                telemetry.addData("__location", "obelisk");
+//                target_velocity = 1150;
+//                target_angle = 8;
+//            }
+//
+//
+//            if (gamepad2.a)
+//            {
+//                // Far
+//                telemetry.addData("__location", "far");
+//                target_velocity = 1500;
+//                target_angle = 8;
+//            }
+//
+//            if (gamepad2.dpad_up)
+//            {
+//                target_velocity += 10;
+//            }
+//            if (gamepad2.dpad_down)
+//            {
+//                target_velocity -= 10;
+//            }
+//            if (gamepad2.dpad_left)
+//            {
+//                target_angle -= 1;
+//            }
+//            if (gamepad2.dpad_right)
+//            {
+//                target_angle += 1;
+//            }
+
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+            target_velocity = shooterParameters[1];
+            target_angle = shooterParameters[0];
+
+            if (tagLocalizer.getDetectionID() != -1)
+            {
+                hood.driveToAngleTarget(target_angle);
+            }
+            else if (gamepad2.y)
+            {
+                hood.driveToAngleTarget(5);
+                shooter.driveToVelocity(700);
+            }
 
             if (gamepad2.x)
             {
-                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                target_velocity = shooterParameters[1];
-                target_angle = shooterParameters[0];
-            }
-
-            if (gamepad2.y)
-            {
-                // Obelisk
-                telemetry.addData("__location", "obelisk");
-                target_velocity = 1100;
-                target_angle = 35;
-            }
-
-
-            if (gamepad2.a)
-            {
-                // Far
-                telemetry.addData("__location", "far");
-                target_velocity = 1100;
-                target_angle = 23;
-            }
-
-            if (gamepad2.dpad_up)
-            {
-                target_velocity += 10;
-            }
-            if (gamepad2.dpad_down)
-            {
-                target_velocity -= 10;
-            }
-            if (gamepad2.dpad_left)
-            {
-                target_angle -= 1;
-            }
-            if (gamepad2.dpad_right)
-            {
-                target_angle += 1;
-            }
-
-            hood.driveToAngleTarget(target_angle);
-            if (gamepad1.b || gamepad2.b)
-            {
                 shooter.driveToVelocity(target_velocity);
             }
-            else if (gamepad1.a || gamepad2.a)
+            else if (gamepad2.a)
             {
                 shooter.setPower(0);
             }
 
-
-
-
-//            if (gamepad1.x)
-//            {
-//                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                telemetry.addData("__Hood target Angle", target_angle);
-                telemetry.addData("__Target Velocity", target_velocity);
-//            }
-
-            //fireControl.firingSuite(12);
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Trigger pos", trigger.getPosition());
-            shooter.currentDraw();
             telemetry.update();
         }
 
