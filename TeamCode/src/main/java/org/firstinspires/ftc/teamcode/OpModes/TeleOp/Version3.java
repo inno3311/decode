@@ -120,12 +120,12 @@ public class Version3 extends LinearOpMode
 
             // Intake Code
 //==================================================================================================================================================================================================
-            if (gamepad1.right_trigger > 0.1)
+            if (gamepad1.right_bumper)
             {
                 intake.setPower(-1);
                 intakeSort.setPower(-1);
             }
-            else if (gamepad1.left_trigger > 0.1)
+            else if (gamepad1.left_bumper)
             {
                 intake.setPower(-1);
                 intakeSort.setPower(1);

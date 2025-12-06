@@ -38,6 +38,7 @@ public class Version_1_fieldcentric extends LinearOpMode
     MecanumDrive drive;
     TurnToHeading turnToHeading;
     CentricDrive centricDrive;
+    AprilTagLocalizer tagLocalizer;
     IMU imu;
     PIDController pid;
 
@@ -54,8 +55,10 @@ public class Version_1_fieldcentric extends LinearOpMode
         transfer = new Transfer(this);
 
         time = new ElapsedTime();
+        tagLocalizer = new AprilTagLocalizer(hardwareMap);
+
         driveController = new DriveController(hardwareMap);
-        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+        fireControl = new FireControl(tagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
@@ -77,14 +80,22 @@ public class Version_1_fieldcentric extends LinearOpMode
             {
                 imu.resetYaw();
             }
-            centricDrive.drive(
-                gamepad1.left_stick_x,
-                gamepad1.left_stick_y,
-                imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                gamepad1.right_trigger,
-                gamepad1.right_stick_x
-            );
+
+            if (gamepad1.left_bumper && (tagLocalizer.getDetectionID() == 20 || tagLocalizer.getDetectionID() == 24))
+            {
+                drive.adjustYaw(tagLocalizer.getTagYaw());
+            }
+            else
+            {
+                centricDrive.drive(
+                        gamepad1.left_stick_x,
+                        gamepad1.left_stick_y,
+                        imu.getRobotYawPitchRollAngles().getYaw(),
+//                        turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+                        gamepad1.right_trigger,
+                        gamepad1.right_stick_x
+                );
+            }
 
             if (gamepad1.right_bumper || gamepad2.right_bumper)
             {

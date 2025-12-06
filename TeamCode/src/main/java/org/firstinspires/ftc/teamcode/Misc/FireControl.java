@@ -78,7 +78,7 @@ public class FireControl
 
     /**
      * @targetX The plane distance to the target in meters
-     * @targetY The height of target in meters
+     * @targetRange The height of target in meters
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
@@ -86,11 +86,11 @@ public class FireControl
     {
         double targetRange = 2;
         try{
-            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.25;
         } catch(Exception e){
             targetRange = 2;
         }
-        double targetZ = 1.4;
+        double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -104,7 +104,7 @@ public class FireControl
 
     /**
      * @targetX The plane distance to the target in meters
-     * @targetY The height of target in meters
+     * @targetRange The height of target in meters
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
@@ -112,7 +112,7 @@ public class FireControl
     {
         double targetRange = 2;
         try{
-            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.35;
         } catch(Exception e){
             targetRange = 2;
         }
@@ -130,14 +130,14 @@ public class FireControl
 
     /**
      * @targetX The plane distance to the target in meters
-     * @targetY The height of target in meters
+     * @targetRange The height of target in meters
      * @param angle The angle at which the ball exits the shooter in degrees
      */
     private double calculateVelocity(double angle)
     {
         double targetRange = 2;
         try{
-            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.5;
+            targetRange = (localizer.getTagRange() * 2.54 / 100) + 0.35;
         } catch(Exception e){
             targetRange = 2;
         }
@@ -178,14 +178,14 @@ public class FireControl
         telemetry.addData("Target Range", targetRange);
 
 
-        if (targetRange < 2.25 && maxLaunchAngle > calculateSteeperAngle(velocity) && minimumAngle < calculateSteeperAngle(velocity))
+        if (targetRange < 2.5 && maxLaunchAngle > calculateSteeperAngle(velocity) && minimumAngle < calculateSteeperAngle(velocity))
         {
             targetAngle = calculateSteeperAngle(velocity);
         }
         else if (targetRange == 0)
         {
             targetAngle = minimumAngle;
-            velocity = targetMotorVelocity(14);
+            velocity = calculateVelocity(65);
         }
         else
         {

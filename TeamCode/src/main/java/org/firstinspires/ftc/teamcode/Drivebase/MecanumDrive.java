@@ -589,6 +589,22 @@ public final class MecanumDrive
 
     }
 
+    public void adjustYaw(double targetYaw)
+    {
+        if (targetYaw > 0)
+        {
+            driveMotors(0,-1,0,0.25);
+        }
+        else if (targetYaw < 0)
+        {
+            driveMotors(0,1,0,0.25);
+        }
+        else
+        {
+            driveMotors(0,0,0,0);
+        }
+    }
+
     /**
      * Drives the bot right or backward in a straight line.
      *
