@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,6 +23,11 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.hardware.Gamepad;
+
 @TeleOp(name = "Version_1_Centric")
 public class Version_1_fieldcentric extends LinearOpMode
 {
@@ -34,7 +43,7 @@ public class Version_1_fieldcentric extends LinearOpMode
     ElapsedTime time;
     double flag1 = 0;
     double flag2 = 0;
-    double initialTargetVelocity = 12;
+    double initialTargetVelocity = 10.5;
     double[] shooterParameters;
     MecanumDrive drive;
     TurnToHeading turnToHeading;
@@ -91,7 +100,7 @@ public class Version_1_fieldcentric extends LinearOpMode
                 gamepad1.right_stick_x
             );
 
-            if (gamepad1.back || gamepad2.right_bumper)
+            if (gamepad1.back || gamepad2.right_trigger > 0.25)
             {
                 trigger.driveServo(0.78);
                 flag1 = time.seconds() + 0.5;
@@ -110,6 +119,11 @@ public class Version_1_fieldcentric extends LinearOpMode
                 transfer.driveServo(0);
             }
 
+            if (gamepad2.back)
+            {
+                trigger.driveServo(1);
+            }
+
 
             intake.simpleDrive(1, gamepad1.right_bumper);
 
@@ -119,6 +133,15 @@ public class Version_1_fieldcentric extends LinearOpMode
                 transfer.driveServo(-1);
             }
 
+
+            if (gamepad2.left_bumper)
+            {
+                initialTargetVelocity = 10.5;
+            }
+            else if (gamepad2.left_trigger > 0.5)
+            {
+                initialTargetVelocity = 9.5;
+            }
 
             if (gamepad2.dpad_up && flag2 < time.seconds())
             {
@@ -130,13 +153,38 @@ public class Version_1_fieldcentric extends LinearOpMode
                 initialTargetVelocity -= 0.5;
                 flag2 = time.seconds() + 0.25;
             }
-            else if (gamepad2.right_bumper)
+
+
+            if (gamepad1.left_trigger > 0.25 && tagLocalizer.getDetectionID() != -1)
             {
-                initialTargetVelocity = 9.5;
-            }
-            else if (gamepad2.right_trigger > 0.5)
-            {
-                initialTargetVelocity = 11.5;
+                try
+                {
+                    double offset = 0;
+
+                    if (Math.sqrt(Math.pow(tagLocalizer.getTagRange(),2) - Math.pow(tagLocalizer.getTagZ(),2)) > 2.35)
+                    {
+                        if (tagLocalizer.getDetectionID() == 20)
+                        {
+                            offset = Math.toRadians(-2);
+                        }
+                        else if (tagLocalizer.getDetectionID() == 24)
+                        {
+                            offset = Math.toRadians(2);
+                        }
+                    }
+
+                    MecanumDrive alignDrive = new MecanumDrive(hardwareMap, new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())));
+                    TrajectoryActionBuilder align = alignDrive.actionBuilder(new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())))
+                            .turn(Math.toRadians(tagLocalizer.getTagBearing() + offset));
+
+                    Action action = align.build();
+                    runBlocking2(action, gamepad1);
+                }
+                catch (Exception exception)
+                {
+                    telemetry.addData("EXCEPTION", exception);
+                    telemetry.update();
+                }
             }
 
 //            if (gamepad2.y)
@@ -187,6 +235,7 @@ public class Version_1_fieldcentric extends LinearOpMode
                 shooter.driveToVelocity(700);
             }
 
+
             if (gamepad2.x)
             {
                 shooter.driveToVelocity(target_velocity);
@@ -196,14 +245,39 @@ public class Version_1_fieldcentric extends LinearOpMode
                 shooter.setPower(0);
             }
 
+            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
+            telemetry.addData("Bearing to Tag", tagLocalizer.getTagBearing());
             telemetry.update();
         }
 
     }
 
+    public void runBlocking2(Action action, Gamepad gpad) {
+        FtcDashboard dash = FtcDashboard.getInstance();
+        Canvas previewCanvas = new Canvas();
+        action.preview(previewCanvas);
+
+        boolean running = true;
+        while (running && !Thread.currentThread().isInterrupted()) {
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.fieldOverlay().getOperations().addAll(previewCanvas.getOperations());
+
+            running = action.run(packet);
+
+            dash.sendTelemetryPacket(packet);
+            telemetry.addData("runBlocking2", "in loop");
+            telemetry.update();
+
+            if (gpad.left_stick_button && gpad.right_stick_button)
+            {
+                break;
+            }
+        }
+        telemetry.addData("runBlocking2", "exit loop");
+        telemetry.update();
+    }
 
 
 }

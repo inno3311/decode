@@ -157,12 +157,6 @@ public class AprilTagLocalizer
         return detection.ftcPose.yaw;
     }
 
-    public double getTagYaw(int tag)
-    {
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        AprilTagDetection detection = currentDetections.get(0);
-        return detection.ftcPose.yaw;
-    }
 
     public double getTagBearing()
     {

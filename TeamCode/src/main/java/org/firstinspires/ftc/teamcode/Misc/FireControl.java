@@ -90,7 +90,7 @@ public class FireControl
         } catch(Exception e){
             targetRange = 2;
         }
-        double targetZ = 1.25;
+        double targetZ = 1;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -141,7 +141,7 @@ public class FireControl
         } catch(Exception e){
             targetRange = 2;
         }
-        double targetZ = 1.25;
+        double targetZ = 1;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
         double numerator = -g * Math.pow(2 * targetRange,2) * numeratorParth;
@@ -161,7 +161,7 @@ public class FireControl
 
         double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 0.625;
 
-        telemetry.addData("Target Motor Velocity2", motorVelocity);
+        telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
     }
 
@@ -188,14 +188,11 @@ public class FireControl
         }
         else
         {
-            targetAngle = maxLaunchAngle;
-            velocity = calculateVelocity(maxLaunchAngle);
+            targetAngle = 65;
+            velocity = calculateVelocity(65);
             telemetry.addData("other angle", targetAngle);
             telemetry.addData("steep angle", calculateSteeperAngle(velocity));
         }
-
-        telemetry.addData("Target Velocity", velocity);
-        telemetry.addData("Taget Angle", targetAngle);
 
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }

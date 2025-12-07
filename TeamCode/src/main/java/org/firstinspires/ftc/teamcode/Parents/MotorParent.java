@@ -280,8 +280,8 @@ public class MotorParent
         if (argument)
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            telemetry.addData("Motor PIDF:", "%s",motor.getPIDFCoefficients(DcMotor.RunMode.RUN_WITHOUT_ENCODER).toString());
-            telemetry.update();
+//            telemetry.addData("Motor PIDF:", "%s",motor.getPIDFCoefficients(DcMotor.RunMode.RUN_WITHOUT_ENCODER).toString());
+//            telemetry.update();
             run(speed);
         }
         else {motorBreak();}
