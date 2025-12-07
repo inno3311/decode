@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -357,6 +358,19 @@ public class MotorParent
     }
 
 
+    public void setPID(double p, double i, double d, double f)
+    {
+        motor.setVelocityPIDFCoefficients(p, i, d, f);
+    }
+
+    public PIDFCoefficients getPID()
+    {
+        PIDFCoefficients pidfCoefficients;
+        pidfCoefficients = motor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        return pidfCoefficients;
+    }
+
+
     public Action action(int target, double speed)
     {
 
@@ -454,5 +468,7 @@ public class MotorParent
     {
         return motor.isBusy();
     }
+
+
 }
 

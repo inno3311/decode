@@ -33,9 +33,12 @@ public class TestAuto extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Trigger(this),
-            new Hood(this), new Transfer(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime());
+        AprilTagLocalizer aprilTagLoc = new AprilTagLocalizer(hardwareMap);
 
+        actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Trigger(this),
+            new Hood(this), new Transfer(this), new FireControl(aprilTagLoc, telemetry), new ElapsedTime());
+
+        aprilTagLoc.getDetectionID();
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
 

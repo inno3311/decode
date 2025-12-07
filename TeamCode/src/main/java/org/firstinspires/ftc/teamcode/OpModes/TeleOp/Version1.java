@@ -217,6 +217,5 @@ public class Version1 extends LinearOpMode
             shooter.currentDraw();
             telemetry.update();
         }
-
     }
 }

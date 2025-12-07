@@ -21,6 +21,8 @@ public class ShooterTest extends LinearOpMode
     double flag2 = 0;
     double shooterVelocity = 13;
 
+    //10 to 14
+
 
     @Override
     public void runOpMode() throws InterruptedException
