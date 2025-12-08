@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -33,10 +35,21 @@ public class TestAuto extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
+        TelemetryPacket initPacket = new TelemetryPacket();
+        initPacket.put("targetVel", 0);
+        initPacket.put("vel", 0);
+        initPacket.put("power", 0);
+        initPacket.put("status", "initialized");
+        dashboard.sendTelemetryPacket(initPacket);
+
+
         AprilTagLocalizer aprilTagLoc = new AprilTagLocalizer(hardwareMap);
 
         actionsBackpack = new ActionsBackpack(new Shooter(this), new Intake(this), new Trigger(this),
             new Hood(this), new Transfer(this), new FireControl(aprilTagLoc, telemetry), new ElapsedTime());
+
 
         aprilTagLoc.getDetectionID();
         // ZOE update with starting location
@@ -53,7 +66,8 @@ public class TestAuto extends LinearOpMode
 
 
 //                .afterTime(0, actionsBackpack.setHood(30))
-//                .waitSeconds(3)
+                .afterTime(.1,actionsBackpack.startLogging())
+//                .waitSeconds(10)
 //                .afterTime(0, actionsBackpack.setHood(0))
 //                .waitSeconds(3)
 //                .afterTime(0, actionsBackpack.setHood(30))
@@ -63,7 +77,10 @@ public class TestAuto extends LinearOpMode
 
                 //.turnTo(Math.toRadians(155))
                 //.afterTime(0, actionsBackpack.mezAction(12, 2))
-                .afterTime(0, actionsBackpack.mezAction(13,3,800,50))
+                //.afterTime(0, actionsBackpack.mezAction(13,3,800,50))
+
+                .afterTime(0, actionsBackpack.mezAction(13,9,950,45))  //back zone.  set is good!
+                //.afterTime(0, actionsBackpack.mezAction(13,9,800,45))
                 .waitSeconds(15)
 
 

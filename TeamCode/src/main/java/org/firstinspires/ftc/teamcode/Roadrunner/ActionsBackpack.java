@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.Roadrunner;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
@@ -55,11 +58,32 @@ public class ActionsBackpack
         this.time = time;
         time.startTime();
 
+//        shooter.setPID(1.0,0.1,0.1,14);
+//        PIDFCoefficients cos = shooter.getPID();
+//        cos.toString();
+
 //        svgLogger = CsvLogger.getInstance();
 //        svgLogger.start("robot_data");
 //
 //        // Write CSV header
 //        svgLogger.log("power,vel,hood angle");
+    }
+
+    public Action startLogging()
+    {
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+                packet.put("targetVel", 0);
+                packet.put("vel", 0);
+                packet.put("power", 0);
+
+                FtcDashboard dashboard = FtcDashboard.getInstance();
+                dashboard.sendTelemetryPacket(packet);
+                return false;
+            };
+        };
     }
 
     public Action mezAction(double velocity, int numRounds, double setVel, double angle)
@@ -92,19 +116,20 @@ public class ActionsBackpack
                         shooter.driveToVelocity(m_targetVelocity);
                         hood.driveToAngleTarget(angle);
                         state = FireState.SPINUP;
-                        packet.put("targetVel",m_targetVelocity);
-                        packet.put("Angle",shooterParameters[0]);
+                        //packet.put("targetVel",m_targetVelocity);
+                        //packet.put("Angle",shooterParameters[0]);
                         packet.put("STATE","INIT");
+
                         break;
                     case SPINUP:
 
                         double vel = shooter.getVelocity();
-                        boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 50;
+                        boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 10;
                         if (notAtSpeed == false)
                         {
                             state = FireState.FIRE;
                         }
-                        packet.put("vel",vel);
+                        //packet.put("vel",vel);
                         packet.put("STATE","SPINUP");
                         break;
                     case FIRE:
@@ -116,14 +141,15 @@ public class ActionsBackpack
                     case FIRE_DOWN:
                         currentTime = time.seconds();
                         if (currentTime - fireTime > .7)
-                        {transfer.driveServo(-1);
+                        {
+                            transfer.driveServo(-1);
                             transfer.driveServo(0);
                             lift.driveServo(1);
                             state = FireState.TRANSFER_START;
                             timesFired++;
                         }
-                        packet.put("fireSeconds",currentTime - fireTime);
-                        packet.put("STATE","FIRE");
+                        //packet.put("fireSeconds",currentTime - fireTime);
+                        packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
                         intake.setPower(1);
@@ -147,6 +173,7 @@ public class ActionsBackpack
                                 state = FireState.FIRE;
                             }
                         }
+                        packet.put("STATE","TRANSFER_STOP");
                         break;
                     case DONE:
                         {
@@ -159,9 +186,9 @@ public class ActionsBackpack
                         }
                 }
 
-                packet.put("targetVel",m_targetVelocity);
-                packet.put("Angle",shooterParameters[0]);
-                packet.put("power",shooter.getPower());
+                //packet.put("targetVel",m_targetVelocity);
+                //packet.put("Angle",shooterParameters[0]);
+                //packet.put("power",shooter.getPower());
 
 
 //                shooterParameters = fireControl.firingSuite(velocity);
@@ -174,8 +201,12 @@ public class ActionsBackpack
 
 //                double t = time.seconds();
 //                double power = shooter.getPower();
-//                double vel = shooter.getVelocity();
+//                  double vel = shooter.getVelocity();
 //                double hoodAngle = 0;
+
+                packet.put("targetVel",m_targetVelocity);
+                packet.put("power",shooter.getPower());
+                packet.put("vel",shooter.getVelocity());
 
                 return true;
             }
