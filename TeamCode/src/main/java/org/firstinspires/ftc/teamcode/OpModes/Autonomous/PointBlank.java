@@ -48,7 +48,7 @@ public class PointBlank extends LinearOpMode
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 870, 40))
+                .afterTime(0, actionsBackpack.mezAction(13, 3, 860, 45))
                 .strafeTo(new Vector2d(-12, 10))
                 .waitSeconds(7)
                 .afterTime(0.1,actionsBackpack.intakeBall(1))
@@ -57,7 +57,7 @@ public class PointBlank extends LinearOpMode
                 .strafeToLinearHeading(new Vector2d(-11, 50), Math.toRadians(90),  new TranslationalVelConstraint(20))
                 .afterTime(2,actionsBackpack.intakeBall(0))
                 .strafeToLinearHeading(new Vector2d(-12, 10), Math.toRadians(135))
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 870, 40))
+                .afterTime(0, actionsBackpack.mezAction(13, 3, 870, 45))
                 .waitSeconds(7)
                 .strafeToLinearHeading(new Vector2d(-11, 45), Math.toRadians(180))
 

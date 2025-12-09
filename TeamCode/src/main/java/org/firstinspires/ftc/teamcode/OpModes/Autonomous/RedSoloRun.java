@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="Zoe Red1", group="Linear OpMode")
+@Autonomous(name="Zoe Red Solo", group="Linear OpMode")
 public class RedSoloRun extends LinearOpMode
 {
 

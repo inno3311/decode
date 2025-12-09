@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="Red3Back", group="Linear OpMode")
-public class Red3Back extends LinearOpMode
+@Autonomous(name="RedBack3_Corn", group="Linear OpMode")
+public class Red3Back_Corn extends LinearOpMode
 {
 
     //Initialization initialization;
@@ -51,7 +50,7 @@ public class Red3Back extends LinearOpMode
 //                .afterTime(0, actionsBackpack.mezRampUp(1))
                 .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45))
                 .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(150))
-                .waitSeconds(6.5)
+                .waitSeconds(7)
 
                 //picking up from corner
                 .afterTime(1,actionsBackpack.intakeBall(1))
