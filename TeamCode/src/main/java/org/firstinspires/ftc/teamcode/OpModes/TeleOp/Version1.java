@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
 @TeleOp(name = "Version_1")
-@Disabled
 public class Version1 extends LinearOpMode
 {
     Intake intake;

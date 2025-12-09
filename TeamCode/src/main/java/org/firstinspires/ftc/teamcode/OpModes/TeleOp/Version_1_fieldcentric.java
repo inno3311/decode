@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -220,14 +222,24 @@ public class Version_1_fieldcentric extends LinearOpMode
 //            {
 //                target_angle += 1;
 //            }
+            
 
-            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-            target_velocity = shooterParameters[1];
-            target_angle = shooterParameters[0];
-
-            if (tagLocalizer.getDetectionID() != -1)
+            if (gamepad2.x)
             {
-                hood.driveToAngleTarget(target_angle);
+                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+                target_velocity = shooterParameters[1];
+                target_angle = shooterParameters[0];
+
+                if (tagLocalizer.getDetectionID() != -1)
+                {
+                    hood.driveToAngleTarget(target_angle);
+                }
+
+                shooter.driveToVelocity(target_velocity);
+            }
+            else if (gamepad2.a)
+            {
+                shooter.setPower(0);
             }
             else if (gamepad2.y)
             {
@@ -235,26 +247,17 @@ public class Version_1_fieldcentric extends LinearOpMode
                 shooter.driveToVelocity(700);
             }
 
-
-            if (gamepad2.x)
-            {
-                shooter.driveToVelocity(target_velocity);
-            }
-            else if (gamepad2.a)
-            {
-                shooter.setPower(0);
-            }
-
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
             telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Bearing to Tag", tagLocalizer.getTagBearing());
+//            telemetry.addData("Bearing to Tag", tagLocalizer.getTagBearing());
             telemetry.update();
         }
 
     }
 
-    public void runBlocking2(Action action, Gamepad gpad) {
+    public void runBlocking2(Action action, Gamepad gamepad)
+    {
         FtcDashboard dash = FtcDashboard.getInstance();
         Canvas previewCanvas = new Canvas();
         action.preview(previewCanvas);
@@ -270,7 +273,7 @@ public class Version_1_fieldcentric extends LinearOpMode
             telemetry.addData("runBlocking2", "in loop");
             telemetry.update();
 
-            if (gpad.left_stick_button && gpad.right_stick_button)
+            if (gamepad.left_stick_button && gamepad.right_stick_button)
             {
                 break;
             }
