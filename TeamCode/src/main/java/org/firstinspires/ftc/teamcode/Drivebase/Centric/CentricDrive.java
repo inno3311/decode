@@ -30,6 +30,9 @@ public class CentricDrive
         }
         drive_x = drive_x * scalar;
         drive_y = drive_y * scalar;
+        if(drive_y == 0){
+            drive_y = 0.0001;
+        }
         driveController.driveMotors(-drive_y, turn, drive_x, speed);
         telemetry.update();
     }

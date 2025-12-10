@@ -21,13 +21,15 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="PointBlank", group="Linear OpMode")
-public class PointBlank extends LinearOpMode
+@Autonomous(name="RedPointBlank_A", group="Linear OpMode")
+public class RedPointBlank_A extends LinearOpMode
 {
 
     //Initialization initialization;
 
     ActionsBackpack actionsBackpack;
+
+    AutoConsts cons;
 
 
     @Override

@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 public class Red3Back_Corn extends LinearOpMode
 {
 
-    //Initialization initialization;
+    AutoConsts cons;
 
     ActionsBackpack actionsBackpack;
 
@@ -47,25 +47,23 @@ public class Red3Back_Corn extends LinearOpMode
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-//                .afterTime(0, actionsBackpack.mezRampUp(1))
                 .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45))
-                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(150))
+                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(7)
 
                 //picking up from corner
                 .afterTime(1,actionsBackpack.intakeBall(1))
                 .turnTo(Math.toRadians (90))
                 .afterTime(0.1,actionsBackpack.intakeBall(1))
-                .strafeTo(new Vector2d(55, 70))
+                .strafeTo(new Vector2d(55, 70)) //hit corner balls.
                 .afterTime(0.1,actionsBackpack.intakeBall(1))
-                .strafeTo(new Vector2d(55, 50))
+                .strafeTo(new Vector2d(55, 50)) //back up
                 .afterTime(0.1,actionsBackpack.intakeBall(1))
-                .strafeTo(new Vector2d(55, 70))
+                .strafeTo(new Vector2d(60, 70)) //hit again
                 .afterTime(0, actionsBackpack.mezAction(13, 2, 950, 45))//
-                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(150))
+                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))
-
 
                 ; //do not remove ;
 
