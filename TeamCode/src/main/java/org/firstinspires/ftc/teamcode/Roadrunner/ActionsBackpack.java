@@ -140,7 +140,7 @@ public class ActionsBackpack
                         break;
                     case FIRE_DOWN:
                         currentTime = time.seconds();
-                        if (currentTime - fireTime > .7)
+                        if (currentTime - fireTime > .4)
                         {
                             transfer.driveServo(-1);
                             transfer.driveServo(0);

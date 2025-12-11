@@ -21,14 +21,10 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-//@Autonomous(name="Zoe Blue2", group="Linear OpMode")
-public class ZoeBlue2 extends LinearOpMode
+@Autonomous(name="BlueBack3_C_A", group="Linear OpMode")
+public class BlueBack3_C_A extends LinearOpMode
 {
-
-    //Initialization initialization;
-
     ActionsBackpack actionsBackpack;
-
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -47,37 +43,26 @@ public class ZoeBlue2 extends LinearOpMode
 
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-
-                //.afterTime(0, actionsBackpack.mezRampUp(1))
-
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 32)) //30
-                .strafeToLinearHeading(new Vector2d(-14, -16), Math.toRadians(230), new TranslationalVelConstraint(40))  //drive to middle and shoot 3 balls.
-                .waitSeconds(8)
-                .turnTo(Math.toRadians(280))
-                .afterTime(.1,actionsBackpack.intakeBall(1))
-                .strafeToLinearHeading(new Vector2d(-12, -60), Math.toRadians(280), new TranslationalVelConstraint(20))
-                .afterTime(.1,actionsBackpack.intakeBall(0))
-                .afterTime(0, actionsBackpack.mezAction(13, 3, 800, 32))
-                .strafeToLinearHeading(new Vector2d(-14, -16), Math.toRadians(230), new TranslationalVelConstraint(40))
-
-                //.strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205))
-                //.turnTo(Math.toRadians(155))
-                .waitSeconds(1)
-
-                .waitSeconds(6.5)
-
-                //.afterTime(0, actionsBackpack.transferBall(1))
-
-//                .afterTime(1,actionsBackpack.intakeBall(1))
-//                .splineTo(new Vector2d(36,-45),Math.toRadians(270),new TranslationalVelConstraint(20))
-//                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(270), new TranslationalVelConstraint(40))
-//                .afterTime(0, actionsBackpack.mezRampUp(.7))
-//                .strafeToLinearHeading(new Vector2d(-12, -20), Math.toRadians(230), new TranslationalVelConstraint(40))
-//                .afterTime(0, actionsBackpack.mezAction(12, 2, 1150, 8))
-//                .waitSeconds(5)
-//                .strafeToLinearHeading(new Vector2d(36, -36), Math.toRadians(180))
+                //.afterTime(0,actionsBackpack.mezRampUp(1))
+                .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45)) //shooting 1st time
+                .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205)) //shooting 1st time from back triangle
+                .waitSeconds(6)
+                .afterTime(0,actionsBackpack.intakeBall(1))
+                .afterTime(1,actionsBackpack.intakeBall(1))
+                .afterTime(2,actionsBackpack.intakeBall(1))
+                .splineTo(new Vector2d(36,-60),Math.toRadians(90+180),new TranslationalVelConstraint(20)) //1st set pickup
+                .afterTime(.5, actionsBackpack.mezAction(12, 3, 860, 45)) //shooting 2nd time
+                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(180), new TranslationalVelConstraint(40)) //move to shoot location
+                .strafeToLinearHeading(new Vector2d(-12, -20), Math.toRadians(235), new TranslationalVelConstraint(40))
+                .waitSeconds(5.2)
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(275))
+                .afterTime(0,actionsBackpack.intakeBall(1))
+                .strafeTo(new Vector2d(-12, -65), new TranslationalVelConstraint(20))
+                .afterTime(0, actionsBackpack.mezAction(12, 2, 860, 45)) //shooting 3rd time
+                .strafeToLinearHeading(new Vector2d(-12, -20), Math.toRadians(235), new TranslationalVelConstraint(40))
+                .waitSeconds(4)
+                .strafeToLinearHeading(new Vector2d(0, -45), Math.toRadians(180))
                 ; //do not remove ;
-
 
 
             Action redRun = yellow_drop
