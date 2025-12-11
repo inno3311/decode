@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="AutoTest", group="Linear OpMode")
+//@Autonomous(name="AutoTest", group="Linear OpMode")
 public class TestAuto extends LinearOpMode
 {
 

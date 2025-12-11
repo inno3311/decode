@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="RedPointBlank_A", group="Linear OpMode")
-public class RedPointBlank_A extends LinearOpMode
+@Autonomous(name="RedFront_A", group="Linear OpMode")
+public class RedFront_A extends LinearOpMode
 {
 
     //Initialization initialization;
@@ -53,9 +53,9 @@ public class RedPointBlank_A extends LinearOpMode
                 .afterTime(0, actionsBackpack.mezAction(13, 3, 860, 45))
                 .strafeTo(new Vector2d(-12, 10))
                 .waitSeconds(7)
-                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .afterTime(0,actionsBackpack.intakeBall(1))
                 .turnTo(Math.toRadians(90))
-                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .afterTime(0,actionsBackpack.intakeBall(1))
                 .strafeToLinearHeading(new Vector2d(-11, 50), Math.toRadians(90),  new TranslationalVelConstraint(20))
                 .afterTime(2,actionsBackpack.intakeBall(0))
                 .strafeToLinearHeading(new Vector2d(-12, 10), Math.toRadians(135))

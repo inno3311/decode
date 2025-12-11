@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="Zoe Blue1", group="Linear OpMode")
+//@Autonomous(name="Zoe Blue1", group="Linear OpMode")
 public class ZoeBlueRun1 extends LinearOpMode
 {
 
