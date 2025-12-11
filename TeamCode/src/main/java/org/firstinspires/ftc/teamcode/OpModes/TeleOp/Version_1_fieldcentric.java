@@ -82,8 +82,6 @@ public class Version_1_fieldcentric extends LinearOpMode
         centricDrive = new CentricDrive(drive, telemetry);
 
 
-
-
         waitForStart();
         time.startTime();
 
@@ -93,14 +91,17 @@ public class Version_1_fieldcentric extends LinearOpMode
             {
                 imu.resetYaw();
             }
-            centricDrive.drive(
-                gamepad1.left_stick_x,
-                gamepad1.left_stick_y,
-                imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                gamepad1.right_trigger,
-                gamepad1.right_stick_x
-            );
+
+            driveController.gamepadController(gamepad1);
+
+//            centricDrive.drive(
+//                gamepad1.left_stick_x,
+//                gamepad1.left_stick_y,
+//                imu.getRobotYawPitchRollAngles().getYaw(),
+////                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+//                gamepad1.right_trigger,
+//                gamepad1.right_stick_x
+//            );
 
             if (gamepad1.back || gamepad2.right_trigger > 0.25)
             {
@@ -167,17 +168,17 @@ public class Version_1_fieldcentric extends LinearOpMode
                     {
                         if (tagLocalizer.getDetectionID() == 20)
                         {
-                            offset = Math.toRadians(-2);
+                            offset = Math.toRadians(10);
                         }
                         else if (tagLocalizer.getDetectionID() == 24)
                         {
-                            offset = Math.toRadians(2);
+                            offset = Math.toRadians(-10);
                         }
                     }
 
                     MecanumDrive alignDrive = new MecanumDrive(hardwareMap, new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())));
                     TrajectoryActionBuilder align = alignDrive.actionBuilder(new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())))
-                            .turn(Math.toRadians(tagLocalizer.getTagBearing() + offset));
+                            .turn(Math.toRadians(tagLocalizer.getTagBearing() + offset), new TurnConstraints(Math.toRadians(20),-Math.toRadians(7),Math.toRadians(7)));
 
                     Action action = align.build();
                     runBlocking2(action, gamepad1);
@@ -222,19 +223,18 @@ public class Version_1_fieldcentric extends LinearOpMode
 //            {
 //                target_angle += 1;
 //            }
-            
+
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+            target_velocity = shooterParameters[1];
+            target_angle = shooterParameters[0];
+
+            if (tagLocalizer.getDetectionID() != -1)
+            {
+                hood.driveToAngleTarget(target_angle);
+            }
 
             if (gamepad2.x)
             {
-                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                target_velocity = shooterParameters[1];
-                target_angle = shooterParameters[0];
-
-                if (tagLocalizer.getDetectionID() != -1)
-                {
-                    hood.driveToAngleTarget(target_angle);
-                }
-
                 shooter.driveToVelocity(target_velocity);
             }
             else if (gamepad2.a)
@@ -246,6 +246,7 @@ public class Version_1_fieldcentric extends LinearOpMode
                 hood.driveToAngleTarget(5);
                 shooter.driveToVelocity(700);
             }
+
 
             telemetry.addData("Motor Velocity: ", shooter.getVelocity());
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
