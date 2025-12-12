@@ -158,7 +158,7 @@ public class Version_1_fieldcentric extends LinearOpMode
             }
 
 
-            if (gamepad1.left_trigger > 0.25 && tagLocalizer.getDetectionID() != -1)
+            if (gamepad1.right_trigger > 0.25 && (tagLocalizer.getDetectionID() == 20 || tagLocalizer.getDetectionID() == 24))
             {
                 try
                 {
@@ -178,7 +178,7 @@ public class Version_1_fieldcentric extends LinearOpMode
 
                     MecanumDrive alignDrive = new MecanumDrive(hardwareMap, new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())));
                     TrajectoryActionBuilder align = alignDrive.actionBuilder(new Pose2d(0,0, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())))
-                            .turn(Math.toRadians(tagLocalizer.getTagBearing() + offset), new TurnConstraints(Math.toRadians(20),-Math.toRadians(7),Math.toRadians(7)));
+                            .turn(Math.toRadians(tagLocalizer.getTagBearing() + offset), new TurnConstraints(Math.toRadians(25),-Math.toRadians(10),Math.toRadians(7)));
 
                     Action action = align.build();
                     runBlocking2(action, gamepad1);
