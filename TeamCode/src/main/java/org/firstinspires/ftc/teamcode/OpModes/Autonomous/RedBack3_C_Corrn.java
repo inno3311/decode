@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@Autonomous(name="BlueBack3_C", group="Linear OpMode")
-public class BlueBack3_C extends LinearOpMode
+@Autonomous(name="RedBack3_C_Corn", group="Linear OpMode")
+public class RedBack3_C_Corrn extends LinearOpMode
 {
     ActionsBackpack actionsBackpack;
 
@@ -33,7 +33,7 @@ public class BlueBack3_C extends LinearOpMode
             new Hood(this), new Transfer(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime());
 
         // ZOE update with starting location
-        Pose2d beginPose = new Pose2d(60, -15, Math.toRadians(180));
+        Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
@@ -45,20 +45,24 @@ public class BlueBack3_C extends LinearOpMode
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0,actionsBackpack.mezRampUp(1))
                 .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45)) //shooting 1st time
-                .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205)) //shooting 1st time from back triangle
+                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155)) //shooting 1st time from back triangle
                 .waitSeconds(7)
                 .afterTime(0,actionsBackpack.intakeBall(1))
                 .afterTime(1,actionsBackpack.intakeBall(1))
                 .afterTime(2,actionsBackpack.intakeBall(1))
-                .splineTo(new Vector2d(36,-60),Math.toRadians(90+180),new TranslationalVelConstraint(20)) //1st set pickup
+                .splineTo(new Vector2d(36,-60),Math.toRadians(90),new TranslationalVelConstraint(20)) //1st set pickup
                 .afterTime(.5, actionsBackpack.mezAction(12, 3, 950, 45)) //shooting 2nd time
-                .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(205), new TranslationalVelConstraint(40))
+                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155), new TranslationalVelConstraint(40))
                 .waitSeconds(7)
-                .afterTime(0,actionsBackpack.intakeBall(1))
-                .afterTime(1,actionsBackpack.intakeBall(1))
-                .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(275))
-                .afterTime(0,actionsBackpack.intakeBall(1))
-                .strafeTo(new Vector2d(12, -60), new TranslationalVelConstraint(20))
+
+                .strafeTo(new Vector2d(55, 70)) //hit corner balls.
+                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .strafeTo(new Vector2d(55, 50)) //back up
+                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .strafeTo(new Vector2d(60, 70)) //hit again
+                  .strafeTo(new Vector2d(55, 50)) //back up
+                  .afterTime(0.1,actionsBackpack.intakeBall(1))
+                  .strafeTo(new Vector2d(70, 70)) //hit again
                 .waitSeconds(2)
                 ; //do not remove ;
 
