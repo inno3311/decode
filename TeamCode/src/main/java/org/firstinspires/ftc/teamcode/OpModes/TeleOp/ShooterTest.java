@@ -1,75 +1,76 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 
 @TeleOp(name = "Shooter")
-@Disabled
-public class ShooterTest extends LinearOpMode
+public class ShooterTest extends OpMode
 {
-
     Shooter shooter;
+    Turret turret;
     FireControl fireControl;
+    DriveController driveController;
+    double tagetVelocity = 10;
 
-    ElapsedTime time;
-    double flag1 = 0;
-    double flag2 = 0;
-    double shooterVelocity = 13;
-
-    //10 to 14
+    FtcDashboard dashboard;
+    TelemetryPacket packet;
 
 
     @Override
-    public void runOpMode() throws InterruptedException
+    public void init()
     {
-        shooter = new Shooter(this);
-        fireControl = new FireControl(null, telemetry);
-        time = new ElapsedTime();
+        shooter = new Shooter(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap,telemetry);
+        fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
+        driveController = new DriveController(hardwareMap);
 
-        time.startTime();
-        waitForStart();
-
-        while (opModeIsActive())
-        {
-            if (gamepad1.dpad_up && flag2 < time.seconds())
-            {
-                shooterVelocity += 1;
-                flag2 = time.seconds() + 0.25;
-            }
-            else if (gamepad1.dpad_down && flag2 < time.seconds())
-            {
-                shooterVelocity -= 1;
-                flag2 = time.seconds() + 0.25;
-            }
-
-            if (gamepad1.b)
-            {
-//                shooter.driveToVelocity(fireControl.targetMotorVelocity(shooterVelocity));
-            }
-
-
-            if (gamepad1.y)
-            {
-                shooter.driveToVelocity(0);
-            }
-
-
-
-            telemetry.addData("ShooterVelocity", shooterVelocity);
-//            fireControl.actualVelocity(shooter.getVelocity());
-//            fireControl.targetMotorVelocity(shooterVelocity);
-            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
-//            telemetry.addData("Hood Projected Angle", 65 - fireControl.calculateSteeperAngle(shooterVelocity));
-//            telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (-shooter.getVelocity()/28)*60);
-            shooter.currentDraw();
-            shooter.telemetry();
-            telemetry.update();
-        }
+        dashboard = FtcDashboard.getInstance();
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.addLine("Starting testing");
+        dashboard.sendTelemetryPacket(packet);
     }
+
+    @Override
+    public void loop()
+    {
+        driveController.gamepadController(gamepad1);
+
+//        shooter.tuning(fireControl.targetMotorVelocity(tagetVelocity), gamepad1);
+        turret.trackGoal(0, gamepad1);
+
+        if (gamepad1.left_bumper)
+        {
+            tagetVelocity = 10;
+        }
+        else if (gamepad1.right_bumper)
+        {
+            tagetVelocity = 8;
+        }
+        else if (gamepad1.a)
+        {
+            tagetVelocity = 0;
+        }
+
+        //packet.put("targetVel", tagetVelocity);
+        //dashboard.sendTelemetryPacket(packet);
+        
+    }
+
+
+
+
+
+
 }
