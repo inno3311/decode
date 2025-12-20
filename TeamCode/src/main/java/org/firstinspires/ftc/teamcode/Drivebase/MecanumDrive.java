@@ -67,6 +67,8 @@ public final class MecanumDrive
     private int strafeDir = 1;
     private int turnDir = 1;
 
+    private Pose2d poseEstimate = new Pose2d(0, 0, 0);
+
     public static class Params
     {
         // IMU orientation
@@ -233,6 +235,9 @@ public final class MecanumDrive
                     twist.line.value(),
                     headingDelta
             ));
+
+//            localizer.update();
+//            poseEstimate = localizer.getPoseEstimate();
 
             return twist.velocity().value();
         }
@@ -657,5 +662,13 @@ public final class MecanumDrive
         telemetry.addData("Motors", "leftFront: %.2f leftBack: %.2f rightFront: %.2f rightBack: %.2f", leftPowerFront, leftPowerBack, rightPowerFront, rightPowerBack);
         telemetry.addData("Speed control", speed);
     }
+
+//    public void updatePoseEstimate() {
+//        update();
+//    }
+//
+//    public Pose2d getPoseEstimate() {
+//        return poseEstimate;
+//    }
 
 }
