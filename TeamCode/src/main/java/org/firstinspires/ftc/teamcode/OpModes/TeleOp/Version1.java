@@ -1,5 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -70,7 +78,10 @@ public class Version1 extends LinearOpMode
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
 
-
+//        telemetry = new MultipleTelemetry(
+//            telemetry,
+//            FtcDashboard.getInstance().getTelemetry()
+//        );
 
 
         waitForStart();
@@ -198,7 +209,10 @@ public class Version1 extends LinearOpMode
             }
 
 
-
+            telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry()
+            );
 
 //            if (gamepad1.x)
 //            {
@@ -215,6 +229,43 @@ public class Version1 extends LinearOpMode
 //            telemetry.addData("Trigger pos", trigger.getPosition());
             shooter.currentDraw();
             telemetry.update();
+
+            drive.updatePoseEstimate();
+
+//            drive.localizer.update();
+//
+            Pose2d pose = drive.localizer.getPose();
+//
+//            telemetry.addData("x (in)", pose.position.x);
+//            telemetry.addData("y (in)", pose.position.y);
+//            telemetry.addData("heading (deg)",
+//                Math.toDegrees(pose.heading.toDouble()));
+//            telemetry.update();
+
+            //Pose2d pose = drive.getPoseEstimate(); // Assuming Road Runner
+
+// Add data to the packet for text telemetry
+            TelemetryPacket packet = new TelemetryPacket();
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+            Canvas fieldOverlay = packet.fieldOverlay();
+            //dashboard.sendTelemetryPacket(packet);
+            packet.put("x", pose.position.x);
+            packet.put("y", pose.position.y);
+            //packet.put("heading", pose.position.());
+
+// Draw on the field overlay
+// Example: Draw a blue circle for the robot's current position
+            fieldOverlay.setStroke("#3F51B5"); // Blue
+            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
+
+// Send the whole packet
+            dashboard.sendTelemetryPacket(packet);
+
+// Clear the overlay for the next frame (important!)
+            fieldOverlay.clear(); // Or clear specific drawings if needed
+
+            telemetry.update(); // Also update regular telemetry if needed
+
         }
     }
 }

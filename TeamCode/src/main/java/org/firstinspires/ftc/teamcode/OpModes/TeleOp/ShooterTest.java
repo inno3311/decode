@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 
 @TeleOp(name = "Shooter")
-@Disabled
+//@Disabled
 public class ShooterTest extends LinearOpMode
 {
 
