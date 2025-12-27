@@ -13,6 +13,7 @@ public class FireControl
     private final double shooterWheelRadius = 0.0508;//meter
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
     private final double maxLaunchAngle = 90;
+    private final double minimumAngle = 65;
 
 
 
@@ -156,7 +157,7 @@ public class FireControl
      * @return the motor RPM at which to fire the ball
      * I have no idea how this math is right but I have no care in the world. It does
      */
-    private double targetMotorVelocity(double velocity)
+    public double targetMotorVelocity(double velocity)
     {
 
         double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 0.625;
@@ -188,8 +189,8 @@ public class FireControl
         }
         else
         {
-            targetAngle = 65;
-            velocity = calculateVelocity(65);
+            targetAngle = maxLaunchAngle;
+            velocity = calculateVelocity(maxLaunchAngle);
             telemetry.addData("other angle", targetAngle);
             telemetry.addData("steep angle", calculateSteeperAngle(velocity));
         }

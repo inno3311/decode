@@ -1,176 +1,53 @@
 package org.firstinspires.ftc.teamcode.Robot.v3;
 
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.Parents.CRServoParent;
 
-public class Turret extends CRServoParent
+public class Turret
 {
-    Encoder encoder;
-    AprilTagLocalizer aprilTagLocalizer;
-    final double ticksPerDegree = 8192 / ((12.55/0.925) * 360); // 1.677
-    final double rightBoundInTicks = ticksPerDegree * 90;
-    final double leftBoundInTicks = ticksPerDegree * -90;
-    double target = 0;
-    public Turret(AprilTagLocalizer aprilTagLocalizer, LinearOpMode opMode)
-    {
-        super("turret", opMode);
-        encoder = new OverflowEncoder(new RawEncoder(opMode.hardwareMap.get(DcMotorEx.class, "intake")));
-        this.aprilTagLocalizer = aprilTagLocalizer;
-    }
+    DcMotorEx turret;
+    final double TICK_PER_DEGREE  = 5.3778; // (Small gear 55 teeth, Big dear 316: 0.1741) (Ticks per rotation 384.5) (360/(0.1741 * 384.5))
+    double P = 0;
+    double F = 0;
+    double[] stepSizes = {10.0, 1.1, 0.1, 0.001, 0.0001};
+    int stepIndex = 0;
 
-//    public void trackTarget(double target, double robotHeading)
-//    {
-//        double error = 0;
-//        double turretHeading = robotHeading + turretHeading();
+    Telemetry telemetry;
+
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry)
+    {
+        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turret.setDirection(DcMotorSimple.Direction.REVERSE);
 //
-//        if (turretHeading > 360)
-//        {
-//            turretHeading -= 360;
-//        }
-//
-//        if (target == 20)
-//        {
-//            if (turretHeading > 315)
-//            {
-//                turretHeading -= 360;
-//            }
-//            error = 135 - turretHeading;
-//        }
-//        else if (target == 24)
-//        {
-//            if (turretHeading < 45)
-//            {
-//                turretHeading += 360;
-//            }
-//            error = 225 - turretHeading;
-//        }
-//
-//        if (error < 0)
-//        {
-//            if ((encoder.getPositionAndVelocity().position * ticksPerDegree) > leftBoundInTicks)
-//            {
-//                driveServo(-(Math.pow(1.1, Math.abs(error)) - 1));
-//            }
-//            else
-//            {
-//                driveServo(0);
-//            }
-//        }
-//        else if (error > 0)
-//        {
-//            if ((encoder.getPositionAndVelocity().position * ticksPerDegree) < rightBoundInTicks)
-//            {
-//                driveServo(Math.pow(1.1,error)-1);
-//            }
-//            else
-//            {
-//                driveServo(0);
-//            }
-//        }
-//        else
-//        {
-//            driveServo(0);
-//        }
-//    }
+//        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+//        turret.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
-    public void trackTarget(Gamepad gamepad)
-    {
-        if (gamepad.dpad_up)
-        {
-            target = 24;
-        }
-        else if (gamepad.dpad_down)
-        {
-            target = 20;
-        }
-
-        if (!(aprilTagLocalizer.getDetectionID() == 20 || aprilTagLocalizer.getDetectionID() == 24))
-        {
-            if (gamepad.left_stick_x < 0 && (encoder.getPositionAndVelocity().position * ticksPerDegree) < leftBoundInTicks)
-            {
-                driveServo(0);
-            }
-            else if (gamepad.left_stick_x > 0 && (encoder.getPositionAndVelocity().position * ticksPerDegree) > rightBoundInTicks)
-            {
-                driveServo(0);
-            }
-            else
-            {
-                driveServo(gamepad.left_stick_x);
-            }
-        }
-        else
-        {
-            double error = 0;
-            double turretHeading = turretHeading();
-
-            if (turretHeading > 360)
-            {
-                turretHeading -= 360;
-            }
-
-            if (target == 20)
-            {
-                if (turretHeading > 315)
-                {
-                    turretHeading -= 360;
-                }
-                error = aprilTagLocalizer.getTagYaw() - turretHeading;
-            }
-            else if (target == 24)
-            {
-                if (turretHeading < 45)
-                {
-                    turretHeading += 360;
-                }
-                error = aprilTagLocalizer.getTagYaw() - turretHeading;
-            }
-
-            if (error < 0)
-            {
-                if ((encoder.getPositionAndVelocity().position * ticksPerDegree) > leftBoundInTicks)
-                {
-//                    driveServo(-(Math.pow(1.1, Math.abs(error)) - 1));
-                }
-                else
-                {
-//                    driveServo(0);
-                }
-            }
-            else if (error > 0)
-            {
-                if ((encoder.getPositionAndVelocity().position * ticksPerDegree) < rightBoundInTicks)
-                {
-//                    driveServo(Math.pow(1.1, error) - 1);
-                }
-                else
-                {
-//                    driveServo(0);
-                }
-            }
-            else
-            {
-//                driveServo(0);
-            }
-        }
+        this.telemetry = telemetry;
     }
 
-    private double turretHeading()
+    public void trackGoal(double goalAngle, Gamepad gamepad)
     {
-        return encoder.getPositionAndVelocity().position * ticksPerDegree;
-    }
+        if (gamepad.y)
+        {
+            turret.setTargetPosition(500);
+            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turret.setPower(0.5);
+        }
+        else if (gamepad.x)
+        {
+            turret.setTargetPosition(0);
+            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turret.setPower(0.5);
+        }
 
-    public void telemetry(Telemetry telemetry)
-    {
-        telemetry.addData("Turret", "Position: " + turretHeading());
+        telemetry.addData("Turret Current Position", turret.getCurrentPosition());
     }
-
 }
