@@ -65,7 +65,7 @@ public final class MecanumDrive
     private double leftPowerBack = 0;
     private double speed = 0;
 
-    private int driveDir = -1;
+    private int driveDir = 1;
     private int strafeDir = 1;
     private int turnDir = 1;
 
@@ -77,15 +77,15 @@ public final class MecanumDrive
         // IMU orientation
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
-//        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-//                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
-//        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-//                RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-            RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
+//        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
+//            RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
+//        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
+//            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
 

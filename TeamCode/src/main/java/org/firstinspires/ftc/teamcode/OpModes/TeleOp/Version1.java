@@ -65,7 +65,7 @@ public class Version1 extends LinearOpMode
         transfer = new Transfer(this);
 
         time = new ElapsedTime();
-        driveController = new DriveController(hardwareMap,-1,1,1);
+        driveController = new DriveController(hardwareMap,1,-1,-1);
         fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
         drive = new MecanumDrive(hardwareMap, null);
         imu = hardwareMap.get(IMU.class, "imu");
