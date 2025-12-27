@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags;
 
 import android.annotation.SuppressLint;
+
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -116,6 +118,17 @@ public class AprilTagLocalizer
         return 0;
     }
 
+    public Pose2d getFieldPose()
+    {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        if (!currentDetections.isEmpty())
+        {
+            AprilTagDetection detection = currentDetections.get(0);
+            return new Pose2d(detection.robotPose.getPosition().x, detection.robotPose.getPosition().y, detection.robotPose.getOrientation().getYaw(AngleUnit.RADIANS));
+        }
+        return new Pose2d(0,0,0);
+    }
+
     public double getTagX()
     {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -208,9 +221,7 @@ public class AprilTagLocalizer
                   )
                 .build();
 
-
-        // Create the vision portal the easy way.
-        //jrm  VisionPortal visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        VisionPortal visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "goal"), aprilTag);
 
     }
 

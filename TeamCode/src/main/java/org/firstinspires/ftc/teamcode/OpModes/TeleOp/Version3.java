@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,6 +43,7 @@ public class Version3 extends LinearOpMode
     TurnToHeading turnToHeading;
     CentricDrive centricDrive;
     IMU imu;
+    IMU turretFacing;
     AprilTagLocalizer aprilTagLocalizer;
     FireControl fireControl;
     ElapsedTime time;
@@ -50,7 +56,7 @@ public class Version3 extends LinearOpMode
     double target_velocity = 0;
     double target_angle = 0;
     double flag2 = 0;
-
+    boolean team = false; //false = red, true = blue
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -67,9 +73,11 @@ public class Version3 extends LinearOpMode
         turret = new Turret(hardwareMap, telemetry);
 
         time = new ElapsedTime();
-        driveController = new DriveController(hardwareMap);
+        //driveController = new DriveController(hardwareMap);
+        driveController = new DriveController(hardwareMap,-1,1,1);
         fireControl = new FireControl(aprilTagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
+
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
@@ -77,14 +85,35 @@ public class Version3 extends LinearOpMode
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
+
+        turretFacing = hardwareMap.get(IMU.class, "imu");
+        turretFacing.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
+
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
+        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(180)); // inches, radians
+        drive.localizer.setPose(startPose);
+        //drive.localizer.setPose(new Pose2d(0,0,0));
 
         waitForStart();
         time.startTime();
 
         while (opModeIsActive())
         {
+            if (gamepad2.left_stick_button)
+            {
+                team = false;
+            }
+            else if (gamepad2.right_stick_button)
+            {
+                team = true;
+            }
+
             if (drive_mode % 2 == 1)
             {
                 driveController.gamepadController(gamepad1);
@@ -149,7 +178,7 @@ public class Version3 extends LinearOpMode
 
             if (gamepad1.right_bumper && !gamepad1.a)
             {
-                sorterRight.driveServo(-1);
+                sorterRight.driveServo(1);
             }
             else
             {
@@ -188,7 +217,17 @@ public class Version3 extends LinearOpMode
                 flag2 = time.seconds() + 0.25;
             }
 
-            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+            // Roadrunner positioning update
+            if (aprilTagLocalizer.getDetectionID() != -1)
+            {
+//                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
+            }
+
+            drive.localizer.update();
+            Pose2d pose2d = drive.localizer.getPose();
+
+
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose2d, team);
             target_velocity = shooterParameters[1];
             target_angle = shooterParameters[0];
 
@@ -203,13 +242,39 @@ public class Version3 extends LinearOpMode
                 shooter.driveToVelocity(0);
             }
 
-            turret.trackGoal(0, gamepad2);
 
-            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
-            telemetry.addData("Hood angle", hood.getAngle());
-            telemetry.addData("Hood Position", hood.getPosition());
-            telemetry.addLine("-----------------------------------------------------");
+            turret.trackGoal(turretFacing.getRobotYawPitchRollAngles().getYaw(), pose2d, team, gamepad2);
+            telemetry.addData("Turret Facing", turretFacing.getRobotYawPitchRollAngles().getYaw());
+
+
+            Pose2d pose = drive.localizer.getPose();
+
+
+            TelemetryPacket packet = new TelemetryPacket();
+            Canvas fieldOverlay = packet.fieldOverlay();
+
+//            telemetry.addData("x (in)", pose.position.x);
+//            telemetry.addData("y (in)", pose.position.y);
+//            telemetry.addData("heading (deg)",
+//                    Math.toDegrees(pose.heading.toDouble()));
+//
+//            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
+//            telemetry.addData("Hood angle", hood.getAngle());
+//            telemetry.addData("Hood Position", hood.getPosition());
+//            telemetry.addLine("-----------------------------------------------------");
+
+
+
+            fieldOverlay.setStroke("#3F51B5"); // Blue
+            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
+            fieldOverlay.strokeLine(
+                    pose.position.x,
+                    pose.position.y, pose.position.x + 9 * Math.cos(pose.heading.toDouble()),
+                    pose.position.y + 9 * Math.sin(pose.heading.toDouble()));
+
+            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
+
         }
 
     }

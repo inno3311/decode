@@ -65,7 +65,7 @@ public final class MecanumDrive
     private double leftPowerBack = 0;
     private double speed = 0;
 
-    private int driveDir = -1;
+    private int driveDir = 1;
     private int strafeDir = 1;
     private int turnDir = 1;
 
@@ -582,7 +582,7 @@ public final class MecanumDrive
      */
     public void gamepadController(Gamepad gamepad)
     {
-        double drive = driveDir * -gamepad.left_stick_y;
+        double drive = driveDir * gamepad.left_stick_y;
         double turn = turnDir * gamepad.right_stick_x;
         double strafe = strafeDir * gamepad.left_stick_x;
         speed = 1 - (1.5 * gamepad.right_trigger);

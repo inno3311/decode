@@ -21,7 +21,7 @@ public class DriveController
     public double leftPowerBack   = 0;
     public double speed = 0;
 
-    int driveDir = -1;
+    int driveDir = 1;
     int strafeDir = 1;
     int turnDir = 1;
 
