@@ -137,7 +137,7 @@ public class Version3 extends LinearOpMode
                 intakeSort.setPower(0);
             }
 
-            if (gamepad1.left_bumper && !gamepad1.a)
+            if (gamepad1.left_bumper && !gamepad1.y)
             {
                 sorterLeft.driveServo(-1);
             }
@@ -147,9 +147,9 @@ public class Version3 extends LinearOpMode
 
             }
 
-            if (gamepad1.right_bumper && !gamepad1.a)
+            if (gamepad1.right_bumper && !gamepad1.y)
             {
-                sorterRight.driveServo(-1);
+                sorterRight.driveServo(1);
             }
             else
             {
@@ -179,18 +179,35 @@ public class Version3 extends LinearOpMode
 
             if (gamepad2.dpad_up && flag2 < time.seconds())
             {
-                initialTargetVelocity += 0.5;
+                target_velocity += 100;
+//                initialTargetVelocity += 0.5;
                 flag2 = time.seconds() + 0.25;
             }
             else if (gamepad2.dpad_down  && flag2 < time.seconds())
             {
-                initialTargetVelocity -= 0.5;
+                target_velocity -= 100;
+//                initialTargetVelocity -= 0.5;
+                flag2 = time.seconds() + 0.25;
+            }
+            if (gamepad2.dpad_right && flag2 < time.seconds())
+            {
+                target_angle += 1;
+//                initialTargetVelocity += 0.5;
+                flag2 = time.seconds() + 0.25;
+            }
+            else if (gamepad2.dpad_left  && flag2 < time.seconds())
+            {
+                target_angle -= 1;
+//                initialTargetVelocity -= 0.5;
                 flag2 = time.seconds() + 0.25;
             }
 
-            shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-            target_velocity = shooterParameters[1];
-            target_angle = shooterParameters[0];
+            if (gamepad1.dpad_left)
+            {
+                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+                target_velocity = shooterParameters[1];
+                target_angle = shooterParameters[0];
+            }
 
             hood.driveToAngleTarget(target_angle);
 
@@ -206,6 +223,8 @@ public class Version3 extends LinearOpMode
             turret.trackGoal(0, gamepad2);
 
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
+            telemetry.addData("Target Hood angle", target_angle);
+            telemetry.addData("Target velocity", target_velocity);
             telemetry.addData("Hood angle", hood.getAngle());
             telemetry.addData("Hood Position", hood.getPosition());
             telemetry.addLine("-----------------------------------------------------");
