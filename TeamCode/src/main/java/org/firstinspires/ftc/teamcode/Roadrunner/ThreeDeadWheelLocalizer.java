@@ -22,9 +22,14 @@ import org.firstinspires.ftc.teamcode.Roadrunner.messages.ThreeDeadWheelInputsMe
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double par0YTicks = -2166.3768424201367; // y position of the first parallel encoder (in tick units)
-        public double par1YTicks = 2074.9062525802888; // y position of the second parallel encoder (in tick units)
-        public double perpXTicks = -2450.189031035289; // x position of the perpendicular encoder (in tick units)
+        //vesion1
+        //public double par0YTicks = -2166.3768424201367; // y position of the first parallel encoder (in tick units)
+        //public double par1YTicks = 2074.9062525802888; // y position of the second parallel encoder (in tick units)
+        //public double perpXTicks = -2450.189031035289; // x position of the perpendicular encoder (in tick units)
+
+        public double par0YTicks = -2862.0794086194437; // y position of the first parallel encoder (in tick units)
+        public double par1YTicks = 2847.5396621570444; // y position of the second parallel encoder (in tick units)
+        public double perpXTicks = -3692.040308215347; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -46,8 +51,13 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftBack")));
 
         // TODO: reverse encoder directions if needed
+
+        //version 1
+        //par1.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //version 3
         //perp.setDirection(DcMotorSimple.Direction.REVERSE);
-        par1.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         this.inPerTick = inPerTick;
 
