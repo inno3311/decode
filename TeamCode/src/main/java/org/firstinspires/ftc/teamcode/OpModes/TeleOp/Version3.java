@@ -9,6 +9,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 
 @TeleOp(name = "Version3")
 public class Version3 extends LinearOpMode
@@ -47,6 +49,7 @@ public class Version3 extends LinearOpMode
     AprilTagLocalizer aprilTagLocalizer;
     FireControl fireControl;
     ElapsedTime time;
+    ColorSensor colorSensor;
     double initialTargetVelocity = 10;
     double[] shooterParameters;
     double obeliskTag = 22;
@@ -100,11 +103,14 @@ public class Version3 extends LinearOpMode
         drive.localizer.setPose(startPose);
         //drive.localizer.setPose(new Pose2d(0,0,0));
 
+        colorSensor = new ColorSensor(hardwareMap);
+
         waitForStart();
         time.startTime();
 
         while (opModeIsActive())
         {
+            colorSensor.getDetectedColor(telemetry);
             if (gamepad2.left_stick_button)
             {
                 team = false;
