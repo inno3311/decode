@@ -11,7 +11,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
@@ -104,13 +107,29 @@ public class Version3 extends LinearOpMode
         //drive.localizer.setPose(new Pose2d(0,0,0));
 
         colorSensor = new ColorSensor(hardwareMap);
+        NormalizedRGBA colors;
+        double hue = 0;
+
 
         waitForStart();
         time.startTime();
 
         while (opModeIsActive())
         {
-            colorSensor.getDetectedColor(telemetry);
+            colors = colorSensor.getDetectedColor(telemetry);
+            float normalizedRed, normalizedGreen, normalizedBlue;
+            normalizedRed = colors.red / colors.alpha;
+            normalizedGreen = colors.green / colors.alpha;
+            normalizedBlue = colors.blue / colors.alpha;
+            if (JavaUtil.colorToHue(colors.toColor()) != 0)
+            {
+                hue = JavaUtil.colorToHue(colors.toColor());
+            }
+
+            telemetry.addData("red", normalizedRed);
+            telemetry.addData("green", normalizedGreen);
+            telemetry.addData("blue", normalizedBlue);
+            telemetry.addData("hue", hue);
             if (gamepad2.left_stick_button)
             {
                 team = false;
@@ -149,13 +168,18 @@ public class Version3 extends LinearOpMode
 
             if (gamepad1.right_trigger > 0.1)
             {
-                intake.setPower(-.8);
-                intakeSort.setPower(1);
-            }
-            else if (gamepad1.left_trigger > 0.1)
-            {
-                intake.setPower(-.8);
-                intakeSort.setPower(-1);
+                // If green (<200), go right
+                if (hue <= 200)
+                {
+                    intake.setPower(-.8);
+                    intakeSort.setPower(1);
+                }
+                // if purple (>200) go left
+                else
+                {
+                    intake.setPower(-.8);
+                    intakeSort.setPower(-1);
+                }
             }
             else if (gamepad1.b)
             {
@@ -251,6 +275,11 @@ public class Version3 extends LinearOpMode
 
             turret.trackGoal(-turret.currentFacing(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team, gamepad2);
             telemetry.addData("Turret Facing", turretFacing.getRobotYawPitchRollAngles().getYaw());
+
+            telemetry.addData("red", normalizedRed);
+            telemetry.addData("green", normalizedGreen);
+            telemetry.addData("blue", normalizedBlue);
+            telemetry.addData("hue", JavaUtil.colorToHue(colors.toColor()));
 
 
             Pose2d pose = drive.localizer.getPose();

@@ -20,18 +20,19 @@ public class ColorSensor
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
     }
 
-    public DetectedColor getDetectedColor(Telemetry telemetry)
+    public NormalizedRGBA getDetectedColor(Telemetry telemetry)
     {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        float normalizedRed, normalizedGreen, normalizedBlue;
-        normalizedRed = colors.red / colors.alpha;
-        normalizedGreen = colors.green / colors.alpha;
-        normalizedBlue = colors.blue / colors.alpha;
+//        float normalizedRed, normalizedGreen, normalizedBlue;
+//        normalizedRed = colors.red / colors.alpha;
+//        normalizedGreen = colors.green / colors.alpha;
+//        normalizedBlue = colors.blue / colors.alpha;
+//
+//        telemetry.addData("red", normalizedRed);
+//        telemetry.addData("green", normalizedGreen);
+//        telemetry.addData("blue", normalizedBlue);
+//        telemetry.update();
 
-        telemetry.addData("red", normalizedRed);
-        telemetry.addData("green", normalizedGreen);
-        telemetry.addData("blue", normalizedBlue);
-
-        return DetectedColor.UNKNOWN;
+        return colors;
     }
 }
