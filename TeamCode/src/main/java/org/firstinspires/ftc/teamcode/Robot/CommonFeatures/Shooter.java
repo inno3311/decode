@@ -126,4 +126,9 @@ public class Shooter
 
     }
 
+    //needed for auto stuff.
+    public DcMotorEx getShooter()
+    {
+        return shooter;
+    }
 }
