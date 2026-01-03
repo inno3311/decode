@@ -35,4 +35,20 @@ public class ColorSensor
 
         return colors;
     }
+
+    public NormalizedRGBA getDetectedColor()
+    {
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+//        float normalizedRed, normalizedGreen, normalizedBlue;
+//        normalizedRed = colors.red / colors.alpha;
+//        normalizedGreen = colors.green / colors.alpha;
+//        normalizedBlue = colors.blue / colors.alpha;
+//
+//        telemetry.addData("red", normalizedRed);
+//        telemetry.addData("green", normalizedGreen);
+//        telemetry.addData("blue", normalizedBlue);
+//        telemetry.update();
+
+        return colors;
+    }
 }

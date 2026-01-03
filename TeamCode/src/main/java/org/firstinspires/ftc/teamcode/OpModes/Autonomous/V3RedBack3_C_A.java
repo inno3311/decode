@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.V3ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
@@ -38,7 +39,7 @@ public class V3RedBack3_C_A extends LinearOpMode
     {
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
-        new Intake_sort(this));
+        new Intake_sort(this), new ColorSensor(hardwareMap));
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
@@ -52,15 +53,27 @@ public class V3RedBack3_C_A extends LinearOpMode
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0,actionsBackpack.mezRampUp(1))
 //                .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45)) //shooting 1st time
+
+                //.afterTime(0,actionsBackpack.sorterRightBall(1))
+                //.afterTime(1,actionsBackpack.sorterRightBall(0))
+//                .waitSeconds(3)
+//                .afterTime(0,actionsBackpack.intakeColor())
+//                .afterTime(0,actionsBackpack.setHood(35))
+//                .waitSeconds(6)
+
+
                 .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155)) //shooting 1st time from back triangle
                 .waitSeconds(6)
-                .afterTime(0,actionsBackpack.intakeBall(-1))
-//                .afterTime(1,actionsBackpack.intakeBall(1))
-//                .afterTime(2,actionsBackpack.intakeBall(1))
-                .splineTo(new Vector2d(36,60),Math.toRadians(90),new TranslationalVelConstraint(20)) //1st set pickup
+                //.afterTime(0,actionsBackpack.intakeBall(-1))
+                //.afterTime(0,actionsBackpack.intakeSortBall(1))
+                .afterTime(0,actionsBackpack.intakeColor(7))
+                .splineTo(new Vector2d(36,70),Math.toRadians(90),new TranslationalVelConstraint(10)) //1st set pickup
+                .waitSeconds(.5)
+                .afterTime(0,actionsBackpack.sorterRightBall(1))
+                .afterTime(.1,actionsBackpack.sorterRightBall(0))
 //                .afterTime(0, actionsBackpack.mezAction(12, 3, 860, 45)) //shooting 2nd time
-//                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
-//                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
+                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
+                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
 //                .waitSeconds(5.2)
 //                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
 //                .afterTime(0,actionsBackpack.intakeBall(1))

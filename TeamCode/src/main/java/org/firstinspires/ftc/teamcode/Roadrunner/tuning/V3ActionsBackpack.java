@@ -5,8 +5,12 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
@@ -36,6 +40,14 @@ public class V3ActionsBackpack
     SorterRight sorterRight;
     Intake_sort intakeSort;
 
+    ColorSensor colorSensor;
+
+
+    double loadTimeStart;
+    boolean loadInProgress;
+
+
+
     private enum FireState {
         INIT,
         SPINUP,
@@ -52,7 +64,7 @@ public class V3ActionsBackpack
     CsvLogger svgLogger;
 
     public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
-    SorterRight sorterRight, Intake_sort intakeSort)
+    SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -64,7 +76,11 @@ public class V3ActionsBackpack
         this.sorterLeft = sorterLeft;
         this.sorterRight = sorterRight;
         this.intakeSort = intakeSort;
+        this.colorSensor = colorSensor;
         time.startTime();
+
+        loadInProgress = false;
+
 
 //        shooter.setPID(1.0,0.1,0.1,14);
 //        PIDFCoefficients cos = shooter.getPID();
@@ -137,6 +153,9 @@ public class V3ActionsBackpack
                         {
                             state = FireState.FIRE;
                         }
+
+
+
                         //packet.put("vel",vel);
                         packet.put("STATE","SPINUP");
                         break;
@@ -194,23 +213,6 @@ public class V3ActionsBackpack
                         }
                 }
 
-                //packet.put("targetVel",m_targetVelocity);
-                //packet.put("Angle",shooterParameters[0]);
-                //packet.put("power",shooter.getPower());
-
-
-//                shooterParameters = fireControl.firingSuite(velocity);
-//                m_targetVelocity = shooterParameters[1];
-//                shooter.driveToVelocity(m_targetVelocity);
-//
-//                hood.driveToAngleTarget(shooterParameters[0]);
-//                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
-//                packet.put("1_Angle", shooterParameters[0]);
-
-//                double t = time.seconds();
-//                double power = shooter.getPower();
-//                  double vel = shooter.getVelocity();
-//                double hoodAngle = 0;
 
                 packet.put("targetVel",m_targetVelocity);
                 packet.put("power",shooter.getShooter().getPower());
@@ -221,91 +223,15 @@ public class V3ActionsBackpack
         };
     }
 
-//    public Action target(double velocity)
-//    {
-//
-//        return new Action()
-//        {
-//            private boolean initialized = false;
-//            private double[] shooterParameters;
-//
-//            @Override
-//            public boolean run(@NonNull TelemetryPacket packet)
-//            {
-//
-//                shooterParameters = fireControl.firingSuite(velocity);
-//                //shooter.driveToVelocity(shooterParameters[1]);
-//                //hood.driveToAngleTarget(shooterParameters[0]);
-//
-//
-//                double t = time.seconds();
-//                double power = shooter.getShooter().getPower();
-//                double targetVel = shooterParameters[1];
-//                double hoodAngle = shooterParameters[0];
-//
-//                //packet.put("targetVel",m_targetVelocity);
-//                packet.put("Angle",hoodAngle);
-//                packet.put("Vel",targetVel);
-//                packet.put("power",power);
-//
-//
-//                return false;
-//            }
-//        };
-//    }
-
-
-//    public Action fireball(double velocity)
-//    {
-//
-//        return new Action()
-//        {
-//            private boolean initialized = false;
-//            private double[] shooterParameters;
-//
-//            @Override
-//            public boolean run(@NonNull TelemetryPacket telemetryPacket)
-//            {
-//
-//                shooterParameters = fireControl.firingSuite(velocity);
-//                shooter.driveToVelocity(shooterParameters[1]);
-//                hood.driveToAngleTarget(shooterParameters[0]);
-//
-//
-//                double t = time.seconds();
-//                double power = shooter.getPower();
-//                double vel = shooter.getVelocity();
-//                double hoodAngle = 0;
-//                logger.log(String.format("%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
-//
-//                return !shooter.isBusy();
-//            }
-//        };
-//    }
 
     public Action mezRampUp(double power)
     {
 
         return new Action()
         {
-
             @Override
             public boolean run(@NonNull TelemetryPacket packet)
             {
-
-//                shooterParameters = fireControl.firingSuite(velocity);
-//                m_targetVelocity = shooterParameters[1];
-//                shooter.driveToVelocity(m_targetVelocity);
-//
-//                hood.driveToAngleTarget(shooterParameters[0]);
-//                packet.put("1_ramp_targetVelocity", shooterParameters[1]);
-//                packet.put("1_Angle", shooterParameters[0]);
-
-//                double t = time.seconds();
-//                double power = shooter.getPower();
-//                double vel = shooter.getVelocity();
-//                double hoodAngle = 0;
-
                 shooter.getShooter().setPower(power);
 
                 return false;
@@ -315,32 +241,7 @@ public class V3ActionsBackpack
 
 
 
-//public Action fireball(double velocity)
-//{
-//
-//    return new Action()
-//    {
-//        private boolean initialized = false;
-//        private double[] shooterParameters;
-//
-//        @Override
-//        public boolean run(@NonNull TelemetryPacket telemetryPacket)
-//        {
-//            shooterParameters = fireControl.firingSuite(velocity);
-//            shooter.driveToVelocity(shooterParameters[1]);
-//            hood.driveToAngleTarget(shooterParameters[0]);
-//
-//
-//            double t = time.seconds();
-//            double power = shooter.getShooter().getPower();
-//            double vel = shooter.getShooter().getVelocity();
-//            double hoodAngle = 0;
-//            svgLogger.log(String.format(Locale.US,"%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
-//
-//            return !shooter.getShooter().isBusy();
-//        }
-//    };
-//}
+
 
     public Action trigger(double position)
     {
@@ -375,6 +276,39 @@ public class V3ActionsBackpack
                 hood.driveToAngleTarget(position);
 
 
+
+                return false;
+            }
+        };
+    }
+
+    public Action loadBall(double speed)
+    {
+        return new Action()
+        {
+            //private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+
+
+                if (!loadInProgress)
+                {
+                    loadInProgress = true;
+                    loadTimeStart = time.seconds();
+                    sorterRight.driveServo(1);
+
+                    return false;
+                }
+
+                if (loadTimeStart - time.seconds() > 1.0)
+                {
+                    sorterRight.driveServo(0);
+                    loadInProgress = false;
+                    return true;
+                }
+
                 return false;
             }
         };
@@ -400,11 +334,56 @@ public class V3ActionsBackpack
         };
     }
 
-
-    public Action transferBall(double speed)
+    public Action intakeSortBall(double speed)
     {
         return new Action()
         {
+            //private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                //if (!initialized)
+                //{
+                intakeSort.setPower(speed);
+                //initialized = true;
+                //}
+
+                return false;
+            }
+        };
+    }
+
+    public Action sorterRightBall(double speed)
+    {
+        return new Action()
+        {
+            //private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                //if (!initialized)
+                //{
+                sorterRight.driveServo(speed);
+                //initialized = true;
+                //}
+
+                return false;
+            }
+        };
+    }
+
+
+    public Action intakeColor(double seconds)
+    {
+        return new Action()
+        {
+            NormalizedRGBA colors;
+            double hue = 0;
+
+            double startTime = 0;
+
             private boolean initialized = false;
 
             @Override
@@ -412,12 +391,42 @@ public class V3ActionsBackpack
             {
                 if (!initialized)
                 {
-                    intake.setPower(speed);
-                    //transfer.driveServo(speed);
+                    startTime = time.seconds();
                     initialized = true;
                 }
 
-                return false;
+
+                colors = colorSensor.getDetectedColor();
+                float normalizedRed, normalizedGreen, normalizedBlue;
+                normalizedRed = colors.red / colors.alpha;
+                normalizedGreen = colors.green / colors.alpha;
+                normalizedBlue = colors.blue / colors.alpha;
+                if (JavaUtil.colorToHue(colors.toColor()) != 0)
+                {
+                    hue = JavaUtil.colorToHue(colors.toColor());
+                }
+                intake.setPower(1);
+
+                if (hue <= 200)
+                {
+                    intake.setPower(-1);
+                    intakeSort.setPower(1);
+                }
+                // if purple (>200) go left
+                else
+                {
+                    intake.setPower(-1);
+                    intakeSort.setPower(-1);
+                }
+
+                if (time.seconds() > startTime + seconds)
+                {
+                    intake.setPower(0);
+                    intakeSort.setPower(0);
+                    return false;
+                }
+
+                return true;
             }
         };
     }
