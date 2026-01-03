@@ -249,7 +249,7 @@ public class Version3 extends LinearOpMode
             }
 
 
-            turret.trackGoal(turretFacing.getRobotYawPitchRollAngles().getYaw(), pose2d, team, gamepad2);
+            turret.trackGoal(-turret.currentFacing(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team, gamepad2);
             telemetry.addData("Turret Facing", turretFacing.getRobotYawPitchRollAngles().getYaw());
 
 

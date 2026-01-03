@@ -1,36 +1,40 @@
-package org.firstinspires.ftc.teamcode.Roadrunner;
+package org.firstinspires.ftc.teamcode.Roadrunner.tuning;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
+import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
-
-public class ActionsBackpack
+public class V3ActionsBackpack
 {
-    private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
+    private static final Logger log = LoggerFactory.getLogger(V3ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
     Trigger lift;
     Hood hood;
-    Transfer transfer;
+
+    //Transfer transfer;
     FireControl fireControl;
     ElapsedTime time;
+
+    SorterLeft sorterLeft;
+    SorterRight sorterRight;
+    Intake_sort intakeSort;
 
     private enum FireState {
         INIT,
@@ -47,15 +51,19 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
+    public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
+    SorterRight sorterRight, Intake_sort intakeSort)
     {
         this.shooter = shooter;
         this.intake = intake;
         this.lift = lift;
         this.hood = hood;
-        this.transfer = transfer;
+        //this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
+        this.sorterLeft = sorterLeft;
+        this.sorterRight = sorterRight;
+        this.intakeSort = intakeSort;
         time.startTime();
 
 //        shooter.setPID(1.0,0.1,0.1,14);
@@ -142,8 +150,8 @@ public class ActionsBackpack
                         currentTime = time.seconds();
                         if (currentTime - fireTime > .4)
                         {
-                            transfer.driveServo(-1);
-                            transfer.driveServo(0);
+                            //transfer.driveServo(-1);
+                            //transfer.driveServo(0);
                             lift.driveServo(1);
                             state = FireState.TRANSFER_START;
                             timesFired++;
@@ -153,7 +161,7 @@ public class ActionsBackpack
                         break;
                     case TRANSFER_START:
                         intake.setPower(1);
-                        transfer.driveServo(1);
+                        //transfer.driveServo(1);
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
                         packet.put("STATE","TRANSFER");
@@ -162,7 +170,7 @@ public class ActionsBackpack
                         if (time.seconds() - transTime > 1.5)
                         {
                             intake.setPower(0);
-                            transfer.driveServo(-1);
+                            //transfer.driveServo(-1);
 
                             if (timesFired == numRounds)
                             {
@@ -179,7 +187,7 @@ public class ActionsBackpack
                         {
                             shooter.driveToVelocity(0);
                             shooter.getShooter().setPower(0);
-                            transfer.driveServo(0);
+                            //transfer.driveServo(0);
                             //intake.setPower(0);
                             packet.put("STATE","DONE");
                             return false;
@@ -405,7 +413,7 @@ public class ActionsBackpack
                 if (!initialized)
                 {
                     intake.setPower(speed);
-                    transfer.driveServo(speed);
+                    //transfer.driveServo(speed);
                     initialized = true;
                 }
 
