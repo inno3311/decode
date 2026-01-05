@@ -42,13 +42,27 @@ public class Turret
 
         if (team)
         {
-            x = robotPose.position.x - 60;
-            y = robotPose.position.y + 60;
+            //x = robotPose.position.x - 60;   // -20 -60 = -80
+            //y = robotPose.position.y + 60;   // 0 + 60 = 60
+                                             //         = -36 degrees
+
+            //dx = target_x - robot_x
+            //dy = target_y - robot_y
+
+            x = -60 - robotPose.position.x;
+            y =  60 - robotPose.position.y;
+
+            //double dx = targetX - robotX;    -60 - (-40)  = -20
+            //double dy = targetY - robotY;     60 - (0)    = 60
+            //                                              = -71 degrees
         }
         else
         {
-            x = robotPose.position.x - 60;
-            y = robotPose.position.y - 60;
+            //x = robotPose.position.x - 60;
+            //y = robotPose.position.y - 60;
+
+            x = -60 - robotPose.position.x;
+            y = -60 - robotPose.position.y;
         }
 
         double goal = Math.toDegrees(Math.atan(y/x));
