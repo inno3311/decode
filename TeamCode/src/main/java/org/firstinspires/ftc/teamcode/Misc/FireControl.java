@@ -87,7 +87,6 @@ public class FireControl
      */
     private double calculateSteeperAngle(double velocity, double targetRange)
     {
-
         double targetZ = 1;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
@@ -127,7 +126,6 @@ public class FireControl
      */
     private double calculateVelocity(double angle, double targetRange)
     {
-
         double targetZ = 1;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
@@ -161,14 +159,14 @@ public class FireControl
         {
             if (team)
             {
-                double x = 55 - robotPose.position.x;
-                double y = 55 - robotPose.position.y;
+                double x = 60 - robotPose.position.x;
+                double y = 60 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
             else
             {
-                double x = 55 - robotPose.position.x;
-                double y = -55 - robotPose.position.y;
+                double x = 60 - robotPose.position.x;
+                double y = -60 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
 
@@ -188,7 +186,7 @@ public class FireControl
             targetAngle = calculateShallowerAngle(velocity, targetRange);
             telemetry.addData("shallow angle", targetAngle);
         }
-        if (maxLaunchAngle > calculateSteeperAngle(velocity, targetRange)) //else
+        else if (maxLaunchAngle > calculateSteeperAngle(velocity, targetRange)) //else
         {
             targetAngle = calculateSteeperAngle(velocity, targetRange);
             telemetry.addData("steep angle", targetAngle);

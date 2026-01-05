@@ -92,9 +92,9 @@ public class Version3 extends LinearOpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
 
-        turretFacing = hardwareMap.get(IMU.class, "imu");
+        turretFacing = hardwareMap.get(IMU.class, "imuTurret");
         turretFacing.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+        turretFacing.resetYaw();
 
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
@@ -116,7 +116,7 @@ public class Version3 extends LinearOpMode
 
         while (opModeIsActive())
         {
-            colors = colorSensor.getDetectedColor(telemetry);
+            colors = colorSensor.getDetectedColor();
             float normalizedRed, normalizedGreen, normalizedBlue;
             normalizedRed = colors.red / colors.alpha;
             normalizedGreen = colors.green / colors.alpha;
@@ -130,6 +130,7 @@ public class Version3 extends LinearOpMode
             telemetry.addData("green", normalizedGreen);
             telemetry.addData("blue", normalizedBlue);
             telemetry.addData("hue", hue);
+
             if (gamepad2.left_stick_button)
             {
                 team = false;
@@ -273,14 +274,8 @@ public class Version3 extends LinearOpMode
             }
 
 
-            turret.trackGoal(-turret.currentFacing(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team, gamepad2);
+            turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team, gamepad2);
             telemetry.addData("Turret Facing", turretFacing.getRobotYawPitchRollAngles().getYaw());
-
-            telemetry.addData("red", normalizedRed);
-            telemetry.addData("green", normalizedGreen);
-            telemetry.addData("blue", normalizedBlue);
-            telemetry.addData("hue", JavaUtil.colorToHue(colors.toColor()));
-
 
             Pose2d pose = drive.localizer.getPose();
 
@@ -299,7 +294,6 @@ public class Version3 extends LinearOpMode
 //            telemetry.addLine("-----------------------------------------------------");
 
 
-
             fieldOverlay.setStroke("#3F51B5"); // Blue
             fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
             fieldOverlay.strokeLine(
@@ -313,4 +307,6 @@ public class Version3 extends LinearOpMode
         }
 
     }
+
+
 }

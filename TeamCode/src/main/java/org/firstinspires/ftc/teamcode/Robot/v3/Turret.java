@@ -42,25 +42,11 @@ public class Turret
 
         if (team)
         {
-            //x = robotPose.position.x - 60;   // -20 -60 = -80
-            //y = robotPose.position.y + 60;   // 0 + 60 = 60
-                                             //         = -36 degrees
-
-            //dx = target_x - robot_x
-            //dy = target_y - robot_y
-
             x = -60 - robotPose.position.x;
             y =  60 - robotPose.position.y;
-
-            //double dx = targetX - robotX;    -60 - (-40)  = -20
-            //double dy = targetY - robotY;     60 - (0)    = 60
-            //                                              = -71 degrees
         }
         else
         {
-            //x = robotPose.position.x - 60;
-            //y = robotPose.position.y - 60;
-
             x = -60 - robotPose.position.x;
             y = -60 - robotPose.position.y;
         }
@@ -68,33 +54,11 @@ public class Turret
         double goal = Math.toDegrees(Math.atan(y/x));
         error = goal - (turretFacing);
 
-//        if (team)
-//        {
-//            if (robotHeading >= -45)
-//            {
-//                error = goal-robotHeading;
-//            }
-//            else
-//            {
-//                error = -((goal+robotHeading)+90);
-//            }
-//        }
-//        else
-//        {
-//            if (robotHeading >= 45)
-//            {
-//                error = goal-robotHeading;
-//            }
-//            else
-//            {
-//                error = (goal-robotHeading)-360;
-//            }
-//        }
 
         double power = turretPID.calculate(error * TICKS_PER_DEGREE, turret.getCurrentPosition());
-        power = Math.max(-0.5, Math.min(0.5, power));
+        power = Math.max(-0.25, Math.min(0.25, power));
 
-        if (Math.abs(error) <= 90)
+        if (Math.abs(error) <= 90 && gamepad.left_bumper)
         {
             turret.setPower(power);
         }
@@ -103,6 +67,8 @@ public class Turret
             turret.setPower(0);
         }
 
+        telemetry.addData("x", robotPose.position.x);
+        telemetry.addData("y", robotPose.position.y);
         telemetry.addData("Turret Current Position", turret.getCurrentPosition());
         telemetry.addData("Error", error);
 
@@ -116,9 +82,4 @@ public class Turret
 
     }
 
-    public double currentFacing(double robotAngle)
-    {
-        double currentFacing = robotAngle;
-        return currentFacing;
-    }
 }
