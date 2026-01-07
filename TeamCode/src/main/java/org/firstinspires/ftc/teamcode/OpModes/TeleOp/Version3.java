@@ -55,14 +55,15 @@ public class Version3 extends LinearOpMode
     ColorSensor colorSensor;
     double initialTargetVelocity = 10;
     double[] shooterParameters;
-    double obeliskTag = 22;
-    int numberOfBallsScored = 0;
     int drive_mode = 0;
     double drive_mode_flag = 1;
     double target_velocity = 0;
     double target_angle = 0;
     double flag2 = 0;
     boolean team = false; //false = red, true = blue
+    double startX = 0;
+    double startY = 0;
+    double startYaw = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -102,14 +103,13 @@ public class Version3 extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(180)); // inches, radians
+        Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
         drive.localizer.setPose(startPose);
         //drive.localizer.setPose(new Pose2d(0,0,0));
 
         colorSensor = new ColorSensor(hardwareMap);
         NormalizedRGBA colors;
         double hue = 0;
-
 
         waitForStart();
         time.startTime();
@@ -131,15 +131,17 @@ public class Version3 extends LinearOpMode
             telemetry.addData("blue", normalizedBlue);
             telemetry.addData("hue", hue);
 
+            // Set team for turret tracking and firesuit
             if (gamepad2.left_stick_button)
             {
-                team = false;
+                team = false; // Red
             }
             else if (gamepad2.right_stick_button)
             {
-                team = true;
+                team = true; // Blue
             }
 
+            // Drive code
             if (drive_mode % 2 == 1)
             {
                 driveController.gamepadController(gamepad1);
@@ -166,7 +168,15 @@ public class Version3 extends LinearOpMode
                 drive_mode += 1;
             }
 
+            // Roadrunner positioning update **Out of order**
+            if (aprilTagLocalizer.getDetectionID() != -1)
+            {
+//                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
+            }
+            drive.localizer.update();
+            Pose2d pose2d = drive.localizer.getPose();
 
+            // Color sensor and intake
             if (gamepad1.right_trigger > 0.1)
             {
                 // If green (<200), go right
@@ -191,12 +201,13 @@ public class Version3 extends LinearOpMode
                 intake.setPower(0);
             }
 
-            //if both triggers are pulled, don't try to sort.  But bad things can happen.
+            //if both triggers are pulled, don't try to sort. But bad things can happen.
             if (gamepad1.right_trigger <= 0.1 && gamepad1.left_trigger <= 0.1)
             {
                 intakeSort.setPower(0);
             }
 
+            // Load ball
             if (gamepad1.left_bumper && !gamepad1.a)
             {
                 sorterLeft.driveServo(-1);
@@ -216,7 +227,7 @@ public class Version3 extends LinearOpMode
                 sorterRight.driveServo(0);
             }
 
-            //Fire the ball!  Ensure sorters are off.
+            // Fire the ball! Ensure sorters are off.
             if (gamepad1.y)
             {
                 trigger.driveServo(1);
@@ -228,6 +239,7 @@ public class Version3 extends LinearOpMode
                 trigger.driveServo(0);
             }
 
+            // Adjust velocity
             if (gamepad2.left_bumper)
             {
                 initialTargetVelocity = 10.5;
@@ -248,16 +260,7 @@ public class Version3 extends LinearOpMode
                 flag2 = time.seconds() + 0.25;
             }
 
-            // Roadrunner positioning update
-            if (aprilTagLocalizer.getDetectionID() != -1)
-            {
-//                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
-            }
-
-            drive.localizer.update();
-            Pose2d pose2d = drive.localizer.getPose();
-
-
+            // Firesuit math
             shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose2d, team);
             target_velocity = shooterParameters[1];
             target_angle = shooterParameters[0];
@@ -273,13 +276,18 @@ public class Version3 extends LinearOpMode
                 shooter.driveToVelocity(0);
             }
 
+            // Turret code
+            if (gamepad2.left_bumper)
+            {
+                turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team);
+            }
+            else
+            {
+                turret.stop();
+            }
 
-            turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team, gamepad2);
-            telemetry.addData("Turret Facing", turretFacing.getRobotYawPitchRollAngles().getYaw());
 
-            Pose2d pose = drive.localizer.getPose();
-
-
+            // Dashboard and telemetry
             TelemetryPacket packet = new TelemetryPacket();
             Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -293,7 +301,7 @@ public class Version3 extends LinearOpMode
 //            telemetry.addData("Hood Position", hood.getPosition());
 //            telemetry.addLine("-----------------------------------------------------");
 
-
+            Pose2d pose = drive.localizer.getPose();
             fieldOverlay.setStroke("#3F51B5"); // Blue
             fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
             fieldOverlay.strokeLine(

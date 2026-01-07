@@ -157,15 +157,15 @@ public class FireControl
 
         try
         {
-            if (team)
+            if (team) // Blue
             {
-                double x = 60 - robotPose.position.x;
+                double x = 65 - robotPose.position.x;
                 double y = 60 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
-            else
+            else // Red
             {
-                double x = 60 - robotPose.position.x;
+                double x = 65 - robotPose.position.x;
                 double y = -60 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
@@ -193,8 +193,8 @@ public class FireControl
         }
         else
         {
-            targetAngle = maxLaunchAngle;
-            velocity = calculateVelocity(maxLaunchAngle, targetRange);
+            targetAngle = minimumAngle;
+            velocity = calculateVelocity(minimumAngle, targetRange);
             telemetry.addData("Max Launch Angle", targetAngle);
         }
 

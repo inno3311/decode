@@ -17,17 +17,16 @@ import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
-import org.firstinspires.ftc.teamcode.Roadrunner.tuning.V3ActionsBackpack;
+import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
-import org.firstinspires.ftc.teamcode.Roadrunner.ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
+import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 
 @Autonomous(name="V3_RedBack3_C_A", group="Linear OpMode")
 public class V3RedBack3_C_A extends LinearOpMode
@@ -38,7 +37,7 @@ public class V3RedBack3_C_A extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap));
 
         // ZOE update with starting location

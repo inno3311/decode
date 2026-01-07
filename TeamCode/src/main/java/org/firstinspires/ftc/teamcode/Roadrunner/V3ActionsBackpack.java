@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.Roadrunner.tuning;
+package org.firstinspires.ftc.teamcode.Roadrunner;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
@@ -17,10 +17,10 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
-import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
+import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +31,7 @@ public class V3ActionsBackpack
     Intake intake;
     Trigger lift;
     Hood hood;
+    Turret turret;
 
     //Transfer transfer;
     FireControl fireControl;
@@ -59,17 +60,17 @@ public class V3ActionsBackpack
         DONE
     }
 
-    private double m_targetVelocity = 0;
-
     CsvLogger svgLogger;
 
-    public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
+    public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
     SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor)
     {
         this.shooter = shooter;
         this.intake = intake;
         this.lift = lift;
         this.hood = hood;
+        this.turret = turret;
+
         //this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
@@ -110,18 +111,16 @@ public class V3ActionsBackpack
         };
     }
 
-    public Action mezAction(double velocity, int numRounds, double setVel, double angle)
+    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team)
     {
 
         return new Action()
         {
             private boolean initialized = false;
             private double[] shooterParameters;
-
             double fireTime;
             double transTime;
             double currentTime;
-
             int timesFired;
 
             FireState state = FireState.INIT;
@@ -129,35 +128,34 @@ public class V3ActionsBackpack
             @Override
             public boolean run(@NonNull TelemetryPacket packet)
             {
+
                 switch (state)
                 {
                     case INIT:
                         timesFired = 0;
-                        //shooterParameters = fireControl.firingSuite(velocity);
-                        m_targetVelocity = setVel; //shooterParameters[1];
-                        if (m_targetVelocity > 1500)
-                            m_targetVelocity = 1500;
-//                        shooter.driveToVelocity(m_targetVelocity);
-                        hood.driveToAngleTarget(angle);
+                        shooterParameters = fireControl.firingSuite(velocity, pose2d, team);
+                        shooter.driveToVelocity(shooterParameters[1]);
+                        hood.driveToAngleTarget(shooterParameters[0]);
                         state = FireState.SPINUP;
+
                         //packet.put("targetVel",m_targetVelocity);
                         //packet.put("Angle",shooterParameters[0]);
                         packet.put("STATE","INIT");
-
                         break;
                     case SPINUP:
-
+                        turret.trackGoal(pose2d.heading.real, pose2d, team);
                         double vel = shooter.getShooter().getVelocity();
-                        boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 10;
-                        if (notAtSpeed == false)
+                        boolean notAtSpeed = Math.abs(vel - shooterParameters[1]) > 100;
+
+                        if (!notAtSpeed && Math.abs(turret.getError()) < 5)
                         {
                             state = FireState.FIRE;
                         }
 
-
-
-                        //packet.put("vel",vel);
+//                        packet.put("vel",vel);
                         packet.put("STATE","SPINUP");
+                        packet.put("Turret", Math.abs(turret.getError()));
+                        packet.put("notAtSpeed", notAtSpeed);
                         break;
                     case FIRE:
                         fireTime = time.seconds();
@@ -214,7 +212,6 @@ public class V3ActionsBackpack
                 }
 
 
-                packet.put("targetVel",m_targetVelocity);
                 packet.put("power",shooter.getShooter().getPower());
                 packet.put("vel",shooter.getShooter().getVelocity());
 

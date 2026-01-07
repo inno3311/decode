@@ -18,6 +18,7 @@ public class Turret
     TurretPID turretPID = new TurretPID(0.015, 0, 0.00075);
     FtcDashboard dashboard;
     Telemetry telemetry;
+    double error;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry)
     {
@@ -34,20 +35,19 @@ public class Turret
         this.telemetry = telemetry;
     }
 
-    public void trackGoal(double turretFacing, Pose2d robotPose, boolean team, Gamepad gamepad)
+    public void trackGoal(double turretFacing, Pose2d robotPose, boolean team)
     {
-        double error;
         double x;
         double y;
 
-        if (team)
+        if (team) // Blue
         {
-            x = -60 - robotPose.position.x;
+            x = -65 - robotPose.position.x;
             y =  60 - robotPose.position.y;
         }
-        else
+        else // Red
         {
-            x = -60 - robotPose.position.x;
+            x = -65 - robotPose.position.x;
             y = -60 - robotPose.position.y;
         }
 
@@ -58,17 +58,8 @@ public class Turret
         double power = turretPID.calculate(error * TICKS_PER_DEGREE, turret.getCurrentPosition());
         power = Math.max(-0.25, Math.min(0.25, power));
 
-        if (Math.abs(error) <= 90 && gamepad.left_bumper)
-        {
-            turret.setPower(power);
-        }
-        else
-        {
-            turret.setPower(0);
-        }
+        turret.setPower(power);
 
-        telemetry.addData("x", robotPose.position.x);
-        telemetry.addData("y", robotPose.position.y);
         telemetry.addData("Turret Current Position", turret.getCurrentPosition());
         telemetry.addData("Error", error);
 
@@ -80,6 +71,16 @@ public class Turret
         packet.put("Power", power);
         dashboard.sendTelemetryPacket(packet);
 
+    }
+
+    public void stop()
+    {
+        turret.setPower(0);
+    }
+
+    public double getError()
+    {
+        return error;
     }
 
 }
