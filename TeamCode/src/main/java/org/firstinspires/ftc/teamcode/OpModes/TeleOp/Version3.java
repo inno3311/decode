@@ -103,13 +103,25 @@ public class Version3 extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
-        drive.localizer.setPose(startPose);
+        // Blackboard our starting position
+        drive.localizer.setPose((Pose2d) blackboard.get("Pose"));
+        if (drive.localizer.getPose() == null)
+        {
+            Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
+            drive.localizer.setPose(startPose);
+        }
+
         //drive.localizer.setPose(new Pose2d(0,0,0));
 
         colorSensor = new ColorSensor(hardwareMap);
         NormalizedRGBA colors;
         double hue = 0;
+
+
+        if (blackboard.get("Alliance") == "BLUE")
+        {
+            team = true;
+        }
 
         waitForStart();
         time.startTime();
@@ -126,10 +138,10 @@ public class Version3 extends LinearOpMode
                 hue = JavaUtil.colorToHue(colors.toColor());
             }
 
-            telemetry.addData("red", normalizedRed);
-            telemetry.addData("green", normalizedGreen);
-            telemetry.addData("blue", normalizedBlue);
-            telemetry.addData("hue", hue);
+//            telemetry.addData("red", normalizedRed);
+//            telemetry.addData("green", normalizedGreen);
+//            telemetry.addData("blue", normalizedBlue);
+//            telemetry.addData("hue", hue);
 
             // Set team for turret tracking and firesuit
             if (gamepad2.left_stick_button)
@@ -169,8 +181,9 @@ public class Version3 extends LinearOpMode
             }
 
             // Roadrunner positioning update **Out of order**
-            if (aprilTagLocalizer.getDetectionID() != -1)
+            if (gamepad2.back)
             {
+                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
 //                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
             }
             drive.localizer.update();
@@ -239,16 +252,7 @@ public class Version3 extends LinearOpMode
                 trigger.driveServo(0);
             }
 
-            // Adjust velocity
-            if (gamepad2.left_bumper)
-            {
-                initialTargetVelocity = 10.5;
-            }
-            else if (gamepad2.left_trigger > 0.5)
-            {
-                initialTargetVelocity = 9.5;
-            }
-
+            // Adjust Velocity
             if (gamepad2.dpad_up && flag2 < time.seconds())
             {
                 initialTargetVelocity += 0.5;
@@ -286,6 +290,7 @@ public class Version3 extends LinearOpMode
                 turret.stop();
             }
 
+            telemetry.addData("Robot Position", drive.localizer.getPose());
 
             // Dashboard and telemetry
             TelemetryPacket packet = new TelemetryPacket();
@@ -308,6 +313,13 @@ public class Version3 extends LinearOpMode
                     pose.position.x,
                     pose.position.y, pose.position.x + 9 * Math.cos(pose.heading.toDouble()),
                     pose.position.y + 9 * Math.sin(pose.heading.toDouble()));
+
+            double error = turret.getError();
+            fieldOverlay.setStroke("#FF0000"); // Blue
+            fieldOverlay.strokeLine(
+                    pose.position.x,
+                    pose.position.y, pose.position.x + 9 * Math.cos(error),
+                    pose.position.y + 9 * Math.sin(error));
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();

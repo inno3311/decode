@@ -18,10 +18,10 @@ public class Shooter
 
     public static class Params
     {
-        public static double F = 25;
-        public static double P = 60;
+        public static double F = 34;
+        public static double P = 20;
         public static double I = 0;
-        public static double D = 1;
+        public static double D = 5;
     }
 
     public static Params PARAMS = new Params();
