@@ -63,7 +63,7 @@ public class Version3 extends LinearOpMode
     boolean team = false; //false = red, true = blue
     double startX = 0;
     double startY = 0;
-    double startYaw = 0;
+    double startYaw = 180;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -80,7 +80,7 @@ public class Version3 extends LinearOpMode
         turret = new Turret(hardwareMap, telemetry);
 
         time = new ElapsedTime();
-        //driveController = new DriveController(hardwareMap);
+
         driveController = new DriveController(hardwareMap,-1,1,1);
         fireControl = new FireControl(aprilTagLocalizer, telemetry);
         drive = new MecanumDrive(hardwareMap, null);
@@ -154,25 +154,27 @@ public class Version3 extends LinearOpMode
             }
 
             // Drive code
-            if (drive_mode % 2 == 1)
-            {
-                driveController.gamepadController(gamepad1);
-            }
-            else
-            {
-                if (gamepad1.dpad_left)
-                {
-                    imu.resetYaw();
-                }
-                centricDrive.drive(
-                        -gamepad1.left_stick_x,
-                        -gamepad1.left_stick_y,
-                        imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                        gamepad1.right_trigger,
-                        -gamepad1.right_stick_x
-                );
-            }
+            driveController.gamepadController(gamepad1);
+
+//            if (drive_mode % 2 == 1)
+//            {
+//                driveController.gamepadController(gamepad1);
+//            }
+//            else
+//            {
+//                if (gamepad1.dpad_left)
+//                {
+//                    imu.resetYaw();
+//                }
+//                centricDrive.drive(
+//                        -gamepad1.left_stick_x,
+//                        -gamepad1.left_stick_y,
+//                        imu.getRobotYawPitchRollAngles().getYaw(),
+////                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+//                        gamepad1.right_trigger,
+//                        -gamepad1.right_stick_x
+//                );
+//            }
 
             if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
             {
@@ -292,6 +294,9 @@ public class Version3 extends LinearOpMode
 
             telemetry.addData("Robot Position", drive.localizer.getPose());
 
+
+
+
             // Dashboard and telemetry
             TelemetryPacket packet = new TelemetryPacket();
             Canvas fieldOverlay = packet.fieldOverlay();
@@ -307,22 +312,42 @@ public class Version3 extends LinearOpMode
 //            telemetry.addLine("-----------------------------------------------------");
 
             Pose2d pose = drive.localizer.getPose();
+
+            fieldOverlay.setStroke("#000FFF"); //
+            fieldOverlay.strokeLine(
+                pose.position.x, pose.position.y,
+                turret.RED_TARGET_X,
+                turret.RED_TARGET_Y
+            );
+
             fieldOverlay.setStroke("#3F51B5"); // Blue
             fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
             fieldOverlay.strokeLine(
                     pose.position.x,
-                    pose.position.y, pose.position.x + 9 * Math.cos(pose.heading.toDouble()),
+                    pose.position.y, pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
                     pose.position.y + 9 * Math.sin(pose.heading.toDouble()));
 
             double error = turret.getError();
-            fieldOverlay.setStroke("#FF0000"); // Blue
+            fieldOverlay.setStroke("#FF0000"); // Red
             fieldOverlay.strokeLine(
-                    pose.position.x,
-                    pose.position.y, pose.position.x + 9 * Math.cos(error),
+                pose.position.x,
+                    pose.position.y, pose.position.x + 8 * Math.cos(error),
                     pose.position.y + 9 * Math.sin(error));
+
+
+            // Target dot
+            fieldOverlay.fillCircle(55, -55, 2);
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
+
+            dashboard = FtcDashboard.getInstance();
+            packet = new TelemetryPacket();
+            packet.put("Bot X", pose.position.x);
+            packet.put("Bot Y", pose.position.y);
+            packet.put("bot heading: ", pose.heading.toDouble());
+            packet.put("turret error: ", turret.getError());
+            dashboard.sendTelemetryPacket(packet);
 
         }
 

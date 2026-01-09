@@ -20,6 +20,11 @@ public class Turret
     Telemetry telemetry;
     double error;
 
+    public int RED_TARGET_X = -55;
+    public int RED_TARGET_Y = 55;
+    public int BLUE_TARGET_X = -55;
+    public int BLUE_TARGET_Y = -55;
+
     public Turret(HardwareMap hardwareMap, Telemetry telemetry)
     {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
