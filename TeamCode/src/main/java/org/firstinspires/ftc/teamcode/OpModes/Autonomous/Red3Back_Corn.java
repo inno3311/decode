@@ -39,6 +39,8 @@ public class Red3Back_Corn extends LinearOpMode
     {
         blackboard.put(ALLIANCE, "RED");
 
+
+
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry),
                 new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap));
@@ -54,7 +56,7 @@ public class Red3Back_Corn extends LinearOpMode
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false))
+                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
 //                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(10)
 
@@ -67,7 +69,7 @@ public class Red3Back_Corn extends LinearOpMode
                 .strafeTo(new Vector2d(55, 50)) //back up
                 .afterTime(0.1,actionsBackpack.intakeBall(-1))
                 .strafeTo(new Vector2d(60, 70)) //hit again
-                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false))
+                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false, drive))
                 .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))

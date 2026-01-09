@@ -189,7 +189,7 @@ public class Version3 extends LinearOpMode
 //                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
             }
             drive.localizer.update();
-            Pose2d pose2d = drive.localizer.getPose();
+            Pose2d pose = drive.localizer.getPose();
 
             // Color sensor and intake
             if (gamepad1.right_trigger > 0.1)
@@ -267,7 +267,7 @@ public class Version3 extends LinearOpMode
             }
 
             // Firesuit math
-            shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose2d, team);
+            shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose, team);
             target_velocity = shooterParameters[1];
             target_angle = shooterParameters[0];
 
@@ -285,7 +285,13 @@ public class Version3 extends LinearOpMode
             // Turret code
             if (gamepad2.left_bumper)
             {
-                turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team);
+                //turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team);
+
+                //Pose2d pose = drive.localizer.getPose();
+                //turret.trackGoal(pose2d.heading.toDouble(), pose2d, team);
+
+                turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
+
             }
             else
             {
@@ -311,9 +317,11 @@ public class Version3 extends LinearOpMode
 //            telemetry.addData("Hood Position", hood.getPosition());
 //            telemetry.addLine("-----------------------------------------------------");
 
-            Pose2d pose = drive.localizer.getPose();
+            //Pose2d pose = drive.localizer.getPose();
 
-            fieldOverlay.setStroke("#000FFF"); //
+            double aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
+
+            fieldOverlay.setStroke("#100FFF"); //
             fieldOverlay.strokeLine(
                 pose.position.x, pose.position.y,
                 turret.RED_TARGET_X,
@@ -325,18 +333,20 @@ public class Version3 extends LinearOpMode
             fieldOverlay.strokeLine(
                     pose.position.x,
                     pose.position.y, pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
-                    pose.position.y + 9 * Math.sin(pose.heading.toDouble()));
+                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
 
-            double error = turret.getError();
+            double turretFieldHeading = Math.toDegrees(pose.heading.toDouble()) + turret.getErrorDegrees();
+
+            double error = turret.getErrorDegrees();
             fieldOverlay.setStroke("#FF0000"); // Red
             fieldOverlay.strokeLine(
                 pose.position.x,
-                    pose.position.y, pose.position.x + 8 * Math.cos(error),
-                    pose.position.y + 9 * Math.sin(error));
+                    pose.position.y, pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()),
+                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()));
 
 
             // Target dot
-            fieldOverlay.fillCircle(55, -55, 2);
+            fieldOverlay.fillCircle(-55, 55, 2);
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
@@ -345,8 +355,12 @@ public class Version3 extends LinearOpMode
             packet = new TelemetryPacket();
             packet.put("Bot X", pose.position.x);
             packet.put("Bot Y", pose.position.y);
-            packet.put("bot heading: ", pose.heading.toDouble());
-            packet.put("turret error: ", turret.getError());
+            packet.put("bot heading: ", Math.toDegrees(pose.heading.toDouble()));
+            //packet.put("turret error: ", turret.getError());
+            packet.put("turret error deg: ", turret.getErrorDegrees());
+            packet.put("turretFieldHeading deg: ", turretFieldHeading);
+
+            packet.put("aiTurretHeading: " , aiTurretHeading);
             dashboard.sendTelemetryPacket(packet);
 
         }

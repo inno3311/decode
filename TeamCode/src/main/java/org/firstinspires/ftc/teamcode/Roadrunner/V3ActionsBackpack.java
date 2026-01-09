@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
@@ -112,7 +113,7 @@ public class V3ActionsBackpack
         };
     }
 
-    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team)
+    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team, MecanumDrive drive)
     {
 
         return new Action()
@@ -135,7 +136,10 @@ public class V3ActionsBackpack
                 {
                     case INIT:
                         timesFired = 0;
-                        shooterParameters = fireControl.firingSuite(velocity, pose2d, team);
+
+                        Pose2d pose1 = drive.localizer.getPose();
+
+                        shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(shooterParameters[1]);
                         hood.driveToAngleTarget(shooterParameters[0]);
                         state = FireState.SPINUP;
@@ -159,7 +163,9 @@ public class V3ActionsBackpack
                         packet.put("notAtSpeed", notAtSpeed);
                         break;
                     case AIM:
-                        turret.trackGoal(pose2d.heading.real, pose2d, team);
+                         pose1 = drive.localizer.getPose();
+                        //turret.trackGoal(pose2d.heading.real, pose2d, team);
+                        turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
 
                         if (Math.abs(turret.getError()) < 5)
                         {
