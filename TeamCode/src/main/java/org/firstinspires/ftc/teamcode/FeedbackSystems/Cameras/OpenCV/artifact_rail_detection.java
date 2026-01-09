@@ -43,7 +43,7 @@ public class artifact_rail_detection extends OpenCvPipeline
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
-
+   public double numBalls;
    final Scalar purple_1_upper = new Scalar(179, 255, 255);
    final Scalar purple_1_lower = new Scalar(135, 35, 100);
 
@@ -297,10 +297,15 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return grey;
 //      return binary_mask_mat;
 //      return canny_output;
+      this.numBalls = number_of_objects;
       return drawings;
 //      Imgproc.cv tColor(input, gray, Imgproc.COLOR_BGR2HSV);
 
-
-
    }
+
+   public double getNumBalls()
+   {
+      return numBalls;
+   }
+
 }

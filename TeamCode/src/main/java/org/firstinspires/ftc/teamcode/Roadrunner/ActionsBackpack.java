@@ -16,16 +16,27 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ActionsBackpack
 {
     private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
+    // Looking from the BACK TO FRONT, Right is green, left is purple
+    SorterLeft sorterLeft; // purple
+    SorterRight sorterRight; // green
+    artifact_rail_detection railDetection;
     Trigger lift;
     Hood hood;
     Transfer transfer;
@@ -47,7 +58,7 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
+    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft, SorterRight sorterRight, artifact_rail_detection railDetection)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -56,6 +67,9 @@ public class ActionsBackpack
         this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
+        this.sorterLeft = sorterLeft;
+        this.sorterRight = sorterRight;
+        this.railDetection = railDetection;
         time.startTime();
 
 //        shooter.setPID(1.0,0.1,0.1,14);
@@ -410,6 +424,46 @@ public class ActionsBackpack
                 }
 
                 return false;
+            }
+        };
+    }
+
+
+
+
+    public Action loadBall(double obelisk_id)
+    {
+        ArrayList<String> order;
+        if (obelisk_id == 21) // GPP
+        {
+            order = new ArrayList<>(Arrays.asList("green", "purple", "purple"));
+        }
+        else if (obelisk_id == 22) // PGP
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+        else //ID = 23 PPG
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+
+        double numBalls = railDetection.getNumBalls();
+        String shoot_color = order.get((int) ((numBalls+2)%3)+1);
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                if (Objects.equals(shoot_color, "green"))
+                // green
+                {
+                    sorterLeft.driveServo(-1);
+                }
+                else
+                // purple
+                {
+                    sorterRight.driveServo(1);
+                }
+                return true;
             }
         };
     }
