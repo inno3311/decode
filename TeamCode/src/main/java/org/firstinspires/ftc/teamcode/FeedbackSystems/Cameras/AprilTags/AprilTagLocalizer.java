@@ -225,8 +225,8 @@ public class AprilTagLocalizer
 
 
 
-        // Create the vision portal the easy way.
-        //VisionPortal visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 2"), aprilTag);
+//         Create the vision portal the easy way.
+        VisionPortal visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
 //
 //        ExposureControl exposureControl =
 //            visionPortal.getCameraControl(ExposureControl.class);
