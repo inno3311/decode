@@ -87,7 +87,7 @@ public class FireControl
      */
     private double calculateSteeperAngle(double velocity, double targetRange)
     {
-        double targetZ = 1;
+        double targetZ = 1.2;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -107,7 +107,7 @@ public class FireControl
      */
     private double calculateShallowerAngle(double velocity, double targetRange)
     {
-        double targetZ = 1.25;
+        double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -126,7 +126,7 @@ public class FireControl
      */
     private double calculateVelocity(double angle, double targetRange)
     {
-        double targetZ = 1;
+        double targetZ = 1.3;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
         double numerator = -g * Math.pow(2 * targetRange,2) * numeratorParth;
@@ -144,7 +144,7 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = (velocity/(2*Math.PI*shooterWheelRadius)) * 28; //* 0.625;
+        double motorVelocity = ((velocity * 1.375)/(2*Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
