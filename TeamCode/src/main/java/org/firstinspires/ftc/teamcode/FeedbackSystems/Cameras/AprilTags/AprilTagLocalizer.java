@@ -4,7 +4,10 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,7 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 public class AprilTagLocalizer
 {
+    WebcamName goal, webcam1;
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+
+    /**
+     * The variable to store our instance of the vision portal.
+     */
+    private VisionPortal visionPortal;
 
     //Camera position
     private Position cameraPosition = new Position(DistanceUnit.INCH, 0, 0, 0, 0);
@@ -30,6 +39,12 @@ public class AprilTagLocalizer
     public AprilTagLocalizer(HardwareMap hardwareMap)
     {
         initAprilTag(hardwareMap);
+    }
+
+    // If initializing else where
+    public AprilTagLocalizer(HardwareMap hardwareMap, boolean uselessVariable)
+    {
+        initAprilTagTwoCamera(hardwareMap);
     }
 
     public void tagsTelemetry(Telemetry telemetry)
@@ -194,6 +209,11 @@ public class AprilTagLocalizer
         return -1;
     }
 
+    public List<AprilTagDetection> getCurrentDetections()
+    {
+        return aprilTag.getDetections();
+    }
+
     // --- REPLACE THESE VALUES WITH YOUR CALIBRATED INTRINSICS ---
     // These values were obtained from the 3DF Zephyr software.
     private static final double CAMERA_FX = 645.007233223; // Example value, replace with yours
@@ -234,5 +254,45 @@ public class AprilTagLocalizer
 //        exposureControl.setExposure(10, TimeUnit.MILLISECONDS);
 
     }
+
+    /**
+     * Initialize the AprilTag processor.
+     */
+    private void initAprilTagTwoCamera(HardwareMap hardwareMap)
+    {
+        // Create the AprilTag processor by using a builder.
+        aprilTag = new AprilTagProcessor.Builder().setCameraPose(cameraPosition, cameraOrientation)
+                .build();
+
+        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        goal = hardwareMap.get(WebcamName.class, "goal");
+        CameraName switchableCamera = ClassFactory.getInstance()
+                .getCameraManager().nameForSwitchableCamera(webcam1, goal);
+
+        // Create the vision portal by using a builder.
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(switchableCamera)
+                .addProcessor(aprilTag)
+                .build();
+
+    }
+
+    public void switchToCameraOne()
+    {
+        if (webcam1.isSwitchable())
+        {
+            visionPortal.setActiveCamera(webcam1);
+        }
+    }
+
+    public void switchToCameraTwo()
+    {
+        if (goal.isSwitchable())
+        {
+            visionPortal.setActiveCamera(goal);
+        }
+    }
+
+
 
 }

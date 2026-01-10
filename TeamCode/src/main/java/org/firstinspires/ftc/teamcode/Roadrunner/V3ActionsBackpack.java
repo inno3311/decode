@@ -22,14 +22,18 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class V3ActionsBackpack
 {
@@ -47,7 +51,6 @@ public class V3ActionsBackpack
     SorterLeft sorterLeft; // purple
     SorterRight sorterRight; // green
     artifact_rail_detection railDetection;
-    AprilTagLocalizer aprilTagLocalizer;
 
     Intake_sort intakeSort;
 
@@ -469,26 +472,36 @@ public class V3ActionsBackpack
             }
         };
     }
-    public Action read_obelisk()
+    public Action read_obelisk(List<AprilTagDetection> currentDetections)
     {
         return new Action() {
             @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                int id_num = aprilTagLocalizer.getDetectionID();
+            public boolean run(@NonNull TelemetryPacket Packet) {
+                Packet.put("current detections", currentDetections);
+//                for (AprilTagDetection detection: currentDetections)
+//                {
+//                    if (detection.id == 21)
+//                    {
+//                        sorterRight.driveServo(1);
+//                        break;
+//                    }
+//                    else if (detection.id == 22)
+//                    {
+//                        sorterLeft.driveServo(1);
+//                        break;
+//                    }
+//                    else if (detection.id == 23)
+//                    {
+//                        sorterRight.driveServo(1);
+//                        sorterLeft.driveServo(1);
+//                        break;
+//                    }
+//                    else
+//                    {
+//                        continue;
+//                    }
+//                }
 
-                if (id_num == 21) // GPP
-                {
-                    sorterRight.driveServo(1);
-                }
-                else if (id_num == 22) // PGP
-                {
-                    sorterLeft.driveServo(1);
-                }
-                else //ID = 23 PPG
-                {
-                    sorterRight.driveServo(1);
-                    sorterLeft.driveServo(1);
-                }
                 return true;
             }
         };

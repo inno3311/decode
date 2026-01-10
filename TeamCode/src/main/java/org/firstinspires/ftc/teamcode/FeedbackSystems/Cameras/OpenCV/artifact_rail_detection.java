@@ -298,6 +298,7 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return binary_mask_mat;
 //      return canny_output;
       this.numBalls = number_of_objects;
+
       return drawings;
 //      Imgproc.cv tColor(input, gray, Imgproc.COLOR_BGR2HSV);
 

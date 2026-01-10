@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
@@ -33,6 +35,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Locale;
 
@@ -40,16 +43,14 @@ import java.util.Locale;
 public class read_obelisk extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;
-    final boolean USING_WEBCAM = false;
-    final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
-    final int RESOLUTION_WIDTH = 640;
-    final int RESOLUTION_HEIGHT = 480;
+    AprilTagLocalizer aprilTagLocalizer;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap));
 
         Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(180));
@@ -57,28 +58,14 @@ public class read_obelisk extends LinearOpMode
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-            VisionPortal portal;
 
-            if (USING_WEBCAM)
-            {
-                portal = new VisionPortal.Builder()
-                        .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
-                        .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
-                        .build();
-            }
-            else
-            {
-                portal = new VisionPortal.Builder()
-                        .setCamera(INTERNAL_CAM_DIR)
-                        .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
-                        .build();
-            }
-
+            telemetry.addData("data", aprilTagLocalizer.getCurrentDetections());
+            telemetry.update();
             waitForStart();
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                    .afterTime(0, actionsBackpack.read_obelisk())
-                    .waitSeconds(6)
+//                    .afterTime(0, actionsBackpack.read_obelisk()
+//                    .waitSeconds(6)
                 ; //do not remove ;
 
 
