@@ -48,7 +48,6 @@ public class Version3 extends LinearOpMode
     TurnToHeading turnToHeading;
     CentricDrive centricDrive;
     IMU imu;
-    IMU turretFacing;
     AprilTagLocalizer aprilTagLocalizer;
     FireControl fireControl;
     ElapsedTime time;
@@ -92,10 +91,6 @@ public class Version3 extends LinearOpMode
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
-
-        turretFacing = hardwareMap.get(IMU.class, "imuTurret");
-        turretFacing.initialize(new IMU.Parameters(orientationOnRobot));
-        turretFacing.resetYaw();
 
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
@@ -268,14 +263,13 @@ public class Version3 extends LinearOpMode
 
             // Firesuit math
             shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose, team);
-            target_velocity = shooterParameters[1];
             target_angle = shooterParameters[0];
 
             hood.driveToAngleTarget(target_angle);
 
-            if (gamepad1.b || gamepad2.b)
+            if (gamepad1.bWasPressed() || gamepad2.bWasPressed())
             {
-                shooter.driveToVelocity(target_velocity);
+                shooter.driveToVelocity(shooterParameters[1]);
             }
             else if (gamepad1.a || gamepad2.a)
             {
@@ -283,27 +277,20 @@ public class Version3 extends LinearOpMode
             }
 
             // Turret code
+            double aiTurretHeading = 0;
             if (gamepad2.left_bumper)
             {
-                //turret.trackGoal(-(turretFacing.getRobotYawPitchRollAngles().getYaw()), pose2d, team);
-
-                //Pose2d pose = drive.localizer.getPose();
-                //turret.trackGoal(pose2d.heading.toDouble(), pose2d, team);
-
-                turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
-
+                aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
             }
             else
             {
                 turret.stop();
             }
 
-            telemetry.addData("Robot Position", drive.localizer.getPose());
-
-
-
 
             // Dashboard and telemetry
+            telemetry.addData("Robot Position", drive.localizer.getPose());
+
             TelemetryPacket packet = new TelemetryPacket();
             Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -319,7 +306,6 @@ public class Version3 extends LinearOpMode
 
             //Pose2d pose = drive.localizer.getPose();
 
-            double aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
 
             fieldOverlay.setStroke("#100FFF"); //
             fieldOverlay.strokeLine(
@@ -335,9 +321,7 @@ public class Version3 extends LinearOpMode
                     pose.position.y, pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
                     pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
 
-            double turretFieldHeading = Math.toDegrees(pose.heading.toDouble()) + turret.getErrorDegrees();
 
-            double error = turret.getErrorDegrees();
             fieldOverlay.setStroke("#FF0000"); // Red
             fieldOverlay.strokeLine(
                 pose.position.x,
@@ -346,7 +330,7 @@ public class Version3 extends LinearOpMode
 
 
             // Target dot
-            fieldOverlay.fillCircle(-55, 55, 2);
+            fieldOverlay.fillCircle(turret.RED_TARGET_X, turret.RED_TARGET_Y, 2);
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
@@ -356,10 +340,6 @@ public class Version3 extends LinearOpMode
             packet.put("Bot X", pose.position.x);
             packet.put("Bot Y", pose.position.y);
             packet.put("bot heading: ", Math.toDegrees(pose.heading.toDouble()));
-            //packet.put("turret error: ", turret.getError());
-            packet.put("turret error deg: ", turret.getErrorDegrees());
-            packet.put("turretFieldHeading deg: ", turretFieldHeading);
-
             packet.put("aiTurretHeading: " , aiTurretHeading);
             dashboard.sendTelemetryPacket(packet);
 

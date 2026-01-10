@@ -62,7 +62,6 @@ public class V3ActionsBackpack
     private enum FireState {
         INIT,
         SPINUP,
-        AIM,
         FIRE,
         RESET_TRIGGER,
         TRANSFER_START,
@@ -139,51 +138,41 @@ public class V3ActionsBackpack
             @Override
             public boolean run(@NonNull TelemetryPacket packet)
             {
-
+                Pose2d pose1 = drive.localizer.getPose();
+                pose1 = drive.localizer.getPose();
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
 
                 switch (state)
                 {
                     case INIT:
                         timesFired = 0;
 
-                        Pose2d pose1 = drive.localizer.getPose();
-
                         shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(shooterParameters[1]);
                         hood.driveToAngleTarget(shooterParameters[0]);
                         state = FireState.SPINUP;
 
-                        //packet.put("targetVel",m_targetVelocity);
-                        //packet.put("Angle",shooterParameters[0]);
                         packet.put("STATE","INIT");
                         break;
                     case SPINUP:
                         double vel = shooter.getShooter().getVelocity();
-                        boolean notAtSpeed = Math.abs(vel - shooterParameters[1]) > 100;
+                        boolean notAtSpeed = Math.abs(vel - shooterParameters[1]) > 50;
 
                         if (!notAtSpeed)
                         {
-                            state = FireState.AIM;
-                        }
-
-//                        packet.put("vel",vel);
-                        packet.put("STATE","SPINUP");
-                        packet.put("Turret", Math.abs(turret.getError()));
-                        packet.put("notAtSpeed", notAtSpeed);
-                        break;
-                    case AIM:
-                         pose1 = drive.localizer.getPose();
-                        //turret.trackGoal(pose2d.heading.real, pose2d, team);
-                        turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
-
-                        if (Math.abs(turret.getError()) < 5)
-                        {
                             state = FireState.FIRE;
                         }
+
+                        packet.put("STATE","SPINUP");
+                        packet.put("Target vel", shooterParameters[1]);
+                        packet.put("vel",vel);
+                        packet.put("notAtSpeed", notAtSpeed);
+                        break;
                     case FIRE:
                         fireTime = time.seconds();
                         lift.driveServo(1);
                         state = FireState.RESET_TRIGGER;
+
                         packet.put("STATE","FIRE");
                         break;
                     case RESET_TRIGGER:
@@ -194,13 +183,14 @@ public class V3ActionsBackpack
                             state = FireState.TRANSFER_START;
                             timesFired++;
                         }
-                        //packet.put("fireSeconds",currentTime - fireTime);
+
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
                         sorterLeft.driveServo(-1);
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
+
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
@@ -213,17 +203,17 @@ public class V3ActionsBackpack
                             }
                             else
                             {
-                                state = FireState.AIM;
+                                state = FireState.SPINUP;
                             }
                         }
+
                         packet.put("STATE","TRANSFER_STOP");
                         break;
                     case DONE:
                         {
                             shooter.driveToVelocity(0);
                             shooter.getShooter().setPower(0);
-                            //transfer.driveServo(0);
-                            //intake.setPower(0);
+
                             packet.put("STATE","DONE");
                             return false;
                         }

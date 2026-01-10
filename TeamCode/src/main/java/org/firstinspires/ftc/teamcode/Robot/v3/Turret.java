@@ -18,10 +18,9 @@ public class Turret
     TurretPID turretPID = new TurretPID(0.015, 0, 0.00075);//0.015, 0, 0.00075
     FtcDashboard dashboard;
     Telemetry telemetry;
-    double error;
 
-    public int RED_TARGET_X = -55;
-    public int RED_TARGET_Y = 55;
+    public int RED_TARGET_X = -62;
+    public int RED_TARGET_Y = 62;
     public int BLUE_TARGET_X = -55;
     public int BLUE_TARGET_Y = -55;
 
@@ -38,7 +37,7 @@ public class Turret
         TelemetryPacket packet = new TelemetryPacket();
         dashboard.sendTelemetryPacket(packet);
 
-        team = false   ;
+        team = false;
 
         this.telemetry = telemetry;
     }
@@ -82,25 +81,12 @@ public class Turret
         turret.setPower(0);
     }
 
-    public double getError()
+    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg)
     {
-        return error * TICKS_PER_DEGREE;
-    }
-
-    public double getErrorDegrees()
-    {
-        return error;
-    }
-
-    public double turretAngleToFixedTarget(
-        double robotX,
-        double robotY,
-        double robotHeadingDeg
-    ) {
         // Fixed field target
 
-         double targetX;
-         double targetY;
+        double targetX;
+        double targetY;
         if (team) // Blue
         {
             targetX = -60.0;
@@ -125,13 +111,13 @@ public class Turret
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
         double power = turretPID.calculate(-noralizedDeg * TICKS_PER_DEGREE, turret.getCurrentPosition());
-        power = Math.max(-0.35, Math.min(0.35, power));
+        power = Math.max(-0.25, Math.min(0.25, power));
         turret.setPower(power);
 
-        return noralizedDeg;
-
+        return noralizedDeg * TICKS_PER_DEGREE;
     }
-    public double normalizeDegrees(double angle) {
+    public double normalizeDegrees(double angle)
+    {
         while (angle > 180) angle -= 360;
         while (angle <= -180) angle += 360;
         return angle;
@@ -140,6 +126,11 @@ public class Turret
     void setTeam(boolean isBlue)
     {
         team = isBlue;
+    }
+
+    public double getPosition()
+    {
+        return turret.getCurrentPosition();
     }
 
 }
