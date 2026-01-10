@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autonomous;//package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 
+import android.util.Size;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
@@ -24,11 +27,23 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
+import org.firstinspires.ftc.vision.VisionPortal;
+
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+
+import java.util.Locale;
 
 @Autonomous(name="read_obelisk", group="Linear OpMode")
 public class read_obelisk extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;
+    final boolean USING_WEBCAM = false;
+    final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
+    final int RESOLUTION_WIDTH = 640;
+    final int RESOLUTION_HEIGHT = 480;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -42,6 +57,22 @@ public class read_obelisk extends LinearOpMode
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+            VisionPortal portal;
+
+            if (USING_WEBCAM)
+            {
+                portal = new VisionPortal.Builder()
+                        .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                        .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
+                        .build();
+            }
+            else
+            {
+                portal = new VisionPortal.Builder()
+                        .setCamera(INTERNAL_CAM_DIR)
+                        .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
+                        .build();
+            }
 
             waitForStart();
 
