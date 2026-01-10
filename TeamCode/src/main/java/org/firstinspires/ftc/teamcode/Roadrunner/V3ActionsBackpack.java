@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
@@ -52,8 +53,9 @@ public class V3ActionsBackpack
     private enum FireState {
         INIT,
         SPINUP,
+        AIM,
         FIRE,
-        FIRE_DOWN,
+        RESET_TRIGGER,
         TRANSFER_START,
         TRANSFER_STOP,
         RESET,
@@ -111,7 +113,7 @@ public class V3ActionsBackpack
         };
     }
 
-    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team)
+    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team, MecanumDrive drive)
     {
 
         return new Action()
@@ -129,11 +131,15 @@ public class V3ActionsBackpack
             public boolean run(@NonNull TelemetryPacket packet)
             {
 
+
                 switch (state)
                 {
                     case INIT:
                         timesFired = 0;
-                        shooterParameters = fireControl.firingSuite(velocity, pose2d, team);
+
+                        Pose2d pose1 = drive.localizer.getPose();
+
+                        shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(shooterParameters[1]);
                         hood.driveToAngleTarget(shooterParameters[0]);
                         state = FireState.SPINUP;
@@ -143,13 +149,12 @@ public class V3ActionsBackpack
                         packet.put("STATE","INIT");
                         break;
                     case SPINUP:
-                        turret.trackGoal(pose2d.heading.real, pose2d, team);
                         double vel = shooter.getShooter().getVelocity();
                         boolean notAtSpeed = Math.abs(vel - shooterParameters[1]) > 100;
 
-                        if (!notAtSpeed && Math.abs(turret.getError()) < 5)
+                        if (!notAtSpeed)
                         {
-                            state = FireState.FIRE;
+                            state = FireState.AIM;
                         }
 
 //                        packet.put("vel",vel);
@@ -157,19 +162,26 @@ public class V3ActionsBackpack
                         packet.put("Turret", Math.abs(turret.getError()));
                         packet.put("notAtSpeed", notAtSpeed);
                         break;
+                    case AIM:
+                         pose1 = drive.localizer.getPose();
+                        //turret.trackGoal(pose2d.heading.real, pose2d, team);
+                        turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
+
+                        if (Math.abs(turret.getError()) < 5)
+                        {
+                            state = FireState.FIRE;
+                        }
                     case FIRE:
                         fireTime = time.seconds();
-                        lift.driveServo(.78);
-                        state = FireState.FIRE_DOWN;
+                        lift.driveServo(1);
+                        state = FireState.RESET_TRIGGER;
                         packet.put("STATE","FIRE");
                         break;
-                    case FIRE_DOWN:
+                    case RESET_TRIGGER:
                         currentTime = time.seconds();
-                        if (currentTime - fireTime > .4)
+                        if (currentTime - fireTime > .5)
                         {
-                            //transfer.driveServo(-1);
-                            //transfer.driveServo(0);
-                            lift.driveServo(1);
+                            lift.driveServo(0);
                             state = FireState.TRANSFER_START;
                             timesFired++;
                         }
@@ -177,25 +189,22 @@ public class V3ActionsBackpack
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
-                        intake.setPower(1);
-                        //transfer.driveServo(1);
+                        sorterLeft.driveServo(-1);
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
-                        if (time.seconds() - transTime > 1.5)
+                        if (time.seconds() - transTime > 1)
                         {
-                            intake.setPower(0);
-                            //transfer.driveServo(-1);
-
+                            sorterLeft.driveServo(0);
                             if (timesFired == numRounds)
                             {
                                 state = FireState.DONE;
                             }
                             else
                             {
-                                state = FireState.FIRE;
+                                state = FireState.AIM;
                             }
                         }
                         packet.put("STATE","TRANSFER_STOP");
@@ -320,11 +329,8 @@ public class V3ActionsBackpack
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
             {
-                //if (!initialized)
-                //{
-                    intake.setPower(speed);
-                    //initialized = true;
-                //}
+                intake.setPower(speed-0.4);
+                intakeSort.setPower(1);
 
                 return false;
             }

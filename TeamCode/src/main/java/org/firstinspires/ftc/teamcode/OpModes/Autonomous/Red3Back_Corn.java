@@ -26,6 +26,8 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 @Autonomous(name="RedBack3_Corn", group="Linear OpMode")
 public class Red3Back_Corn extends LinearOpMode
 {
+    public static final String ALLIANCE = "Alliance";
+    public static final String ENDPOSE = "Pose";
 
     AutoConsts cons;
 
@@ -35,36 +37,39 @@ public class Red3Back_Corn extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+        blackboard.put(ALLIANCE, "RED");
+
+
+
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry),
                 new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap));
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
             waitForStart();
 
-
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                .afterTime(0, actionsBackpack.shootBall(12,3, drive.localizer.getPose(), false))
+                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
 //                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
-                .waitSeconds(20)
+                .waitSeconds(10)
 
                 //picking up from corner
-                .afterTime(1,actionsBackpack.intakeBall(1))
+                .afterTime(1,actionsBackpack.intakeBall(-1))
                 .turnTo(Math.toRadians (90))
-                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .afterTime(0.1,actionsBackpack.intakeBall(-1))
                 .strafeTo(new Vector2d(55, 70)) //hit corner balls.
-                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .afterTime(0.1,actionsBackpack.intakeBall(-1))
                 .strafeTo(new Vector2d(55, 50)) //back up
-                .afterTime(0.1,actionsBackpack.intakeBall(1))
+                .afterTime(0.1,actionsBackpack.intakeBall(-1))
                 .strafeTo(new Vector2d(60, 70)) //hit again
-                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false))
+                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false, drive))
                 .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))
@@ -78,11 +83,15 @@ public class Red3Back_Corn extends LinearOpMode
 
             Actions.runBlocking(redRun);
 
+
         }
         else
         {
             throw new RuntimeException();
         }
+
+        blackboard.put(ENDPOSE, drive.localizer.getPose());
+
     }
 }
 
