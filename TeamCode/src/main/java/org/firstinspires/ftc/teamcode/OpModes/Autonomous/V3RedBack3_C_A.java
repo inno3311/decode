@@ -70,7 +70,7 @@ public class V3RedBack3_C_A extends LinearOpMode
                 .waitSeconds(.5)
                 .afterTime(0,actionsBackpack.sorterRightBall(1))
                 .afterTime(.1,actionsBackpack.sorterRightBall(0))
-//                .afterTime(0, actionsBackpack.mezAction(12, 3, 860, 45)) //shooting 2nd time
+                .afterTime(0, actionsBackpack.shootBall(12, 3, drive.localizer.getPose(), false, drive)) //shooting 2nd time
                 .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
                 .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
 //                .waitSeconds(5.2)

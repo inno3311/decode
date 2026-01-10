@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -22,6 +23,9 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import java.util.List;
 
 @Autonomous(name="RedBack3_Corn", group="Linear OpMode")
 public class Red3Back_Corn extends LinearOpMode
@@ -33,6 +37,10 @@ public class Red3Back_Corn extends LinearOpMode
 
     V3ActionsBackpack actionsBackpack;
 
+    AprilTagLocalizer aprilTagLocalizer;
+
+    List<AprilTagDetection> list;
+
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -40,13 +48,14 @@ public class Red3Back_Corn extends LinearOpMode
         blackboard.put(ALLIANCE, "RED");
 
 
-
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry),
+            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry),
                 new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap));
 
         // ZOE update with starting location
-        Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
+        //Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
+        Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
@@ -55,24 +64,31 @@ public class Red3Back_Corn extends LinearOpMode
             waitForStart();
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-
-                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
+//                .afterTime(0, actionsBackpack.read_obelisk(list))
+//                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
+            //    .afterTime(0, actionsBackpack.shootBallManual(9,3, 1500,35, drive))  //good for back zone
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))  //good for back zone
 //                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
                 .waitSeconds(10)
 
+//                .afterTime(1,actionsBackpack.intakeBall(-1))
+//                .splineTo(new Vector2d(36,52),Math.toRadians(90),new TranslationalVelConstraint(10))
+//                .afterTime(1,actionsBackpack.intakeBall(0))
+
+
                 //picking up from corner
-                .afterTime(1,actionsBackpack.intakeBall(-1))
-                .turnTo(Math.toRadians (90))
-                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-                .strafeTo(new Vector2d(55, 70)) //hit corner balls.
-                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-                .strafeTo(new Vector2d(55, 50)) //back up
-                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-                .strafeTo(new Vector2d(60, 70)) //hit again
-                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false, drive))
-                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
-                .waitSeconds(5)
-                .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))
+//                .afterTime(1,actionsBackpack.intakeBall(-1))
+//                .turnTo(Math.toRadians (90))
+//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
+//                .strafeTo(new Vector2d(55, 70)) //hit corner balls.
+//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
+//                .strafeTo(new Vector2d(55, 50)) //back up
+//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
+//                .strafeTo(new Vector2d(60, 70)) //hit again
+//                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false, drive))
+//                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
+//                .waitSeconds(5)
+//                .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))
 
                 ; //do not remove ;
 

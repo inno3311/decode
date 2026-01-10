@@ -35,8 +35,10 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.List;
 import java.util.Locale;
 
 @Autonomous(name="read_obelisk", group="Linear OpMode")
@@ -44,6 +46,8 @@ public class read_obelisk extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;
     AprilTagLocalizer aprilTagLocalizer;
+
+    List<AprilTagDetection> list;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -59,13 +63,34 @@ public class read_obelisk extends LinearOpMode
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-            telemetry.addData("data", aprilTagLocalizer.getCurrentDetections());
+            boolean found = false;
+
+            while (!found)
+            {
+                list = aprilTagLocalizer.getCurrentDetections();
+                if (!list.isEmpty())
+                {
+                    AprilTagDetection targetTag = null;
+
+                    for (AprilTagDetection detection : list) {
+                        int id = detection.id;
+
+                        if (id >= 21 && id <= 23) {
+                            targetTag = detection;
+                            found = true;
+                            break; // stop once found
+                        }
+                    }
+                }
+            }
+
+            //telemetry.addData("data", list.toString());
             telemetry.update();
             waitForStart();
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-//                    .afterTime(0, actionsBackpack.read_obelisk()
-//                    .waitSeconds(6)
+                    .afterTime(0, actionsBackpack.read_obelisk(list))
+                    .waitSeconds(10)
                 ; //do not remove ;
 
 
