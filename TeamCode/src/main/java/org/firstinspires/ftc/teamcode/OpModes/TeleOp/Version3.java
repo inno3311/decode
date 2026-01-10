@@ -194,13 +194,13 @@ public class Version3 extends LinearOpMode
             // Color sensor and intake
             if (gamepad1.right_trigger > 0.1)
             {
-                // If green (<200), go right
+                // If green (<200), intake to the LEFT side (looking from the back)
                 if (hue <= 200)
                 {
                     intake.setPower(-.8);
                     intakeSort.setPower(1);
                 }
-                // if purple (>200) go left
+                // if purple (>200) intake to the RIGHT side (looking from the back)
                 else
                 {
                     intake.setPower(-.8);

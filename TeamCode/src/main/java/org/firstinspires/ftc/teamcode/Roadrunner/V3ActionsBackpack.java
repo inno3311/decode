@@ -25,6 +25,12 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+
 public class V3ActionsBackpack
 {
     private static final Logger log = LoggerFactory.getLogger(V3ActionsBackpack.class);
@@ -37,9 +43,12 @@ public class V3ActionsBackpack
     //Transfer transfer;
     FireControl fireControl;
     ElapsedTime time;
+    // Looking from the BACK TO FRONT, Right is purple, left is green
+    SorterLeft sorterLeft; // purple
+    SorterRight sorterRight; // green
+    artifact_rail_detection railDetection;
+    AprilTagLocalizer aprilTagLocalizer;
 
-    SorterLeft sorterLeft;
-    SorterRight sorterRight;
     Intake_sort intakeSort;
 
     ColorSensor colorSensor;
@@ -288,37 +297,6 @@ public class V3ActionsBackpack
         };
     }
 
-    public Action loadBall(double speed)
-    {
-        return new Action()
-        {
-            //private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket)
-            {
-
-
-                if (!loadInProgress)
-                {
-                    loadInProgress = true;
-                    loadTimeStart = time.seconds();
-                    sorterRight.driveServo(1);
-
-                    return false;
-                }
-
-                if (loadTimeStart - time.seconds() > 1.0)
-                {
-                    sorterRight.driveServo(0);
-                    loadInProgress = false;
-                    return true;
-                }
-
-                return false;
-            }
-        };
-    }
 
     public Action intakeBall(double speed)
     {
@@ -410,12 +388,12 @@ public class V3ActionsBackpack
                 }
                 intake.setPower(1);
 
-                if (hue <= 200)
+                if (hue <= 200) // if GREEN intake to the LEFT side (looking from the back)
                 {
                     intake.setPower(-1);
                     intakeSort.setPower(1);
                 }
-                // if purple (>200) go left
+                // if purple (>200) intake to the RIGHT side (looking from the back)
                 else
                 {
                     intake.setPower(-1);
@@ -433,4 +411,97 @@ public class V3ActionsBackpack
             }
         };
     }
+//    public Action loadBall(double speed)
+//    {
+//        return new Action()
+//        {
+//            //private boolean initialized = false;
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+//            {
+//
+//
+//                if (!loadInProgress)
+//                {
+//                    loadInProgress = true;
+//                    loadTimeStart = time.seconds();
+//                    sorterRight.driveServo(1);
+//
+//                    return false;
+//                }
+//
+//                if (loadTimeStart - time.seconds() > 1.0)
+//                {
+//                    sorterRight.driveServo(0);
+//                    loadInProgress = false;
+//                    return true;
+//                }
+//
+//                return false;
+//            }
+//        };
+//    }
+
+    public Action loadBall(double obelisk_id)
+    {
+        ArrayList<String> order;
+        if (obelisk_id == 21) // GPP
+        {
+            order = new ArrayList<>(Arrays.asList("green", "purple", "purple"));
+        }
+        else if (obelisk_id == 22) // PGP
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+        else //ID = 23 PPG
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+
+        double numBalls = railDetection.getNumBalls();
+        String shoot_color = order.get((int) (numBalls%3));
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                if (Objects.equals(shoot_color, "green"))
+                // green
+                {
+                    sorterLeft.driveServo(-1);
+                }
+                else
+                // purple
+                {
+                    sorterRight.driveServo(1);
+                }
+                return true;
+            }
+        };
+    }
+    public Action read_obelisk()
+    {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                int id_num = aprilTagLocalizer.getDetectionID();
+
+                if (id_num == 21) // GPP
+                {
+                    sorterRight.driveServo(1);
+                }
+                else if (id_num == 22) // PGP
+                {
+                    sorterLeft.driveServo(1);
+                }
+                else //ID = 23 PPG
+                {
+                    sorterRight.driveServo(1);
+                    sorterLeft.driveServo(1);
+                }
+                return true;
+            }
+        };
+    }
 }
+

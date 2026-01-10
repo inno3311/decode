@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -33,10 +34,11 @@ public class ActionsBackpack
     private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
-    // Looking from the BACK TO FRONT, Right is green, left is purple
+    // Looking from the BACK TO FRONT, Right is purple, left is green
     SorterLeft sorterLeft; // purple
     SorterRight sorterRight; // green
     artifact_rail_detection railDetection;
+    AprilTagLocalizer aprilTagLocalizer;
     Trigger lift;
     Hood hood;
     Transfer transfer;
@@ -427,10 +429,6 @@ public class ActionsBackpack
             }
         };
     }
-
-
-
-
     public Action loadBall(double obelisk_id)
     {
         ArrayList<String> order;
@@ -448,7 +446,7 @@ public class ActionsBackpack
         }
 
         double numBalls = railDetection.getNumBalls();
-        String shoot_color = order.get((int) ((numBalls+2)%3)+1);
+        String shoot_color = order.get((int) (numBalls%3));
         return new Action()
         {
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
@@ -463,6 +461,16 @@ public class ActionsBackpack
                 {
                     sorterRight.driveServo(1);
                 }
+                return true;
+            }
+        };
+    }
+    public Action read_obelisk()
+    {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                aprilTagLocalizer.getDetectionID();
                 return true;
             }
         };
