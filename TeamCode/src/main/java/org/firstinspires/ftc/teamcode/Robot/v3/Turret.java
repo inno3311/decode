@@ -110,9 +110,12 @@ public class Turret
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
-        double power = turretPID.calculate(-noralizedDeg * TICKS_PER_DEGREE, turret.getCurrentPosition());
-        power = Math.max(-0.25, Math.min(0.25, power));
-        turret.setPower(power);
+        if (Math.abs(noralizedDeg) <= 90)
+        {
+            double power = turretPID.calculate(-noralizedDeg * TICKS_PER_DEGREE, turret.getCurrentPosition());
+            power = Math.max(-0.25, Math.min(0.25, power));
+            turret.setPower(power);
+        }
 
         return noralizedDeg * TICKS_PER_DEGREE;
     }
