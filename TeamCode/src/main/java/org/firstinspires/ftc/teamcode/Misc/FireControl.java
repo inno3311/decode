@@ -144,7 +144,7 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = ((velocity * 1.375)/(2*Math.PI*shooterWheelRadius)) * 28;
+        double motorVelocity = ((velocity * 1.45)/(2*Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
@@ -159,14 +159,14 @@ public class FireControl
         {
             if (team) // Blue
             {
-                double x = 62 - robotPose.position.x;
-                double y = 62 - robotPose.position.y;
+                double x = -62 - robotPose.position.x;
+                double y = -62 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
             else // Red
             {
-                double x = 62 - robotPose.position.x;
-                double y = -62 - robotPose.position.y;
+                double x = -62 - robotPose.position.x;
+                double y = 62 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
 
@@ -179,25 +179,19 @@ public class FireControl
         }
 
 
-        telemetry.addData("Plan Distance", targetRange);
 
-        if (minimumAngle < calculateShallowerAngle(velocity,targetRange) && targetRange > 1)
+        if (targetRange > 2.5)
         {
-            targetAngle = calculateShallowerAngle(velocity, targetRange);
-            telemetry.addData("shallow angle", targetAngle);
-        }
-        else if (maxLaunchAngle > calculateSteeperAngle(velocity, targetRange)) //else
-        {
-            targetAngle = calculateSteeperAngle(velocity, targetRange);
-            telemetry.addData("steep angle", targetAngle);
+            targetAngle = 65;
+            velocity = calculateVelocity(65, targetRange);
         }
         else
         {
-            targetAngle = minimumAngle;
-            velocity = calculateVelocity(minimumAngle, targetRange);
-            telemetry.addData("Max Launch Angle", targetAngle);
+            velocity = 8.75;
+            targetAngle = calculateShallowerAngle(10, targetRange);
         }
 
+        telemetry.addData("Target Range", targetRange);
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 

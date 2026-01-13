@@ -244,10 +244,12 @@ public class AprilTagLocalizer
                   )
                 .build();
 
+//        VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
-        VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+
 //         Create the vision portal the easy way.
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+
 //
 //        ExposureControl exposureControl =
 //            visionPortal.getCameraControl(ExposureControl.class);

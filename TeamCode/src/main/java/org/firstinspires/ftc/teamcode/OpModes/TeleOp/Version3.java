@@ -56,7 +56,6 @@ public class Version3 extends LinearOpMode
     double[] shooterParameters;
     int drive_mode = 0;
     double drive_mode_flag = 1;
-    double target_velocity = 0;
     double target_angle = 0;
     double flag2 = 0;
     boolean team = false; //false = red, true = blue
@@ -81,7 +80,9 @@ public class Version3 extends LinearOpMode
         time = new ElapsedTime();
 
         driveController = new DriveController(hardwareMap,-1,1,1);
+
         fireControl = new FireControl(aprilTagLocalizer, telemetry);
+
         drive = new MecanumDrive(hardwareMap, null);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -263,18 +264,10 @@ public class Version3 extends LinearOpMode
 
             // Firesuit math
             shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose, team);
+            shooter.driveToVelocity(shooterParameters[1]);
             target_angle = shooterParameters[0];
 
             hood.driveToAngleTarget(target_angle);
-
-            if (gamepad1.bWasPressed() || gamepad2.bWasPressed())
-            {
-                shooter.driveToVelocity(shooterParameters[1]);
-            }
-            else if (gamepad1.a || gamepad2.a)
-            {
-                shooter.driveToVelocity(0);
-            }
 
             // Turret code
             double aiTurretHeading = 0;
@@ -289,22 +282,18 @@ public class Version3 extends LinearOpMode
 
 
             // Dashboard and telemetry
-            telemetry.addData("Robot Position", drive.localizer.getPose());
-
             TelemetryPacket packet = new TelemetryPacket();
             Canvas fieldOverlay = packet.fieldOverlay();
 
-//            telemetry.addData("x (in)", pose.position.x);
-//            telemetry.addData("y (in)", pose.position.y);
-//            telemetry.addData("heading (deg)",
-//                    Math.toDegrees(pose.heading.toDouble()));
-//
-//            telemetry.addData("Initial Target Velocity", initialTargetVelocity);
-//            telemetry.addData("Hood angle", hood.getAngle());
-//            telemetry.addData("Hood Position", hood.getPosition());
-//            telemetry.addLine("-----------------------------------------------------");
+            telemetry.addData("x (m)", pose.position.x * 0.0254);
+            telemetry.addData("y (m)", pose.position.y * 0.0254);
+            telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 
-            //Pose2d pose = drive.localizer.getPose();
+            telemetry.addData("Hood angle", hood.getAngle());
+            telemetry.addData("Hood Position", hood.getPosition());
+            telemetry.addLine("-----------------------------------------------------");
+
+//            Pose2d pose = drive.localizer.getPose();
 
 
             fieldOverlay.setStroke("#100FFF"); //
