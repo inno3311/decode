@@ -63,8 +63,32 @@ public class Red3Back_Corn extends LinearOpMode
 
             waitForStart();
 
+            boolean found = false;
+            int searchCount = 0;
+            while (!found && searchCount < 100)
+            {
+                list = aprilTagLocalizer.getCurrentDetections();
+                if (!list.isEmpty())
+                {
+                    AprilTagDetection targetTag = null;
+
+                    for (AprilTagDetection detection : list) {
+                        int id = detection.id;
+
+                        if (id >= 21 && id <= 23) {
+                            targetTag = detection;
+                            found = true;
+                            break; // stop once found
+                        }
+                    }
+                }
+                else {
+                    searchCount++;
+                }
+            }
+
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-//                .afterTime(0, actionsBackpack.read_obelisk(list))
+                .afterTime(0, actionsBackpack.read_obelisk(list))
 //                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
             //    .afterTime(0, actionsBackpack.shootBallManual(9,3, 1500,35, drive))  //good for back zone
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))  //good for back zone

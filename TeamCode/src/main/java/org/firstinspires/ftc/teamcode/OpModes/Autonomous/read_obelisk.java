@@ -64,8 +64,8 @@ public class read_obelisk extends LinearOpMode
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
             boolean found = false;
-
-            while (!found)
+            int searchCount = 0;
+            while (!found && searchCount < 100)
             {
                 list = aprilTagLocalizer.getCurrentDetections();
                 if (!list.isEmpty())
@@ -81,6 +81,9 @@ public class read_obelisk extends LinearOpMode
                             break; // stop once found
                         }
                     }
+                }
+                else {
+                    searchCount++;
                 }
             }
 

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.UItility;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 
-@TeleOp(name = "Shooter")
+@Disabled
+@TeleOp(name = "Shooter", group = "Utility")
 public class ShooterTest extends OpMode
 {
     Shooter shooter;

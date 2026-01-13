@@ -56,11 +56,16 @@ public class V3ActionsBackpack
 
     ColorSensor colorSensor;
 
+    enum color {GREEN, PURPLE};
+
+    color[][] matrix = new color[3][9];
+
+
 
     double loadTimeStart;
     boolean loadInProgress;
 
-
+    int aprilTag_Id = 0;
 
     private enum FireState {
         INIT,
@@ -95,6 +100,36 @@ public class V3ActionsBackpack
 
         loadInProgress = false;
 
+
+        matrix[0][0] = color.GREEN;
+        matrix[0][1] = color.PURPLE;
+        matrix[0][2] = color.PURPLE;
+        matrix[0][3] = color.GREEN;
+        matrix[0][4] = color.PURPLE;
+        matrix[0][5] = color.PURPLE;
+        matrix[0][6] = color.GREEN;
+        matrix[0][7] = color.PURPLE;
+        matrix[0][8] = color.PURPLE;
+
+        matrix[1][0] = color.PURPLE;
+        matrix[1][1] = color.GREEN;
+        matrix[1][2] = color.PURPLE;
+        matrix[1][3] = color.PURPLE;
+        matrix[1][4] = color.GREEN;
+        matrix[1][5] = color.PURPLE;
+        matrix[1][6] = color.PURPLE;
+        matrix[1][7] = color.GREEN;
+        matrix[1][8] = color.PURPLE;
+
+        matrix[2][0] = color.PURPLE;
+        matrix[2][1] = color.PURPLE;
+        matrix[2][2] = color.GREEN;
+        matrix[2][3] = color.PURPLE;
+        matrix[2][4] = color.PURPLE;
+        matrix[2][5] = color.GREEN;
+        matrix[2][6] = color.PURPLE;
+        matrix[2][7] = color.PURPLE;
+        matrix[2][8] = color.GREEN;
 
 //        shooter.setPID(1.0,0.1,0.1,14);
 //        PIDFCoefficients cos = shooter.getPID();
@@ -449,7 +484,7 @@ public class V3ActionsBackpack
         }
         else //ID = 23 PPG
         {
-            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+            order = new ArrayList<>(Arrays.asList("purple", "purple", "green"));
         }
 
         double numBalls = railDetection.getNumBalls();
@@ -483,17 +518,20 @@ public class V3ActionsBackpack
                     if (detection.id == 21)
                     {
                         //sorterRight.driveServo(1);
+                        aprilTag_Id = 21;
                         break;
                     }
                     else if (detection.id == 22)
                     {
                         //sorterLeft.driveServo(1);
+                        aprilTag_Id = 22;
                         break;
                     }
                     else if (detection.id == 23)
                     {
                         //sorterRight.driveServo(1);
                         //sorterLeft.driveServo(1);
+                        aprilTag_Id = 23;
                         break;
                     }
                     else
@@ -574,7 +612,19 @@ public class V3ActionsBackpack
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
-                        sorterLeft.driveServo(-1);
+
+                        color c = matrix[aprilTag_Id-21][timesFired];
+                        if (c == color.PURPLE)
+                        {
+                            sorterLeft.driveServo(-1);
+                        }
+                        else
+                        {
+                            sorterRight.driveServo(-1);
+                        }
+
+                        //sorterLeft.driveServo(-1);
+
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
 
@@ -584,6 +634,7 @@ public class V3ActionsBackpack
                         if (time.seconds() - transTime > 1)
                         {
                             sorterLeft.driveServo(0);
+                            sorterRight.driveServo(0);
                             if (timesFired == numRounds)
                             {
                                 state = FireState.DONE;

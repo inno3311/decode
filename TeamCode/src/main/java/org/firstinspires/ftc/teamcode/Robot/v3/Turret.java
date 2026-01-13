@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Robot.v3;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,13 +11,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.algorithms.TurretPID;
 
+@Config
 public class Turret
 {
+    public static class Params
+    {
+        public static double P = 0.0055;
+        public static double I = 0;
+        public static double D = 0.0001;
+    }
+
+    public static Params pid = new Params();
+
     DcMotorEx turret;
-    final double TICKS_PER_DEGREE  = 5.4616; // (Small gear 54 teeth, Big gear 315: 0.1741) (Ticks per rotation 384.5) (360/(0.1741 * 384.5))
-    TurretPID turretPID = new TurretPID(0.015, 0, 0.00075);//0.015, 0, 0.00075
+    final double TICKS_PER_DEGREE  = 5.5; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
+    TurretPID turretPID = new TurretPID(Params.P, Params.I, Params.D);// POWER: 0.25 0.0125, 0, 0.000125    POWER: 0.35 P: 0.0055 D: 0.0005   POWER: 0.5 P:  D:
     FtcDashboard dashboard;
     Telemetry telemetry;
+    double target = 0;
 
     public int RED_TARGET_X = -62;
     public int RED_TARGET_Y = 62;
@@ -110,7 +121,7 @@ public class Turret
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
-        if (Math.abs(noralizedDeg) <= 90)
+        if (Math.abs(noralizedDeg) <= 88)
         {
             double power = turretPID.calculate(-noralizedDeg * TICKS_PER_DEGREE, turret.getCurrentPosition());
             power = Math.max(-0.25, Math.min(0.25, power));
@@ -134,6 +145,47 @@ public class Turret
     public double getPosition()
     {
         return turret.getCurrentPosition();
+    }
+
+    public void tuning(Gamepad gamepad)
+    {
+        TelemetryPacket packet = new TelemetryPacket();
+        dashboard.sendTelemetryPacket(packet);
+
+        turretPID.setPID(Params.P, Params.I, Params.D);
+
+        if (gamepad.y)
+        {
+            target = 0;
+            double power = turretPID.calculate(target, turret.getCurrentPosition());
+            power = Math.max(-0.5, Math.min(0.5, power));
+            turret.setPower(power);
+        }
+        else if (gamepad.b)
+        {
+            target = -100;
+            double power = turretPID.calculate(target, turret.getCurrentPosition());
+            power = Math.max(-0.5, Math.min(0.5, power));
+            turret.setPower(power);
+        }
+        else if (gamepad.a)
+        {
+            target = 300;
+            double power = turretPID.calculate(target, turret.getCurrentPosition());
+            power = Math.max(-0.5, Math.min(0.5, power));
+            turret.setPower(power);
+        }
+        else if (gamepad.x)
+        {
+            target = -150;
+            double power = turretPID.calculate(target, turret.getCurrentPosition());
+            power = Math.max(-0.5, Math.min(0.5, power));
+            turret.setPower(power);
+        }
+
+        packet.put("target", target);
+        packet.put("Current Position", turret.getCurrentPosition());
+        packet.put("Zero", 0);
     }
 
 }
