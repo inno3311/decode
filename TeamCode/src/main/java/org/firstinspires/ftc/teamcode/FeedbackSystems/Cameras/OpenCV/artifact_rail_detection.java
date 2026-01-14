@@ -91,14 +91,14 @@ public class artifact_rail_detection extends OpenCvPipeline
          this.bottom_y_intercept = 40;
          this.top_y_intercept = 0;
          // x_max, x_min, y_max, y_min
-         this.detection_limits = new Scalar(70, 280, 48, 115);
+         this.detection_limits = new Scalar(40, 260, 48, 115);
       }
 
       if (side == -1)
       {
          this.bottom_y_intercept = 55;
          this.top_y_intercept = 30;
-         this.detection_limits = new Scalar(70, 280, 48, 115);
+         this.detection_limits = new Scalar(40, 280, 48, 115);
       }
    }
 
@@ -285,6 +285,10 @@ public class artifact_rail_detection extends OpenCvPipeline
       Imgproc.line(drawings, new Point(leftmost_object_point, 0), new Point(leftmost_object_point, y_resolution), red_color);
       Imgproc.line(drawings, new Point(rightmost_object_point, 0), new Point(rightmost_object_point, y_resolution), red_color);
       double number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/width_to_object_ratio);
+      if (number_of_objects < 0)
+      {
+         number_of_objects = 0;
+      }
       this.artifact_points = artifact_points;
       telemetry.addData("Artifact Points", artifact_points);
       telemetry.addData("left", leftmost_object_point);
