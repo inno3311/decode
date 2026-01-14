@@ -13,6 +13,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvInternalCamera2;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.opencv.core.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +157,7 @@ public class artifact_rail_detection extends OpenCvPipeline
       double rightmost_object_point = 0;
 //      telemetry.addData("pixel angle", pixel_angle);
 
-
+      Imgproc.resize(input, input, new Size(320, 180), 0, 0, Imgproc.INTER_AREA);
       if (side == -1)
       {
          Core.flip(input, input, 1);
