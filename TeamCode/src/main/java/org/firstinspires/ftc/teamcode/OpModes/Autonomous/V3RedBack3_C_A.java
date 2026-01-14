@@ -27,17 +27,25 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import java.util.List;
 
 @Autonomous(name="V3_RedBack3_C_A", group="Linear OpMode")
 public class V3RedBack3_C_A extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;
 
+    AprilTagLocalizer aprilTagLocalizer;
+
+    List<AprilTagDetection> list;
+
     @Override
     public void runOpMode() throws InterruptedException
     {
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(new AprilTagLocalizer(hardwareMap), telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap));
 
         // ZOE update with starting location
@@ -49,35 +57,55 @@ public class V3RedBack3_C_A extends LinearOpMode
 
             waitForStart();
 
+            boolean found = false;
+            int searchCount = 0;
+            while (!found && searchCount < 5000)
+            {
+                list = aprilTagLocalizer.getCurrentDetections();
+                if (!list.isEmpty())
+                {
+                    AprilTagDetection targetTag = null;
+
+                    for (AprilTagDetection detection : list) {
+                        int id = detection.id;
+
+                        if (id >= 21 && id <= 23) {
+                            targetTag = detection;
+                            found = true;
+                            telemetry.addData("id", id);
+                            telemetry.update();
+                            actionsBackpack.taglist = list;
+                            actionsBackpack.aprilTag_Id = id;
+                            break; // stop once found
+                        }
+                    }
+                }
+                else {
+                    searchCount++;
+                    telemetry.addData("searchCount", searchCount);
+                    telemetry.update();
+                }
+            }
+
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                //.afterTime(0,actionsBackpack.mezRampUp(1))
-//                .afterTime(0, actionsBackpack.mezAction(13, 3, 950, 45)) //shooting 1st time
+                //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1400,35, drive))  //fire first set of three balls
 
-                //.afterTime(0,actionsBackpack.sorterRightBall(1))
-                //.afterTime(1,actionsBackpack.sorterRightBall(0))
-//                .waitSeconds(3)
-//                .afterTime(0,actionsBackpack.intakeColor())
-//                .afterTime(0,actionsBackpack.setHood(35))
-//                .waitSeconds(6)
-
-
-                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155)) //shooting 1st time from back triangle
-                .waitSeconds(6)
-                //.afterTime(0,actionsBackpack.intakeBall(-1))
-                //.afterTime(0,actionsBackpack.intakeSortBall(1))
+                .waitSeconds(7)
                 .afterTime(0,actionsBackpack.intakeColor(7))
-                .splineTo(new Vector2d(36,70),Math.toRadians(90),new TranslationalVelConstraint(10)) //1st set pickup
+                .splineTo(new Vector2d(36,70),Math.toRadians(90),new TranslationalVelConstraint(15)) //1st set pickup
                 .waitSeconds(.5)
-                .afterTime(0,actionsBackpack.sorterRightBall(1))
-                .afterTime(.1,actionsBackpack.sorterRightBall(0))
-                .afterTime(0, actionsBackpack.shootBall(3, drive.localizer.getPose(), false, drive)) //shooting 2nd time
                 .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
-                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
-//                .waitSeconds(5.2)
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))  //shooting 2nd time
+                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(90), new TranslationalVelConstraint(40))
+                .waitSeconds(7)
+                .afterTime(0,actionsBackpack.intakeColor(7))
+                .strafeTo(new Vector2d(-12, 55))
+                .strafeTo(new Vector2d(-12, 20))
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
+                .waitSeconds(7)
 //                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
-//                .afterTime(0,actionsBackpack.intakeBall(1))
 //                .strafeTo(new Vector2d(-12, 65), new TranslationalVelConstraint(20))
-//                .afterTime(0, actionsBackpack.mezAction(12, 2, 860, 45)) //shooting 3rd time
 //                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
                 .waitSeconds(4)
 //                .strafeToLinearHeading(new Vector2d(0, 45), Math.toRadians(180))

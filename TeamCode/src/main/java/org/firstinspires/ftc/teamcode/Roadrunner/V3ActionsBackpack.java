@@ -60,12 +60,13 @@ public class V3ActionsBackpack
 
     color[][] matrix = new color[3][9];
 
+    public List<AprilTagDetection> taglist;
 
 
     double loadTimeStart;
     boolean loadInProgress;
 
-    int aprilTag_Id = 0;
+    public int aprilTag_Id = 0;
 
     private enum FireState {
         INIT,
@@ -140,6 +141,7 @@ public class V3ActionsBackpack
 //
 //        // Write CSV header
 //        svgLogger.log("power,vel,hood angle");
+        railDetection = new artifact_rail_detection(fireControl.telemetry);
     }
 
     public Action startLogging()
@@ -471,6 +473,20 @@ public class V3ActionsBackpack
 //        };
 //    }
 
+    public Action readRamp()
+    {
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                double numBall = railDetection.getNumBalls();
+                telemetryPacket.put("NUM BALLS: ", numBall);
+                return true;
+            }
+
+        };
+    }
+
     public Action loadBall(double obelisk_id)
     {
         ArrayList<String> order;
@@ -512,8 +528,41 @@ public class V3ActionsBackpack
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket Packet) {
-                Packet.put("current detections", currentDetections);
-                for (AprilTagDetection detection: currentDetections)
+
+//                boolean found = false;
+//                int searchCount = 0;
+//                while (!found && searchCount < 5000)
+//                {
+//                    taglist = fireControl.localizer.getCurrentDetections();
+//                    if (!taglist.isEmpty())
+//                    {
+//                        AprilTagDetection targetTag = null;
+//
+//                        for (AprilTagDetection detection : taglist)
+//                        {
+//                            int id = detection.id;
+//
+//                            if (id >= 21 && id <= 23)
+//                            {
+//                                targetTag = detection;
+//                                found = true;
+//                                fireControl.telemetry.addData("id", id);
+//                                fireControl.telemetry.update();
+//                                break; // stop once found
+//                            }
+//                        }
+//                    }
+//                    else
+//                    {
+//                        searchCount++;
+//                        fireControl.telemetry.addData("searchCount", searchCount);
+//                        fireControl.telemetry.update();
+//                    }
+//                }
+
+                Packet.put("current detections", taglist);
+
+                for (AprilTagDetection detection: taglist)
                 {
                     if (detection.id == 21)
                     {
@@ -536,6 +585,7 @@ public class V3ActionsBackpack
                     }
                     else
                     {
+                        aprilTag_Id = 21;
                         continue;
                     }
                 }
@@ -566,6 +616,8 @@ public class V3ActionsBackpack
                 pose1 = drive.localizer.getPose();
                 double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), false);
 
+                color c;
+
                 switch (state)
                 {
                     case INIT:
@@ -574,8 +626,18 @@ public class V3ActionsBackpack
                         //shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(setvel);
                         hood.driveToAngleTarget(angle);
-                        state = FireState.SPINUP;
+                        state = FireState.TRANSFER_START;
 
+//                        c = matrix[aprilTag_Id-21][timesFired];
+//                        if (c == color.PURPLE)
+//                        {
+//                            sorterLeft.driveServo(-1);
+//                        }
+//                        else
+//                        {
+//                            sorterRight.driveServo(1);
+//                        }
+                        packet.put("MOTIF", aprilTag_Id);
                         packet.put("STATE","INIT");
                         break;
                     case SPINUP:
@@ -612,26 +674,30 @@ public class V3ActionsBackpack
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
-
-                        color c = matrix[aprilTag_Id-21][timesFired];
-                        if (c == color.PURPLE)
+                        if (timesFired >= numRounds)
                         {
-                            sorterLeft.driveServo(-1);
+                            state = FireState.DONE;
                         }
                         else
                         {
-                            sorterRight.driveServo(-1);
+                            c = matrix[aprilTag_Id - 21][timesFired];
+                            if (c == color.PURPLE)
+                            {
+                                sorterLeft.driveServo(-1);
+                            }
+                            else
+                            {
+                                sorterRight.driveServo(1);
+                            }
+
+                            transTime = time.seconds();
+                            state = FireState.TRANSFER_STOP;
                         }
-
-                        //sorterLeft.driveServo(-1);
-
-                        transTime = time.seconds();
-                        state = FireState.TRANSFER_STOP;
 
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
-                        if (time.seconds() - transTime > 1)
+                        if (time.seconds() - transTime > .7)
                         {
                             sorterLeft.driveServo(0);
                             sorterRight.driveServo(0);

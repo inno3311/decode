@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
@@ -47,6 +48,7 @@ public class read_obelisk extends LinearOpMode
     V3ActionsBackpack actionsBackpack;
     AprilTagLocalizer aprilTagLocalizer;
 
+    artifact_rail_detection railDetection;
     List<AprilTagDetection> list;
 
     @Override
@@ -65,9 +67,12 @@ public class read_obelisk extends LinearOpMode
 
             boolean found = false;
             int searchCount = 0;
-            while (!found && searchCount < 100)
+            while (!found && searchCount < 1000)
             {
                 list = aprilTagLocalizer.getCurrentDetections();
+                telemetry.addData("data", list.toString());
+                telemetry.addData("data", searchCount);
+                telemetry.update();
                 if (!list.isEmpty())
                 {
                     AprilTagDetection targetTag = null;
@@ -87,12 +92,19 @@ public class read_obelisk extends LinearOpMode
                 }
             }
 
-            //telemetry.addData("data", list.toString());
+            telemetry.addData("data", list.toString());
+            telemetry.addData("found", found);
+
+
+            railDetection = new artifact_rail_detection(telemetry);
+            double numBalls = railDetection.getNumBalls();
+            telemetry.addData("numBalls", numBalls);
             telemetry.update();
+
             waitForStart();
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                    .afterTime(0, actionsBackpack.read_obelisk(list))
+                    .afterTime(0, actionsBackpack.readRamp())
                     .waitSeconds(10)
                 ; //do not remove ;
 

@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTag
 
 public class FireControl
 {
-    AprilTagLocalizer localizer;
-    Telemetry telemetry;
+    public AprilTagLocalizer localizer;
+    public Telemetry telemetry;
     private final double g = 9.8;//meter/sec
 
     //Fly Wheel Stats
