@@ -144,16 +144,17 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = ((velocity * 1.45)/(2*Math.PI*shooterWheelRadius)) * 28;
+        double motorVelocity = ((velocity * 1.4)/(2*Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
     }
 
-    public double[] firingSuite(double velocity, Pose2d robotPose, boolean team)
+    public double[] firingSuite(Pose2d robotPose, boolean team)
     {
+        double velocity;
         double targetAngle;
-        double targetRange = 0;
+        double targetRange;
 
         try
         {
@@ -179,26 +180,20 @@ public class FireControl
         }
 
 
-
         if (targetRange > 2.5)
         {
             targetAngle = 65;
-            velocity = calculateVelocity(65, targetRange);
+            velocity = calculateVelocity(67, targetRange);
         }
         else
         {
-            velocity = 8.75;
-            targetAngle = calculateShallowerAngle(10, targetRange);
+            velocity = (targetRange - 2.2) + 9;
+            targetAngle = calculateSteeperAngle(velocity, targetRange);
         }
 
         telemetry.addData("Target Range", targetRange);
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
-
-    private double getRange()
-    {
-        return Math.sqrt(Math.pow(localizer.getTagRange(),2) - Math.pow(localizer.getTagZ(),2));
-    }
 
 }

@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.algorithms.TurretPID;
 
@@ -16,7 +18,7 @@ public class Turret
 {
     public static class Params
     {
-        public static double P = 0.0075;
+        public static double P = 0.0125;
         public static double I = 0;
         public static double D = 0.0175;
     }
@@ -24,19 +26,13 @@ public class Turret
     public static Params pid = new Params();
 
     DcMotorEx turret;
-    final double TICKS_PER_DEGREE  = 5.5; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
+    final double TICKS_PER_DEGREE  = 6.2; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
     TurretPID turretPID = new TurretPID(Params.P, Params.I, Params.D);
-    //POWER: 0.25 0.0125, 0, 0.000125    POWER: 0.35 P: 0.0055 D: 0.0005   POWER: 0.5 P: 0.0055  D: 0.01    POWER 0.75 P: 0.00575 D: 0.015  POWER 1 P: 0.0075 D: 0.0175
+    //POWER: 0.25 0.0125, 0, 0.000125    POWER: 0.35 P: 0.0055 D: 0.0005   POWER: 0.5 P: 0.0055  D: 0.01    POWER 0.75 P: 0.00575 D: 0.015  POWER 1 P: 0.0125 D: 0.0175
+    TouchSensor turretLimit;
     FtcDashboard dashboard;
     Telemetry telemetry;
     double target = 0;
-
-    public int RED_TARGET_X = -62;
-    public int RED_TARGET_Y = 62;
-    public int BLUE_TARGET_X = -55;
-    public int BLUE_TARGET_Y = -55;
-
-    boolean team;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry)
     {
@@ -45,11 +41,11 @@ public class Turret
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turret.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        turretLimit = hardwareMap.get(TouchSensor.class, "turretLimit");
+
         dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
         dashboard.sendTelemetryPacket(packet);
-
-        team = false;
 
         this.telemetry = telemetry;
     }
@@ -93,21 +89,23 @@ public class Turret
         turret.setPower(0);
     }
 
-    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg)
+    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, boolean team)
     {
         // Fixed field target
+
+        turretPID.setPID(Params.P, Params.I, Params.D);
 
         double targetX;
         double targetY;
         if (team) // Blue
         {
-            targetX = -60.0;
-            targetY = -60.0;
+            targetX = -62.0;
+            targetY = -62.0;
         }
         else
         {
-            targetX = -60.0;
-            targetY =  60.0;
+            targetX = -62.0;
+            targetY =  62.0;
         }
 
         // Vector from robot to target
@@ -115,21 +113,35 @@ public class Turret
         double dy = targetY - robotY;
 
         // Absolute field angle to target
-        double targetAngleDeg = Math.toDegrees(Math.atan2(dy, dx));
+        double targetAngleDeg = Math.abs(180 + Math.toDegrees(Math.atan(dy/dx)));
+
+        telemetry.addData("TargetAngleDeg", targetAngleDeg);
 
         // Convert to robot-centric turret angle
-        double turretAngleDeg = targetAngleDeg - robotHeadingDeg;
+        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 90);
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
-        if (Math.abs(noralizedDeg) <= 88)
+        double targetInTicks = -noralizedDeg * TICKS_PER_DEGREE;
+
+        if (targetInTicks > 0 && targetInTicks < 1115)
         {
-            double power = turretPID.calculate(-noralizedDeg * TICKS_PER_DEGREE, turret.getCurrentPosition());
+            double power = turretPID.calculate(targetInTicks, turret.getCurrentPosition());
             power = Math.max(-1, Math.min(1, power));
             turret.setPower(power);
         }
+        else
+        {
+            turret.setPower(0);
+        }
 
-        return noralizedDeg * TICKS_PER_DEGREE;
+        TelemetryPacket packet = new TelemetryPacket();
+        dashboard.sendTelemetryPacket(packet);
+        packet.put("target", targetInTicks);
+        packet.put("Current Position", turret.getCurrentPosition());
+        packet.put("Zero", 0);
+
+        return noralizedDeg;
     }
     public double normalizeDegrees(double angle)
     {
@@ -138,14 +150,37 @@ public class Turret
         return angle;
     }
 
-    void setTeam(boolean isBlue)
-    {
-        team = isBlue;
-    }
-
     public double getPosition()
     {
         return turret.getCurrentPosition();
+    }
+
+    public void driveToPosition(double target)
+    {
+        double power = turretPID.calculate(target, turret.getCurrentPosition());
+        power = Math.max(-1, Math.min(1, power));
+        turret.setPower(power);
+    }
+
+    public void zero(Gamepad gamepad)
+    {
+        if (!turretLimit.isPressed() && gamepad.left_stick_x == 0)
+        {
+            if (gamepad.left_stick_x != 0)
+            {
+                turret.setPower(gamepad.left_stick_x/3);
+            }
+            else
+            {
+                turret.setPower(-0.15);
+            }
+        }
+        else
+        {
+            turret.setPower(0);
+            turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 
     public void tuning(Gamepad gamepad)

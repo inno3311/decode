@@ -159,7 +159,7 @@ public class V3ActionsBackpack
         };
     }
 
-    public Action shootBall(double velocity, int numRounds, Pose2d pose2d, boolean team, MecanumDrive drive)
+    public Action shootBall(int numRounds, Pose2d pose2d, boolean team, MecanumDrive drive)
     {
 
         return new Action()
@@ -178,14 +178,14 @@ public class V3ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), team);
 
                 switch (state)
                 {
                     case INIT:
                         timesFired = 0;
 
-                        shooterParameters = fireControl.firingSuite(velocity, pose1, team);
+                        shooterParameters = fireControl.firingSuite(pose1, team);
                         shooter.driveToVelocity(shooterParameters[1]);
                         hood.driveToAngleTarget(shooterParameters[0]);
                         state = FireState.SPINUP;
@@ -564,7 +564,7 @@ public class V3ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()));
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), false);
 
                 switch (state)
                 {

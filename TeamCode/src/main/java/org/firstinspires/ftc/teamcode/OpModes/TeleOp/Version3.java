@@ -52,16 +52,23 @@ public class Version3 extends LinearOpMode
     FireControl fireControl;
     ElapsedTime time;
     ColorSensor colorSensor;
-    double initialTargetVelocity = 10;
     double[] shooterParameters;
     int drive_mode = 0;
     double drive_mode_flag = 1;
     double target_angle = 0;
-    double flag2 = 0;
     boolean team = false; //false = red, true = blue
     double startX = 0;
     double startY = 0;
     double startYaw = 180;
+
+    public enum TurretState
+    {
+        resetting,
+        tracking,
+        stopped,
+    }
+
+    TurretState state = TurretState.stopped;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -140,11 +147,11 @@ public class Version3 extends LinearOpMode
 //            telemetry.addData("hue", hue);
 
             // Set team for turret tracking and firesuit
-            if (gamepad2.left_stick_button)
+            if (gamepad2.right_stick_button)
             {
                 team = false; // Red
             }
-            else if (gamepad2.right_stick_button)
+            else if (gamepad2.left_stick_button)
             {
                 team = true; // Blue
             }
@@ -190,16 +197,15 @@ public class Version3 extends LinearOpMode
             // Color sensor and intake
             if (gamepad1.right_trigger > 0.1)
             {
+                intake.setPower(-1);
                 // If green (<200), intake to the LEFT side (looking from the back)
                 if (hue <= 200)
                 {
-                    intake.setPower(-.8);
                     intakeSort.setPower(1);
                 }
                 // if purple (>200) intake to the RIGHT side (looking from the back)
                 else
                 {
-                    intake.setPower(-.8);
                     intakeSort.setPower(-1);
                 }
             }
@@ -219,7 +225,7 @@ public class Version3 extends LinearOpMode
             }
 
             // Load ball
-            if (gamepad1.left_bumper && !gamepad1.a)
+            if (gamepad2.left_bumper && !gamepad1.a)
             {
                 sorterLeft.driveServo(-1);
             }
@@ -229,7 +235,7 @@ public class Version3 extends LinearOpMode
 
             }
 
-            if (gamepad1.right_bumper && !gamepad1.a)
+            if (gamepad2.right_bumper && !gamepad1.a)
             {
                 sorterRight.driveServo(1);
             }
@@ -239,7 +245,7 @@ public class Version3 extends LinearOpMode
             }
 
             // Fire the ball! Ensure sorters are off.
-            if (gamepad1.y)
+            if (gamepad1.y || gamepad2.y)
             {
                 trigger.driveServo(1);
                 sorterRight.driveServo(0);
@@ -250,34 +256,40 @@ public class Version3 extends LinearOpMode
                 trigger.driveServo(0);
             }
 
-            // Adjust Velocity
-            if (gamepad2.dpad_up && flag2 < time.seconds())
-            {
-                initialTargetVelocity += 0.5;
-                flag2 = time.seconds() + 0.25;
-            }
-            else if (gamepad2.dpad_down  && flag2 < time.seconds())
-            {
-                initialTargetVelocity -= 0.5;
-                flag2 = time.seconds() + 0.25;
-            }
 
             // Firesuit math
-            shooterParameters = fireControl.firingSuite(initialTargetVelocity, pose, team);
-            shooter.driveToVelocity(shooterParameters[1]);
-            target_angle = shooterParameters[0];
+            shooterParameters = fireControl.firingSuite(pose, team);
 
-            hood.driveToAngleTarget(target_angle);
+            shooter.driveToVelocity(shooterParameters[1]);
+            hood.driveToAngleTarget(shooterParameters[0]);
+
 
             // Turret code
             double aiTurretHeading = 0;
-            if (gamepad2.left_bumper)
+            if (gamepad2.b)
             {
-                aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
+                state = TurretState.resetting;
             }
-            else
+            else if (gamepad2.x)
             {
-                turret.stop();
+                state = TurretState.tracking;
+            }
+            else if (gamepad2.a)
+            {
+                state = TurretState.stopped;
+            }
+
+            switch (state)
+            {
+                case resetting:
+                    turret.zero(gamepad2);
+                    break;
+                case tracking:
+                    aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()), team);
+                    break;
+                case stopped:
+                    turret.stop();
+                    break;
             }
 
 
@@ -291,35 +303,29 @@ public class Version3 extends LinearOpMode
 
             telemetry.addData("Hood angle", hood.getAngle());
             telemetry.addData("Hood Position", hood.getPosition());
+
+            telemetry.addData("Turret Position", turret.getPosition());
             telemetry.addLine("-----------------------------------------------------");
 
-//            Pose2d pose = drive.localizer.getPose();
 
+//            fieldOverlay.setStroke("#100FFF"); //
+//            fieldOverlay.strokeLine(
+//                pose.position.x, pose.position.y, -62, 62);
+//
+//            fieldOverlay.setStroke("#3F51B5"); // Blue
+//            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
+//            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
+//                    pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
+//                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
+//
+//            fieldOverlay.setStroke("#FF0000"); // Red
+//            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
+//                    pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90),
+//                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90));
+//
+//            // Target dot
+//            fieldOverlay.fillCircle(-62, 62, 2);
 
-            fieldOverlay.setStroke("#100FFF"); //
-            fieldOverlay.strokeLine(
-                pose.position.x, pose.position.y,
-                turret.RED_TARGET_X,
-                turret.RED_TARGET_Y
-            );
-
-            fieldOverlay.setStroke("#3F51B5"); // Blue
-            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
-            fieldOverlay.strokeLine(
-                    pose.position.x,
-                    pose.position.y, pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
-                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
-
-
-            fieldOverlay.setStroke("#FF0000"); // Red
-            fieldOverlay.strokeLine(
-                pose.position.x,
-                    pose.position.y, pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()),
-                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()));
-
-
-            // Target dot
-            fieldOverlay.fillCircle(turret.RED_TARGET_X, turret.RED_TARGET_Y, 2);
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
