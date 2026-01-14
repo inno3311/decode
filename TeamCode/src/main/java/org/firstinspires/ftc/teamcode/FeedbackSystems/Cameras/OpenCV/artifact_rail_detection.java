@@ -75,9 +75,9 @@ public class artifact_rail_detection extends OpenCvPipeline
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
    public double side = 1;
-   public double width_to_object_ratio = 23.9;
+   public double width_to_object_ratio = 31;
 
-   double slope = -Math.tan(2.88);
+   double slope = -Math.tan(2.93);
 
    double bottom_y_intercept;
    double top_y_intercept;
@@ -92,7 +92,7 @@ public class artifact_rail_detection extends OpenCvPipeline
          this.bottom_y_intercept = 40;
          this.top_y_intercept = 0;
          // x_max, x_min, y_max, y_min
-         this.detection_limits = new Scalar(40, 260, 48, 115);
+         this.detection_limits = new Scalar(20, 300, 48, 115);
       }
 
       if (side == -1)
@@ -157,7 +157,7 @@ public class artifact_rail_detection extends OpenCvPipeline
       double rightmost_object_point = 0;
 //      telemetry.addData("pixel angle", pixel_angle);
 
-      Imgproc.resize(input, input, new Size(320, 180), 0, 0, Imgproc.INTER_AREA);
+      Imgproc.resize(input, input, new Size(x_resolution, y_resolution), 0, 0, Imgproc.INTER_AREA);
       if (side == -1)
       {
          Core.flip(input, input, 1);
@@ -235,7 +235,7 @@ public class artifact_rail_detection extends OpenCvPipeline
          {
             if ((minEllipse[i].boundingRect().area() > object_size_limits.val[0]) && (minEllipse[i].boundingRect().area() < object_size_limits.val[1]))
             {
-               telemetry.addData("area", minEllipse[i].boundingRect().area());
+//               telemetry.addData("area", minEllipse[i].boundingRect().area());
                // Draw contour
                if (draw_objects.val[0] >= 1)
                {
@@ -291,7 +291,7 @@ public class artifact_rail_detection extends OpenCvPipeline
          number_of_objects = 0;
       }
       this.artifact_points = artifact_points;
-      telemetry.addData("Artifact Points", artifact_points);
+//      telemetry.addData("Artifact Points", artifact_points);
       telemetry.addData("left", leftmost_object_point);
       telemetry.addData("right", rightmost_object_point);
       telemetry.addData("difference", rightmost_object_point-leftmost_object_point);
