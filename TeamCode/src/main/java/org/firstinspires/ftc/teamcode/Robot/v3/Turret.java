@@ -34,6 +34,9 @@ public class Turret
     Telemetry telemetry;
     double target = 0;
 
+    double targetX;
+    double targetY;
+
     public Turret(HardwareMap hardwareMap, Telemetry telemetry)
     {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
@@ -48,6 +51,19 @@ public class Turret
         dashboard.sendTelemetryPacket(packet);
 
         this.telemetry = telemetry;
+
+        boolean team = false;
+        if (team) // Blue
+        {
+            targetX = -62.0;
+            targetY = -62.0;
+        }
+        else
+        {
+            targetX = -54.0;  //Use for auto
+            //targetX = -62.0;
+            targetY =  62.0;
+        }
     }
 
 //    public void trackGoal(double turretFacing, Pose2d robotPose, boolean team)
@@ -89,24 +105,44 @@ public class Turret
         turret.setPower(0);
     }
 
+    public void trimX(int value)
+    {
+        targetX = targetX + value;
+    }
+
+    public void trimY(int value)
+    {
+        targetY = targetY + value;
+    }
+
+    public double getTargetX()
+    {
+        return targetX;
+    }
+
+    public double getTargetY()
+    {
+        return targetY;
+    }
+
     public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, boolean team)
     {
         // Fixed field target
 
         turretPID.setPID(Params.P, Params.I, Params.D);
 
-        double targetX;
-        double targetY;
-        if (team) // Blue
-        {
-            targetX = -62.0;
-            targetY = -62.0;
-        }
-        else
-        {
-            targetX = -62.0;
-            targetY =  62.0;
-        }
+
+//        if (team) // Blue
+//        {
+//            targetX = -62.0;
+//            targetY = -62.0;
+//        }
+//        else
+//        {
+//            targetX = -54.0;  //Use for auto
+//            //targetX = -62.0;
+//            targetY =  62.0;
+//        }
 
         // Vector from robot to target
         double dx = targetX - robotX;

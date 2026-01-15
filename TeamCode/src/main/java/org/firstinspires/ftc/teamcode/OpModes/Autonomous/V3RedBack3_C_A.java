@@ -34,6 +34,9 @@ import java.util.List;
 @Autonomous(name="V3_RedBack3_C_A", group="Linear OpMode")
 public class V3RedBack3_C_A extends LinearOpMode
 {
+    public static final String ALLIANCE = "Alliance";
+    public static final String ENDPOSE = "Pose";
+
     V3ActionsBackpack actionsBackpack;
 
     AprilTagLocalizer aprilTagLocalizer;
@@ -90,20 +93,25 @@ public class V3RedBack3_C_A extends LinearOpMode
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1400,35, drive))  //fire first set of three balls
-
+//                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(180))
                 .waitSeconds(7)
                 .afterTime(0,actionsBackpack.intakeColor(7))
                 .splineTo(new Vector2d(36,70),Math.toRadians(90),new TranslationalVelConstraint(15)) //1st set pickup
                 .waitSeconds(.5)
+//                .setReversed(true)
                 .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
-                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))  //shooting 2nd time
+//                .splineTo(new Vector2d(36,30),Math.toRadians(90),new TranslationalVelConstraint(40))
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))  //shooting 2nd time
                 .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(90), new TranslationalVelConstraint(40))
+//                .splineTo(new Vector2d(-12,20),Math.toRadians(90),new TranslationalVelConstraint(40))
+//                .waitSeconds(7)
+//                .afterTime(0,actionsBackpack.intakeColor(7))
+//                .strafeTo(new Vector2d(-12, 55))
+//                .strafeTo(new Vector2d(-12, 20))
+//                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
                 .waitSeconds(7)
-                .afterTime(0,actionsBackpack.intakeColor(7))
-                .strafeTo(new Vector2d(-12, 55))
-                .strafeTo(new Vector2d(-12, 20))
-                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
-                .waitSeconds(7)
+
+
 //                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
 //                .strafeTo(new Vector2d(-12, 65), new TranslationalVelConstraint(20))
 //                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
@@ -117,11 +125,15 @@ public class V3RedBack3_C_A extends LinearOpMode
 
             Actions.runBlocking(redRun);
 
+            blackboard.put(ENDPOSE, drive.localizer.getPose());
+
         }
         else
         {
             throw new RuntimeException();
         }
+
+
     }
 }
 

@@ -31,9 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class V3ActionsBackpack
 {
@@ -48,8 +45,8 @@ public class V3ActionsBackpack
     FireControl fireControl;
     ElapsedTime time;
     // Looking from the BACK TO FRONT, Right is purple, left is green
-    SorterLeft sorterLeft; // purple
-    SorterRight sorterRight; // green
+    SorterLeft sorterGreen; // purple
+    SorterRight sorterPurple; // green
     artifact_rail_detection railDetection;
 
     Intake_sort intakeSort;
@@ -82,7 +79,7 @@ public class V3ActionsBackpack
     CsvLogger svgLogger;
 
     public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
-    SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor)
+                             SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -93,8 +90,8 @@ public class V3ActionsBackpack
         //this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
-        this.sorterLeft = sorterLeft;
-        this.sorterRight = sorterRight;
+        this.sorterGreen = sorterLeft;
+        this.sorterPurple = sorterRight;
         this.intakeSort = intakeSort;
         this.colorSensor = colorSensor;
         time.startTime();
@@ -227,7 +224,7 @@ public class V3ActionsBackpack
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
-                        sorterLeft.driveServo(-1);
+                        sorterGreen.driveServo(-1);
                         transTime = time.seconds();
                         state = FireState.TRANSFER_STOP;
 
@@ -236,7 +233,7 @@ public class V3ActionsBackpack
                     case TRANSFER_STOP:
                         if (time.seconds() - transTime > 1)
                         {
-                            sorterLeft.driveServo(0);
+                            sorterGreen.driveServo(0);
                             if (timesFired == numRounds)
                             {
                                 state = FireState.DONE;
@@ -376,7 +373,7 @@ public class V3ActionsBackpack
             {
                 //if (!initialized)
                 //{
-                sorterRight.driveServo(speed);
+                sorterPurple.driveServo(speed);
                 //initialized = true;
                 //}
 
@@ -512,12 +509,12 @@ public class V3ActionsBackpack
                 if (Objects.equals(shoot_color, "green"))
                 // green
                 {
-                    sorterLeft.driveServo(-1);
+                    sorterGreen.driveServo(-1);
                 }
                 else
                 // purple
                 {
-                    sorterRight.driveServo(1);
+                    sorterPurple.driveServo(1);
                 }
                 return true;
             }
@@ -664,7 +661,7 @@ public class V3ActionsBackpack
                         break;
                     case RESET_TRIGGER:
                         currentTime = time.seconds();
-                        if (currentTime - fireTime > .5)
+                        if (currentTime - fireTime > .3)
                         {
                             lift.driveServo(0);
                             state = FireState.TRANSFER_START;
@@ -683,11 +680,12 @@ public class V3ActionsBackpack
                             c = matrix[aprilTag_Id - 21][timesFired];
                             if (c == color.PURPLE)
                             {
-                                sorterLeft.driveServo(-1);
+                                sorterPurple.driveServo(1);
                             }
                             else
                             {
-                                sorterRight.driveServo(1);
+
+                                sorterGreen.driveServo(-1);
                             }
 
                             transTime = time.seconds();
@@ -697,11 +695,11 @@ public class V3ActionsBackpack
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
-                        if (time.seconds() - transTime > .7)
+                        if (time.seconds() - transTime > 1.2)
                         {
-                            sorterLeft.driveServo(0);
-                            sorterRight.driveServo(0);
-                            if (timesFired == numRounds)
+                            sorterGreen.driveServo(0);
+                            sorterPurple.driveServo(0);
+                            if (timesFired > numRounds)
                             {
                                 state = FireState.DONE;
                             }

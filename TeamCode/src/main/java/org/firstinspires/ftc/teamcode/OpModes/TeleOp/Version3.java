@@ -292,6 +292,24 @@ public class Version3 extends LinearOpMode
                     break;
             }
 
+            if (gamepad2.dpad_up)
+            {
+                turret.trimY(1);
+            }
+            else if (gamepad2.dpad_down)
+            {
+                turret.trimY(-1);
+            }
+            if (gamepad2.dpad_right)
+            {
+                turret.trimX(1);
+            }
+            else if (gamepad2.dpad_left)
+            {
+                turret.trimX(-1);
+            }
+
+
 
             // Dashboard and telemetry
             TelemetryPacket packet = new TelemetryPacket();
@@ -308,23 +326,23 @@ public class Version3 extends LinearOpMode
             telemetry.addLine("-----------------------------------------------------");
 
 
-//            fieldOverlay.setStroke("#100FFF"); //
-//            fieldOverlay.strokeLine(
-//                pose.position.x, pose.position.y, -62, 62);
-//
-//            fieldOverlay.setStroke("#3F51B5"); // Blue
-//            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
-//            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
-//                    pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
-//                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
-//
-//            fieldOverlay.setStroke("#FF0000"); // Red
-//            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
-//                    pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90),
-//                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90));
-//
-//            // Target dot
-//            fieldOverlay.fillCircle(-62, 62, 2);
+            fieldOverlay.setStroke("#100FFF"); //
+            fieldOverlay.strokeLine(
+                pose.position.x, pose.position.y, -62, 62);
+
+            fieldOverlay.setStroke("#3F51B5"); // Blue
+            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
+            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
+                    pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
+                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
+
+            fieldOverlay.setStroke("#FF0000"); // Red
+            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
+                    pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90),
+                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90));
+
+            // Target dot
+            fieldOverlay.fillCircle(turret.getTargetX(), turret.getTargetY(), 2);
 
 
             dashboard.sendTelemetryPacket(packet);

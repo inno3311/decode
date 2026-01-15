@@ -74,8 +74,8 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
-   public double side = 1;
-   public double width_to_object_ratio = 31;
+   public double side = -1;
+   public double width_to_object_ratio = 29.5;
 
    double slope = -Math.tan(2.93);
 
@@ -92,14 +92,14 @@ public class artifact_rail_detection extends OpenCvPipeline
          this.bottom_y_intercept = 40;
          this.top_y_intercept = 0;
          // x_max, x_min, y_max, y_min
-         this.detection_limits = new Scalar(20, 300, 48, 115);
+         this.detection_limits = new Scalar(45, 350, 48, 115);
       }
 
       if (side == -1)
       {
-         this.bottom_y_intercept = 55;
-         this.top_y_intercept = 30;
-         this.detection_limits = new Scalar(40, 280, 48, 115);
+         this.bottom_y_intercept = 47;
+         this.top_y_intercept = 15;
+         this.detection_limits = new Scalar(0, 250, 48, 115);
       }
    }
 
