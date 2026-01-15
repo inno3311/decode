@@ -82,7 +82,7 @@ public class Version3 extends LinearOpMode
         trigger = new Trigger(this);
         sorterLeft = new SorterLeft(this);
         sorterRight = new SorterRight(this);
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry,team);
 
         time = new ElapsedTime();
 
@@ -292,19 +292,19 @@ public class Version3 extends LinearOpMode
                     break;
             }
 
-            if (gamepad2.dpad_up)
+            if (gamepad2.dpadUpWasPressed())
             {
                 turret.trimY(1);
             }
-            else if (gamepad2.dpad_down)
+            else if (gamepad2.dpadDownWasPressed())
             {
                 turret.trimY(-1);
             }
-            if (gamepad2.dpad_right)
+            if (gamepad2.dpadRightWasPressed())
             {
                 turret.trimX(1);
             }
-            else if (gamepad2.dpad_left)
+            else if (gamepad2.dpadLeftWasPressed())
             {
                 turret.trimX(-1);
             }
@@ -323,6 +323,20 @@ public class Version3 extends LinearOpMode
             telemetry.addData("Hood Position", hood.getPosition());
 
             telemetry.addData("Turret Position", turret.getPosition());
+            telemetry.addLine("-----------------------------------------------------");
+
+            telemetry.addData("Target X", turret.getTargetX());
+            telemetry.addData("Target Y", turret.getTargetY());
+
+            if (!team)
+            {
+                telemetry.addLine("!!! Team is RED !!!");
+            }
+            else
+            {
+                telemetry.addLine("!!! Team is BLUE !!!");
+            }
+
             telemetry.addLine("-----------------------------------------------------");
 
 
@@ -357,8 +371,5 @@ public class Version3 extends LinearOpMode
             dashboard.sendTelemetryPacket(packet);
 
         }
-
     }
-
-
 }

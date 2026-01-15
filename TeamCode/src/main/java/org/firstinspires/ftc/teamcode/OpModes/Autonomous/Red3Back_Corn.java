@@ -50,11 +50,12 @@ public class Red3Back_Corn extends LinearOpMode
     {
         blackboard.put(ALLIANCE, "RED");
 
+        boolean isBlue = false;
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry),
-                new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
+            new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry),
+                new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
 
         // ZOE update with starting location
         //Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));

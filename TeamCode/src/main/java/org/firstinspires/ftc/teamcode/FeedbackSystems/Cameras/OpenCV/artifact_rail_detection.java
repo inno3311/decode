@@ -44,7 +44,7 @@ public class artifact_rail_detection extends OpenCvPipeline
 
    // contours, ellipses, rectangles, center dots&bounding box
    public Scalar draw_objects = new Scalar(1, 1, 1, 1);
-   public double numBalls;
+   public int numBalls;
    final Scalar purple_1_upper = new Scalar(179, 255, 255);
    final Scalar purple_1_lower = new Scalar(135, 35, 100);
 
@@ -74,7 +74,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    private Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
-   public double side = -1;
+   public double side = 1;
    public double width_to_object_ratio = 29.5;
 
    double slope = -Math.tan(2.93);
@@ -285,7 +285,7 @@ public class artifact_rail_detection extends OpenCvPipeline
       }
       Imgproc.line(drawings, new Point(leftmost_object_point, 0), new Point(leftmost_object_point, y_resolution), red_color);
       Imgproc.line(drawings, new Point(rightmost_object_point, 0), new Point(rightmost_object_point, y_resolution), red_color);
-      double number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/width_to_object_ratio);
+      long number_of_objects = Math.round((rightmost_object_point-leftmost_object_point)/width_to_object_ratio);
       if (number_of_objects < 0)
       {
          number_of_objects = 0;
@@ -302,14 +302,14 @@ public class artifact_rail_detection extends OpenCvPipeline
 //      return grey;
 //      return binary_mask_mat;
 //      return canny_output;
-      this.numBalls = number_of_objects;
+      this.numBalls = (int)number_of_objects;
 
       return drawings;
 //      Imgproc.cv tColor(input, gray, Imgproc.COLOR_BGR2HSV);
 
    }
 
-   public double getNumBalls()
+   public int getNumBalls()
    {
       return numBalls;
    }

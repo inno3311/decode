@@ -30,7 +30,7 @@ public class ShooterTest extends OpMode
     public void init()
     {
         shooter = new Shooter(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap,telemetry);
+        turret = new Turret(hardwareMap,telemetry,false);
         fireControl = new FireControl(new AprilTagLocalizer(hardwareMap), telemetry);
         driveController = new DriveController(hardwareMap);
 

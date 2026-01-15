@@ -12,7 +12,7 @@ public class TurretTest extends OpMode
     @Override
     public void init()
     {
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry,false);
     }
 
     @Override

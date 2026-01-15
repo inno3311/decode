@@ -37,12 +37,16 @@ public class Turret
     double targetX;
     double targetY;
 
-    public Turret(HardwareMap hardwareMap, Telemetry telemetry)
+    boolean isBlue;
+
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry, boolean team)
     {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turret.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        isBlue = team;
 
         turretLimit = hardwareMap.get(TouchSensor.class, "turretLimit");
 
@@ -52,16 +56,16 @@ public class Turret
 
         this.telemetry = telemetry;
 
-        boolean team = false;
-        if (team) // Blue
+        //boolean team = false;
+        if (isBlue) // Blue
         {
             targetX = -62.0;
             targetY = -62.0;
         }
         else
         {
-            targetX = -54.0;  //Use for auto
-            //targetX = -62.0;
+            //targetX = -54.0;  //Use for auto
+            targetX = -62.0;
             targetY =  62.0;
         }
     }

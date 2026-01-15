@@ -47,6 +47,10 @@ public class AprilTagLocalizer
         initAprilTagTwoCamera(hardwareMap);
     }
 
+    public AprilTagProcessor getProcessor() {
+        return aprilTag;
+    }
+
     public void tagsTelemetry(Telemetry telemetry)
     {
         // Push telemetry to the Driver Station.
@@ -295,6 +299,10 @@ public class AprilTagLocalizer
         }
     }
 
+    public void closeVision()
+    {
+        visionPortal.close();
+    }
 
 
 }

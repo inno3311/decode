@@ -78,8 +78,10 @@ public class V3ActionsBackpack
 
     CsvLogger svgLogger;
 
+    boolean isBlue;
+
     public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
-                             SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor, artifact_rail_detection pipeline)
+                             SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor, boolean team)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -87,7 +89,9 @@ public class V3ActionsBackpack
         this.hood = hood;
         this.turret = turret;
 
-        this.railDetection = pipeline;
+        this.isBlue = team;
+
+        //this.railDetection = pipeline;
 
         //this.transfer = transfer;
         this.fireControl = fireControl;
@@ -606,6 +610,7 @@ public class V3ActionsBackpack
             double currentTime;
             int timesFired;
 
+            int railBalls = 0;
             FireState state = FireState.INIT;
 
             @Override
@@ -613,19 +618,24 @@ public class V3ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), false);
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue);
 
                 color c;
+
+
 
                 switch (state)
                 {
                     case INIT:
                         timesFired = 0;
-
+                        railBalls = 0;
                         //shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(setvel);
                         hood.driveToAngleTarget(angle);
                         state = FireState.TRANSFER_START;
+
+                        //double railballs = railDetection.getNumBalls();
+                        //packet.put("railDetection", railballs);
 
 //                        c = matrix[aprilTag_Id-21][timesFired];
 //                        if (c == color.PURPLE)
@@ -679,7 +689,9 @@ public class V3ActionsBackpack
                         }
                         else
                         {
-                            c = matrix[aprilTag_Id - 21][timesFired];
+                            if (aprilTag_Id == 0)
+                                aprilTag_Id = 21;
+                            c = matrix[aprilTag_Id - 21][timesFired+railBalls];
                             if (c == color.PURPLE)
                             {
                                 sorterPurple.driveServo(1);

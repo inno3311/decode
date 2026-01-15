@@ -52,14 +52,16 @@ public class V3RedBack3_C_A extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
 
-        OpenCvCamera camera;
-        artifact_rail_detection pipeline;
-        pipeline = new artifact_rail_detection(telemetry);
+        blackboard.put(ALLIANCE, "RED");
+        boolean isBlue = false;
+
+        //OpenCvCamera camera;
+        //artifact_rail_detection pipeline;
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
-        new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
+            new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+        new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
@@ -68,92 +70,108 @@ public class V3RedBack3_C_A extends LinearOpMode
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+            boolean found = false;
+            int searchCount = 0;
 
             while (opModeInInit()) {
-                boolean found = false;
-                int searchCount = 0;
-                //if (!found && searchCount < 5000)
+                list = aprilTagLocalizer.getCurrentDetections();
+                if (!list.isEmpty())
                 {
-                    list = aprilTagLocalizer.getCurrentDetections();
-                    if (!list.isEmpty())
-                    {
-                        AprilTagDetection targetTag = null;
+                    AprilTagDetection targetTag = null;
 
-                        for (AprilTagDetection detection : list) {
-                            int id = detection.id;
+                    for (AprilTagDetection detection : list) {
+                        int id = detection.id;
 
-                            if (id >= 21 && id <= 23) {
-                                targetTag = detection;
-                                found = true;
-                                telemetry.addData("id", id);
-                                telemetry.update();
-                                actionsBackpack.taglist = list;
-                                actionsBackpack.aprilTag_Id = id;
-                                telemetry.addData("Detected", id);
-                                break; // stop once found
-                            }
+                        if (id >= 21 && id <= 23) {
+                            targetTag = detection;
+                            found = true;
+                            telemetry.addData("id", id);
+                            telemetry.update();
+                            actionsBackpack.taglist = list;
+                            actionsBackpack.aprilTag_Id = id;
+                            break; // stop once found
                         }
                     }
-                    else {
-                        searchCount++;
-                        telemetry.addData("searchCount", searchCount);
-                        telemetry.update();
-                    }
                 }
-                // Dashboard updates
-                // Sensor calibration
-
+                else {
+                    searchCount++;
+                    telemetry.addData("searchCount", searchCount);
+                }
+                telemetry.addLine("!!! Team is RED !!!");
                 telemetry.update();
+                idle();
+
+
+
             }
-
-
-
-
-
-            // -------------------------------
-            // 1. Camera setup
-            // -------------------------------
-            int cameraMonitorViewId = hardwareMap.appContext
-                .getResources()
-                .getIdentifier(
-                    "cameraMonitorViewId",
-                    "id",
-                    hardwareMap.appContext.getPackageName()
-                );
-
-            camera = OpenCvCameraFactory.getInstance().createWebcam(
-                hardwareMap.get(WebcamName.class, "Webcam 1"),
-                cameraMonitorViewId
-            );
-
-            // -------------------------------
-            // 2. Create & attach pipeline
-            // -------------------------------
-            //pipeline = new artifact_rail_detection(telemetry);
-            camera.setPipeline(pipeline);
-
-            // -------------------------------
-            // 3. Open camera async
-            // -------------------------------
-            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-                }
-
-                @Override
-                public void onError(int errorCode) {
-                    telemetry.addData("Camera error", errorCode);
-                }
-            });
 
             waitForStart();
 
 
-//            actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-//                new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
-//                new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
+            while (!found && searchCount < 5000)
+            {
+//                list = aprilTagLocalizer.getCurrentDetections();
+//                if (!list.isEmpty())
+//                {
+//                    AprilTagDetection targetTag = null;
+//
+//                    for (AprilTagDetection detection : list) {
+//                        int id = detection.id;
+//
+//                        if (id >= 21 && id <= 23) {
+//                            targetTag = detection;
+//                            found = true;
+//                            telemetry.addData("id", id);
+//                            telemetry.update();
+//                            actionsBackpack.taglist = list;
+//                            actionsBackpack.aprilTag_Id = id;
+//                            break; // stop once found
+//                        }
+//                    }
+//                }
+//                else {
+//                    searchCount++;
+//                    telemetry.addData("searchCount", searchCount);
+//                    telemetry.update();
+//                }
+            }
 
+            // -------------------------------
+            // 1. Camera setup
+            // -------------------------------
+//            int cameraMonitorViewId = hardwareMap.appContext
+//                .getResources()
+//                .getIdentifier(
+//                    "cameraMonitorViewId",
+//                    "id",
+//                    hardwareMap.appContext.getPackageName()
+//                );
+//
+//            camera = OpenCvCameraFactory.getInstance().createWebcam(
+//                hardwareMap.get(WebcamName.class, "Webcam 1"),
+//                cameraMonitorViewId
+//            );
+//
+//            // -------------------------------
+//            // 2. Create & attach pipeline
+//            // -------------------------------
+//            pipeline = new artifact_rail_detection(telemetry);
+//            camera.setPipeline(pipeline);
+//
+//            // -------------------------------
+//            // 3. Open camera async
+//            // -------------------------------
+//            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//                @Override
+//                public void onOpened() {
+//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+//                }
+//
+//                @Override
+//                public void onError(int errorCode) {
+//                    telemetry.addData("Camera error", errorCode);
+//                }
+//            });
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
@@ -169,14 +187,12 @@ public class V3RedBack3_C_A extends LinearOpMode
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))  //shooting 2nd time
                 .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(90), new TranslationalVelConstraint(40))
 //                .splineTo(new Vector2d(-12,20),Math.toRadians(90),new TranslationalVelConstraint(40))
-//                .waitSeconds(7)
-//                .afterTime(0,actionsBackpack.intakeColor(7))
-//                .strafeTo(new Vector2d(-12, 55))
-//                .strafeTo(new Vector2d(-12, 20))
-//                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
                 .waitSeconds(7)
-
-
+                .afterTime(0,actionsBackpack.intakeColor(7))
+                .strafeTo(new Vector2d(-12, 55))
+                //.strafeTo(new Vector2d(-12, 20))
+//                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
+                //.waitSeconds(7)
 //                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
 //                .strafeTo(new Vector2d(-12, 65), new TranslationalVelConstraint(20))
 //                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
