@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -84,6 +87,9 @@ public class Version3 extends LinearOpMode
         imu.resetYaw();
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         waitForStart();
         time.startTime();
@@ -230,6 +236,8 @@ public class Version3 extends LinearOpMode
             turret.telemetry(telemetry);
 
             telemetry.update();
+
+
         }
 
     }

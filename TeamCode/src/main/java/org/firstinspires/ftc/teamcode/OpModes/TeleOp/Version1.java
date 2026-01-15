@@ -83,6 +83,9 @@ public class Version1 extends LinearOpMode
 //            FtcDashboard.getInstance().getTelemetry()
 //        );
 
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
 
         waitForStart();
         time.startTime();
@@ -230,41 +233,47 @@ public class Version1 extends LinearOpMode
             shooter.currentDraw();
             telemetry.update();
 
-            drive.updatePoseEstimate();
-
-//            drive.localizer.update();
-//
-            Pose2d pose = drive.localizer.getPose();
-//
-//            telemetry.addData("x (in)", pose.position.x);
-//            telemetry.addData("y (in)", pose.position.y);
-//            telemetry.addData("heading (deg)",
-//                Math.toDegrees(pose.heading.toDouble()));
-//            telemetry.update();
-
-            //Pose2d pose = drive.getPoseEstimate(); // Assuming Road Runner
-
-// Add data to the packet for text telemetry
             TelemetryPacket packet = new TelemetryPacket();
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            Canvas fieldOverlay = packet.fieldOverlay();
-            //dashboard.sendTelemetryPacket(packet);
-            packet.put("x", pose.position.x);
-            packet.put("y", pose.position.y);
-            //packet.put("heading", pose.position.());
-
-// Draw on the field overlay
-// Example: Draw a blue circle for the robot's current position
-            fieldOverlay.setStroke("#3F51B5"); // Blue
-            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
-
-// Send the whole packet
             dashboard.sendTelemetryPacket(packet);
+            packet.put("target_velocity", target_velocity);
+            packet.put("Current Position", shooter.getVelocity());
+            packet.put("Zero", 0);
 
-// Clear the overlay for the next frame (important!)
-            fieldOverlay.clear(); // Or clear specific drawings if needed
+//            drive.updatePoseEstimate();
+//
+////            drive.localizer.update();
+////
+//            Pose2d pose = drive.localizer.getPose();
+////
+////            telemetry.addData("x (in)", pose.position.x);
+////            telemetry.addData("y (in)", pose.position.y);
+////            telemetry.addData("heading (deg)",
+////                Math.toDegrees(pose.heading.toDouble()));
+////            telemetry.update();
+//
+//            //Pose2d pose = drive.getPoseEstimate(); // Assuming Road Runner
+//
+//// Add data to the packet for text telemetry
+//            TelemetryPacket packet = new TelemetryPacket();
+//            FtcDashboard dashboard = FtcDashboard.getInstance();
+//            Canvas fieldOverlay = packet.fieldOverlay();
+//            //dashboard.sendTelemetryPacket(packet);
+//            packet.put("x", pose.position.x);
+//            packet.put("y", pose.position.y);
+//            //packet.put("heading", pose.position.());
+//
+//// Draw on the field overlay
+//// Example: Draw a blue circle for the robot's current position
+//            fieldOverlay.setStroke("#3F51B5"); // Blue
+//            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
+//
+//// Send the whole packet
+//            dashboard.sendTelemetryPacket(packet);
+//
+//// Clear the overlay for the next frame (important!)
+//            fieldOverlay.clear(); // Or clear specific drawings if needed
 
-            telemetry.update(); // Also update regular telemetry if needed
+//            telemetry.update(); // Also update regular telemetry if needed
 
         }
     }

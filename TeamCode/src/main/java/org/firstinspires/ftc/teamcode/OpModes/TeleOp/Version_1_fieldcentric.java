@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -81,6 +82,8 @@ public class Version_1_fieldcentric extends LinearOpMode
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
 
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         waitForStart();
         time.startTime();
@@ -253,6 +256,12 @@ public class Version_1_fieldcentric extends LinearOpMode
             telemetry.addData("shooter Power", shooter.getPower());
 //            telemetry.addData("Bearing to Tag", tagLocalizer.getTagBearing());
             telemetry.update();
+
+            TelemetryPacket packet = new TelemetryPacket();
+            dashboard.sendTelemetryPacket(packet);
+            packet.put("target_velocity", target_velocity);
+            packet.put("Current Position", shooter.getVelocity());
+            packet.put("Zero", 0);
         }
 
     }
