@@ -13,8 +13,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //import org.firstinspires.ftc.teamcode.initialization.Initialization;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
@@ -28,6 +30,9 @@ import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
@@ -46,10 +51,15 @@ public class V3RedBack3_C_A extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+
+        OpenCvCamera camera;
+        artifact_rail_detection pipeline;
+        pipeline = new artifact_rail_detection(telemetry);
+
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
-        new Intake_sort(this), new ColorSensor(hardwareMap));
+        new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
 
         // ZOE update with starting location
         Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
@@ -58,37 +68,92 @@ public class V3RedBack3_C_A extends LinearOpMode
         {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-            waitForStart();
 
-            boolean found = false;
-            int searchCount = 0;
-            while (!found && searchCount < 5000)
-            {
-                list = aprilTagLocalizer.getCurrentDetections();
-                if (!list.isEmpty())
+            while (opModeInInit()) {
+                boolean found = false;
+                int searchCount = 0;
+                //if (!found && searchCount < 5000)
                 {
-                    AprilTagDetection targetTag = null;
+                    list = aprilTagLocalizer.getCurrentDetections();
+                    if (!list.isEmpty())
+                    {
+                        AprilTagDetection targetTag = null;
 
-                    for (AprilTagDetection detection : list) {
-                        int id = detection.id;
+                        for (AprilTagDetection detection : list) {
+                            int id = detection.id;
 
-                        if (id >= 21 && id <= 23) {
-                            targetTag = detection;
-                            found = true;
-                            telemetry.addData("id", id);
-                            telemetry.update();
-                            actionsBackpack.taglist = list;
-                            actionsBackpack.aprilTag_Id = id;
-                            break; // stop once found
+                            if (id >= 21 && id <= 23) {
+                                targetTag = detection;
+                                found = true;
+                                telemetry.addData("id", id);
+                                telemetry.update();
+                                actionsBackpack.taglist = list;
+                                actionsBackpack.aprilTag_Id = id;
+                                telemetry.addData("Detected", id);
+                                break; // stop once found
+                            }
                         }
                     }
+                    else {
+                        searchCount++;
+                        telemetry.addData("searchCount", searchCount);
+                        telemetry.update();
+                    }
                 }
-                else {
-                    searchCount++;
-                    telemetry.addData("searchCount", searchCount);
-                    telemetry.update();
-                }
+                // Dashboard updates
+                // Sensor calibration
+
+                telemetry.update();
             }
+
+
+
+
+
+            // -------------------------------
+            // 1. Camera setup
+            // -------------------------------
+            int cameraMonitorViewId = hardwareMap.appContext
+                .getResources()
+                .getIdentifier(
+                    "cameraMonitorViewId",
+                    "id",
+                    hardwareMap.appContext.getPackageName()
+                );
+
+            camera = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"),
+                cameraMonitorViewId
+            );
+
+            // -------------------------------
+            // 2. Create & attach pipeline
+            // -------------------------------
+            //pipeline = new artifact_rail_detection(telemetry);
+            camera.setPipeline(pipeline);
+
+            // -------------------------------
+            // 3. Open camera async
+            // -------------------------------
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                }
+
+                @Override
+                public void onError(int errorCode) {
+                    telemetry.addData("Camera error", errorCode);
+                }
+            });
+
+            waitForStart();
+
+
+//            actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
+//                new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+//                new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
+
 
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed

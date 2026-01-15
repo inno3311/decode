@@ -57,7 +57,7 @@ public class read_obelisk extends LinearOpMode
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
-        new Intake_sort(this), new ColorSensor(hardwareMap));
+        new Intake_sort(this), new ColorSensor(hardwareMap),railDetection);
 
         Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(180));
 

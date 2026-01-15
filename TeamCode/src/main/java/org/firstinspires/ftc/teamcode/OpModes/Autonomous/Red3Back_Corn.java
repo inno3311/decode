@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
@@ -41,6 +42,8 @@ public class Red3Back_Corn extends LinearOpMode
 
     List<AprilTagDetection> list;
 
+    artifact_rail_detection pipeline;
+
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -51,7 +54,7 @@ public class Red3Back_Corn extends LinearOpMode
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
             new Hood(this), new Turret(hardwareMap, telemetry), new FireControl(aprilTagLocalizer, telemetry),
-                new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap));
+                new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap),pipeline);
 
         // ZOE update with starting location
         //Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));

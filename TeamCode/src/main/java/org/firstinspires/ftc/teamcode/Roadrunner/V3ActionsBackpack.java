@@ -79,13 +79,15 @@ public class V3ActionsBackpack
     CsvLogger svgLogger;
 
     public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
-                             SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor)
+                             SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor, artifact_rail_detection pipeline)
     {
         this.shooter = shooter;
         this.intake = intake;
         this.lift = lift;
         this.hood = hood;
         this.turret = turret;
+
+        this.railDetection = pipeline;
 
         //this.transfer = transfer;
         this.fireControl = fireControl;
