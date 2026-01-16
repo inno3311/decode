@@ -136,17 +136,17 @@ public class Turret
         turretPID.setPID(Params.P, Params.I, Params.D);
 
 
-//        if (team) // Blue
-//        {
-//            targetX = -62.0;
-//            targetY = -62.0;
-//        }
-//        else
-//        {
-//            targetX = -54.0;  //Use for auto
-//            //targetX = -62.0;
-//            targetY =  62.0;
-//        }
+        if (team) // Blue
+        {
+            targetX = -62.0;
+            targetY = -62.0;
+        }
+        else
+        {
+            targetX = -64.0;  //Use for auto
+            //targetX = -62.0;
+            targetY =  62.0;
+        }
 
         // Vector from robot to target
         double dx = targetX - robotX;

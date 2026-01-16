@@ -28,7 +28,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-@Autonomous(name="RedBack3_Corn", group="Linear OpMode")
+//@Autonomous(name="RedBack3_Corn", group="Linear OpMode")
 public class Red3Back_Corn extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";

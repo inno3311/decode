@@ -84,6 +84,9 @@ public class Version3 extends LinearOpMode
         sorterRight = new SorterRight(this);
         turret = new Turret(hardwareMap, telemetry,team);
 
+        //jrm
+        turret.trimX(4);
+
         time = new ElapsedTime();
 
         driveController = new DriveController(hardwareMap,-1,1,1);

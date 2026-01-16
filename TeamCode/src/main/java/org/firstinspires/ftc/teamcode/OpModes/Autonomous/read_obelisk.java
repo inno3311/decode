@@ -42,7 +42,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.Locale;
 
-@Autonomous(name="read_obelisk", group="Linear OpMode")
+//@Autonomous(name="read_obelisk", group="Linear OpMode")
 public class read_obelisk extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;

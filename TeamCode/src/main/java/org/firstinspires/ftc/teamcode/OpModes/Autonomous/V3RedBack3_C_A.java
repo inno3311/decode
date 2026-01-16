@@ -107,106 +107,50 @@ public class V3RedBack3_C_A extends LinearOpMode
 
             waitForStart();
 
-
-            while (!found && searchCount < 5000)
+            try
             {
-//                list = aprilTagLocalizer.getCurrentDetections();
-//                if (!list.isEmpty())
-//                {
-//                    AprilTagDetection targetTag = null;
-//
-//                    for (AprilTagDetection detection : list) {
-//                        int id = detection.id;
-//
-//                        if (id >= 21 && id <= 23) {
-//                            targetTag = detection;
-//                            found = true;
-//                            telemetry.addData("id", id);
-//                            telemetry.update();
-//                            actionsBackpack.taglist = list;
-//                            actionsBackpack.aprilTag_Id = id;
-//                            break; // stop once found
-//                        }
-//                    }
-//                }
-//                else {
-//                    searchCount++;
-//                    telemetry.addData("searchCount", searchCount);
-//                    telemetry.update();
-//                }
-            }
 
-            // -------------------------------
-            // 1. Camera setup
-            // -------------------------------
-//            int cameraMonitorViewId = hardwareMap.appContext
-//                .getResources()
-//                .getIdentifier(
-//                    "cameraMonitorViewId",
-//                    "id",
-//                    hardwareMap.appContext.getPackageName()
-//                );
-//
-//            camera = OpenCvCameraFactory.getInstance().createWebcam(
-//                hardwareMap.get(WebcamName.class, "Webcam 1"),
-//                cameraMonitorViewId
-//            );
-//
-//            // -------------------------------
-//            // 2. Create & attach pipeline
-//            // -------------------------------
-//            pipeline = new artifact_rail_detection(telemetry);
-//            camera.setPipeline(pipeline);
-//
-//            // -------------------------------
-//            // 3. Open camera async
-//            // -------------------------------
-//            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-//                @Override
-//                public void onOpened() {
-//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-//                }
-//
-//                @Override
-//                public void onError(int errorCode) {
-//                    telemetry.addData("Camera error", errorCode);
-//                }
-//            });
 
-            TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
-                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1400,35, drive))  //fire first set of three balls
-//                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(180))
-                .waitSeconds(7)
-                .afterTime(0,actionsBackpack.intakeColor(7))
-                .splineTo(new Vector2d(36,70),Math.toRadians(90),new TranslationalVelConstraint(15)) //1st set pickup
-                .waitSeconds(.5)
-//                .setReversed(true)
-                .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(90), new TranslationalVelConstraint(40)) //move to shoot location
-//                .splineTo(new Vector2d(36,30),Math.toRadians(90),new TranslationalVelConstraint(40))
-                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))  //shooting 2nd time
-                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(90), new TranslationalVelConstraint(40))
-//                .splineTo(new Vector2d(-12,20),Math.toRadians(90),new TranslationalVelConstraint(40))
-                .waitSeconds(7)
-                .afterTime(0,actionsBackpack.intakeColor(7))
-                .strafeTo(new Vector2d(-12, 55))
-                //.strafeTo(new Vector2d(-12, 20))
-//                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))
-                //.waitSeconds(7)
-//                .strafeToLinearHeading(new Vector2d(-12, 30), Math.toRadians(80))
-//                .strafeTo(new Vector2d(-12, 65), new TranslationalVelConstraint(20))
-//                .strafeToLinearHeading(new Vector2d(-12, 20), Math.toRadians(125), new TranslationalVelConstraint(40))
-                .waitSeconds(4)
+                TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1400, 35, drive)) //at launch zone
+                    .waitSeconds(8)
+                    .afterTime(0, actionsBackpack.intakeColor(7))
+                    .splineTo(new Vector2d(36, 60), Math.toRadians(86), new TranslationalVelConstraint(15)) // C
+                    .waitSeconds(.5)
+                    //first set, fires 3, intakes 3.
+                    .strafeToLinearHeading(new Vector2d(36, 30), Math.toRadians(86), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
+                    .strafeToLinearHeading(new Vector2d(-10, 20), Math.toRadians(86), new TranslationalVelConstraint(40)) //launch zone
+                    .waitSeconds(8)
+                    .afterTime(0, actionsBackpack.intakeColor(7))
+                    .strafeTo(new Vector2d(-10, 50), new TranslationalVelConstraint(20)) // A
+                    //second set, fires 3, intakes 3,
+       //             .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
+       //             .strafeTo(new Vector2d(-10, 20)) //launch zone
+       //             .waitSeconds(8)
+       //             .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(86)) //in line with B
+                    //third set, fires 3, moves.
+
+
+//                .waitSeconds(4)
 //                .strafeToLinearHeading(new Vector2d(0, 45), Math.toRadians(180))
-                ; //do not remove ;
+//                .splineTo(new Vector2d(-12,20),Math.toRadians(90),new TranslationalVelConstraint(40))
+
+                    ; //do not remove ;
 
 
-            Action redRun = yellow_drop
-                .build();
+                Action redRun = yellow_drop
+                    .build();
 
-            Actions.runBlocking(redRun);
+                Actions.runBlocking(redRun);
 
-            blackboard.put(ENDPOSE, drive.localizer.getPose());
+                blackboard.put(ENDPOSE, drive.localizer.getPose());
+
+            }
+            finally
+            {
+                blackboard.put(ENDPOSE, drive.localizer.getPose());
+            }
 
         }
         else

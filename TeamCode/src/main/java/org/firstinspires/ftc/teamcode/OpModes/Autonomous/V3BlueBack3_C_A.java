@@ -43,16 +43,18 @@ public class V3BlueBack3_C_A extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-
-        //OpenCvCamera camera;
         //artifact_rail_detection pipeline;
         blackboard.put(ALLIANCE, "BLUE");
         boolean isBlue = true;
 
+        Turret turret = new Turret(hardwareMap, telemetry,isBlue);
+
+        turret.trimX(4);
+        turret.trimY(-4);
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
         actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+            new Hood(this), turret, new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
 
         // ZOE update with starting location
@@ -78,7 +80,6 @@ public class V3BlueBack3_C_A extends LinearOpMode
                             targetTag = detection;
                             found = true;
                             telemetry.addData("id", id);
-                            telemetry.update();
                             actionsBackpack.taglist = list;
                             actionsBackpack.aprilTag_Id = id;
                             break; // stop once found
@@ -99,11 +100,15 @@ public class V3BlueBack3_C_A extends LinearOpMode
 
             waitForStart();
 
+            try
+            {
 
-            TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
+
+
+                TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1400,35, drive))  //fire first set of three balls
-                .waitSeconds(7)
+                .waitSeconds(8)
                 .afterTime(0,actionsBackpack.intakeColor(7))
                 .splineTo(new Vector2d(36,-70),Math.toRadians(270),new TranslationalVelConstraint(15)) //1st set pickup
                 .waitSeconds(.5)
@@ -131,7 +136,11 @@ public class V3BlueBack3_C_A extends LinearOpMode
 
             blackboard.put(ENDPOSE, drive.localizer.getPose());
             blackboard.put(ALLIANCE,"BLUE");
-
+            }
+            finally
+            {
+                blackboard.put(ENDPOSE, drive.localizer.getPose());
+            }
 
         }
         else

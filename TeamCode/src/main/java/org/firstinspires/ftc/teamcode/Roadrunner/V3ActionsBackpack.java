@@ -70,6 +70,8 @@ public class V3ActionsBackpack
         SPINUP,
         FIRE,
         RESET_TRIGGER,
+
+        SEC_DELAY,
         TRANSFER_START,
         TRANSFER_STOP,
         RESET,
@@ -676,10 +678,17 @@ public class V3ActionsBackpack
                         if (currentTime - fireTime > .3)
                         {
                             lift.driveServo(0);
-                            state = FireState.TRANSFER_START;
+                            state = FireState.SEC_DELAY;
                             timesFired++;
                         }
-
+                    case SEC_DELAY:
+                    {
+                        currentTime = time.seconds();
+                        if (currentTime - fireTime > 1)
+                        {
+                            state = FireState.TRANSFER_START;
+                        }
+                    }
                         packet.put("STATE","FIRE_DOWN");
                         break;
                     case TRANSFER_START:
@@ -692,7 +701,12 @@ public class V3ActionsBackpack
                             if (aprilTag_Id == 0)
                                 aprilTag_Id = 21;
                             c = matrix[aprilTag_Id - 21][timesFired+railBalls];
-                            if (c == color.PURPLE)
+                            if (timesFired == 2)
+                            {
+                                sorterPurple.driveServo(1);
+                                sorterGreen.driveServo(-1);
+                            }
+                            else if (c == color.PURPLE)
                             {
                                 sorterPurple.driveServo(1);
                             }
@@ -709,7 +723,7 @@ public class V3ActionsBackpack
                         packet.put("STATE","TRANSFER");
                         break;
                     case TRANSFER_STOP:
-                        if (time.seconds() - transTime > 1.2)
+                        if (time.seconds() - transTime > 1)
                         {
                             sorterGreen.driveServo(0);
                             sorterPurple.driveServo(0);

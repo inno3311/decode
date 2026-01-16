@@ -28,8 +28,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-@Autonomous(name="V3_RedFront3_A", group="Linear OpMode")
-public class V3RedFront3_A extends LinearOpMode
+@Autonomous(name="V3_BlueFront3_A", group="Linear OpMode")
+public class V3BlueFront3_A extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
     public static final String ENDPOSE = "Pose";
@@ -44,8 +44,8 @@ public class V3RedFront3_A extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
 
-        boolean isBlue = false;
-        blackboard.put(ALLIANCE, "RED");
+        boolean isBlue = true;
+        blackboard.put(ALLIANCE, "BLUE");
 
         //OpenCvCamera camera;
         //artifact_rail_detection pipeline;
@@ -60,7 +60,7 @@ public class V3RedFront3_A extends LinearOpMode
         turret.trimX(4);
 
         // ZOE update with starting location
-        Pose2d beginPose = new Pose2d(-42, 51, Math.toRadians(237));
+        Pose2d beginPose = new Pose2d(-42, -51, Math.toRadians(90+33));
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
@@ -93,7 +93,7 @@ public class V3RedFront3_A extends LinearOpMode
                     searchCount++;
                     telemetry.addData("searchCount", searchCount);
                 }
-                telemetry.addLine("!!! Team is RED !!!");
+                telemetry.addLine("!!! Team is BLUE !!!");
                 telemetry.update();
                 idle();
 
@@ -107,16 +107,18 @@ public class V3RedFront3_A extends LinearOpMode
 
 
 
+
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))
-                .strafeToLinearHeading(new Vector2d(-10, 10), Math.toRadians(86)) //launch zone
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(270)) //launch zone
                 .waitSeconds(8)
                 .afterTime(0,actionsBackpack.intakeColor(7))
-                .strafeToLinearHeading(new Vector2d(-10, 55), Math.toRadians(86), new TranslationalVelConstraint(25)) //A
-                .strafeToLinearHeading(new Vector2d(-10, 10), Math.toRadians(86)) //launch zone
+                .strafeToLinearHeading(new Vector2d(-10, -55), Math.toRadians(270), new TranslationalVelConstraint(25)) //A
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(270)) //launch zone
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))
                 .waitSeconds(8)
-                .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(86)) //in line with B
+                .strafeToLinearHeading(new Vector2d(10, -10), Math.toRadians(270)) //in line with B
 
                 ; //do not remove ;
 
@@ -127,17 +129,19 @@ public class V3RedFront3_A extends LinearOpMode
             Actions.runBlocking(redRun);
 
             blackboard.put(ENDPOSE, drive.localizer.getPose());
-
             }
             finally
             {
                 blackboard.put(ENDPOSE, drive.localizer.getPose());
             }
+
         }
         else
         {
             throw new RuntimeException();
         }
+
+
     }
 }
 
