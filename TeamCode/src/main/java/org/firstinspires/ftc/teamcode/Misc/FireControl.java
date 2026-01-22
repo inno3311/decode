@@ -1,18 +1,21 @@
 package org.firstinspires.ftc.teamcode.Misc;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
 public class FireControl
 {
-    AprilTagLocalizer localizer;
-    Telemetry telemetry;
+    public AprilTagLocalizer localizer;
+    public Telemetry telemetry;
     private final double g = 9.8;//meter/sec
 
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0508;//meter
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
-    private final double maxLaunchAngle = 90;
+    private final double maxLaunchAngle = 89;
+    private final double minimumAngle = 65;
 
 
 
@@ -26,14 +29,14 @@ public class FireControl
      * @param flightTime time of desired flight in seconds
      * @return the velocity at which to fire in the first element and the angle in the second
      */
-    public double[] timeLaunch(double flightTime)
-    {
-        double velocity = velocityMag(velocityX(flightTime), velocityY(flightTime));
-        if (velocity > maxVelocity) {velocity = maxVelocity;}
-        double angle = calculateSteeperAngle(velocity);
-
-        return new double[] {velocity, angle};
-    }
+//    public double[] timeLaunch(double flightTime)
+//    {
+//        double velocity = velocityMag(velocityX(flightTime), velocityY(flightTime));
+//        if (velocity > maxVelocity) {velocity = maxVelocity;}
+//        double angle = calculateSteeperAngle(velocity, );
+//
+//        return new double[] {velocity, angle};
+//    }
 
     /**
      * @param time of flight desired
@@ -82,15 +85,9 @@ public class FireControl
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
-    private double calculateSteeperAngle(double velocity)
+    private double calculateSteeperAngle(double velocity, double targetRange)
     {
-        double targetRange = 2;
-        try{
-            targetRange = (getRange() * 2.54 / 100) + 0.2;
-        } catch(Exception e){
-            targetRange = 2;
-        }
-        double targetZ = 1;
+        double targetZ = 1.2;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -108,15 +105,9 @@ public class FireControl
      * @param velocity The exit velocity of the artifact from the launcher in meters/second
      * @return The angle of launch in degrees
      */
-    private double calculateShallowerAngle(double velocity)
+    private double calculateShallowerAngle(double velocity, double targetRange)
     {
-        double targetRange = 2;
-        try{
-            targetRange = (getRange() * 2.54 / 100) + 0.35;
-        } catch(Exception e){
-            targetRange = 2;
-        }
-        double targetZ = 1.25;
+        double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -133,15 +124,9 @@ public class FireControl
      * @targetY The height of target in meters
      * @param angle The angle at which the ball exits the shooter in degrees
      */
-    private double calculateVelocity(double angle)
+    private double calculateVelocity(double angle, double targetRange)
     {
-        double targetRange = 2;
-        try{
-            targetRange = (getRange() * 2.54 / 100) + 0.25;
-        } catch(Exception e){
-            targetRange = 2;
-        }
-        double targetZ = 1;
+        double targetZ = 1.3;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
         double numerator = -g * Math.pow(2 * targetRange,2) * numeratorParth;
@@ -156,51 +141,59 @@ public class FireControl
      * @return the motor RPM at which to fire the ball
      * I have no idea how this math is right but I have no care in the world. It does
      */
-    private double targetMotorVelocity(double velocity)
+    public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = (velocity/(Math.PI * shooterWheelRadius)) * 28 * 0.625;
+        double motorVelocity = ((velocity * 1.4)/(2*Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
     }
 
-    public double[] firingSuite(double velocity)
+    public double[] firingSuite(Pose2d robotPose, boolean team)
     {
+        double velocity;
         double targetAngle;
-        double targetRange = 2;
-        try{
-            targetRange = getRange() * 2.54 / 100;
-        } catch(Exception e){
+        double targetRange;
+
+        try
+        {
+            if (team) // Blue
+            {
+                double x = -62 - robotPose.position.x;
+                double y = -62 - robotPose.position.y;
+                targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+            }
+            else // Red
+            {
+                double x = -62 - robotPose.position.x;
+                double y = 62 - robotPose.position.y;
+                targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+            }
+
+            // Convert from inches to meters
+            targetRange *= 0.0254;
+        }
+        catch (Exception e)
+        {
             targetRange = 2;
         }
-        telemetry.addData("Plan Distance", targetRange);
 
-//        if (targetRange > 1.65)
-//        {
-//            targetAngle = calculateShallowerAngle(velocity);
-//            telemetry.addData("shallow angle", targetAngle);
-//        }
-        if (maxLaunchAngle > calculateSteeperAngle(velocity)) //else
+
+        if (targetRange > 2.5)
         {
-            targetAngle = calculateSteeperAngle(velocity);
-            telemetry.addData("steep angle", targetAngle);
+            targetAngle = 65;
+            velocity = calculateVelocity(67, targetRange);
         }
         else
         {
-            targetAngle = 65;
-            velocity = calculateVelocity(65);
-            telemetry.addData("other angle", targetAngle);
-            telemetry.addData("steep angle", calculateSteeperAngle(velocity));
+            velocity = (targetRange - 2.2) + 9;
+            targetAngle = calculateSteeperAngle(velocity, targetRange);
         }
 
+        telemetry.addData("Target Range", targetRange);
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
-
-    private double getRange()
-    {
-        return Math.sqrt(Math.pow(localizer.getTagRange(),2) - Math.pow(localizer.getTagZ(),2));
-    }
 
 }

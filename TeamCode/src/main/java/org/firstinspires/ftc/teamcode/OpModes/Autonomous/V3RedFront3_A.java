@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous;//package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -9,9 +9,9 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
@@ -28,13 +28,11 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-//@Autonomous(name="RedBack3_Corn", group="Linear OpMode")
-public class Red3Back_Corn extends LinearOpMode
+@Autonomous(name="V3_RedFront3_A", group="Linear OpMode")
+public class V3RedFront3_A extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
     public static final String ENDPOSE = "Pose";
-
-    AutoConsts cons;
 
     V3ActionsBackpack actionsBackpack;
 
@@ -42,35 +40,36 @@ public class Red3Back_Corn extends LinearOpMode
 
     List<AprilTagDetection> list;
 
-    artifact_rail_detection pipeline;
-
-
     @Override
     public void runOpMode() throws InterruptedException
     {
-        blackboard.put(ALLIANCE, "RED");
 
         boolean isBlue = false;
+        blackboard.put(ALLIANCE, "RED");
+
+        //OpenCvCamera camera;
+        //artifact_rail_detection pipeline;
+        Turret turret = new Turret(hardwareMap, telemetry,isBlue);
+
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
-        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap, telemetry), new Intake(this), new Trigger(this),
-            new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry),
-                new ElapsedTime(), new SorterLeft(this), new SorterRight(this), new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
+        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
+            new Hood(this), turret, new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
+        new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
+
+        turret.trimX(4);
 
         // ZOE update with starting location
-        //Pose2d beginPose = new Pose2d(60, 15, Math.toRadians(180));
-        Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(180));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+        Pose2d beginPose = new Pose2d(-42, 51, Math.toRadians(237));
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
-
-            waitForStart();
+            MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
             boolean found = false;
             int searchCount = 0;
-            while (!found && searchCount < 100)
-            {
+
+            while (opModeInInit()) {
                 list = aprilTagLocalizer.getCurrentDetections();
                 if (!list.isEmpty())
                 {
@@ -82,44 +81,44 @@ public class Red3Back_Corn extends LinearOpMode
                         if (id >= 21 && id <= 23) {
                             targetTag = detection;
                             found = true;
+                            telemetry.addData("id", id);
+                            telemetry.update();
+                            actionsBackpack.taglist = list;
+                            actionsBackpack.aprilTag_Id = id;
                             break; // stop once found
                         }
                     }
                 }
                 else {
                     searchCount++;
+                    telemetry.addData("searchCount", searchCount);
                 }
+                telemetry.addLine("!!! Team is RED !!!");
+                telemetry.update();
+                idle();
+
             }
 
+
+            waitForStart();
+
+            try
+            {
+
+
+
             TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                .afterTime(0, actionsBackpack.read_obelisk(list))
-//                .afterTime(0, actionsBackpack.shootBall(9,3, drive.localizer.getPose(), false, drive))
-            //    .afterTime(0, actionsBackpack.shootBallManual(9,3, 1500,35, drive))  //good for back zone
-                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1150,55, drive))  //good for back zone
-//                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
-                .waitSeconds(10)
-
-//                .afterTime(1,actionsBackpack.intakeBall(-1))
-//                .splineTo(new Vector2d(36,52),Math.toRadians(90),new TranslationalVelConstraint(10))
-//                .afterTime(1,actionsBackpack.intakeBall(0))
-
-
-                //picking up from corner
-//                .afterTime(1,actionsBackpack.intakeBall(-1))
-//                .turnTo(Math.toRadians (90))
-//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-//                .strafeTo(new Vector2d(55, 70)) //hit corner balls.
-//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-//                .strafeTo(new Vector2d(55, 50)) //back up
-//                .afterTime(0.1,actionsBackpack.intakeBall(-1))
-//                .strafeTo(new Vector2d(60, 70)) //hit again
-//                .afterTime(0, actionsBackpack.shootBall(10,3, drive.localizer.getPose(), false, drive))
-//                .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(155))
-//                .waitSeconds(5)
-//                .strafeToLinearHeading(new Vector2d(50, 40 ), Math.toRadians(180))
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))
+                .strafeToLinearHeading(new Vector2d(-10, 10), Math.toRadians(86)) //launch zone
+                .waitSeconds(8)
+                .afterTime(0,actionsBackpack.intakeColor(7))
+                .strafeToLinearHeading(new Vector2d(-10, 55), Math.toRadians(86), new TranslationalVelConstraint(25)) //A
+                .strafeToLinearHeading(new Vector2d(-10, 10), Math.toRadians(86)) //launch zone
+                .afterTime(0, actionsBackpack.shootBallManual(9,3, 1050,35, drive))
+                .waitSeconds(8)
+                .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(86)) //in line with B
 
                 ; //do not remove ;
-
 
 
             Action redRun = yellow_drop
@@ -127,15 +126,18 @@ public class Red3Back_Corn extends LinearOpMode
 
             Actions.runBlocking(redRun);
 
+            blackboard.put(ENDPOSE, drive.localizer.getPose());
 
+            }
+            finally
+            {
+                blackboard.put(ENDPOSE, drive.localizer.getPose());
+            }
         }
         else
         {
             throw new RuntimeException();
         }
-
-        blackboard.put(ENDPOSE, drive.localizer.getPose());
-
     }
 }
 

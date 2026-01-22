@@ -187,6 +187,8 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
+
+
         // Choose a camera resolution. Not all cameras support all resolutions.
         //builder.setCameraResolution(new Size(640, 480));
 

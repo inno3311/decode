@@ -16,16 +16,29 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
+import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ActionsBackpack
 {
     private static final Logger log = LoggerFactory.getLogger(ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
+    // Looking from the BACK TO FRONT, Right is purple, left is green
+    SorterLeft sorterLeft; // purple
+    SorterRight sorterRight; // green
+    artifact_rail_detection railDetection;
+    AprilTagLocalizer aprilTagLocalizer;
     Trigger lift;
     Hood hood;
     Transfer transfer;
@@ -47,7 +60,7 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time)
+    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft, SorterRight sorterRight, artifact_rail_detection railDetection)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -56,6 +69,9 @@ public class ActionsBackpack
         this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
+        this.sorterLeft = sorterLeft;
+        this.sorterRight = sorterRight;
+        this.railDetection = railDetection;
         time.startTime();
 
 //        shooter.setPID(1.0,0.1,0.1,14);
@@ -109,11 +125,11 @@ public class ActionsBackpack
                 {
                     case INIT:
                         timesFired = 0;
-                        shooterParameters = fireControl.firingSuite(velocity);
+                        //shooterParameters = fireControl.firingSuite(velocity);
                         m_targetVelocity = setVel; //shooterParameters[1];
                         if (m_targetVelocity > 1500)
                             m_targetVelocity = 1500;
-                        shooter.driveToVelocity(m_targetVelocity);
+//                        shooter.driveToVelocity(m_targetVelocity);
                         hood.driveToAngleTarget(angle);
                         state = FireState.SPINUP;
                         //packet.put("targetVel",m_targetVelocity);
@@ -123,7 +139,7 @@ public class ActionsBackpack
                         break;
                     case SPINUP:
 
-                        double vel = shooter.getVelocity();
+                        double vel = shooter.getShooter().getVelocity();
                         boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 10;
                         if (notAtSpeed == false)
                         {
@@ -178,7 +194,7 @@ public class ActionsBackpack
                     case DONE:
                         {
                             shooter.driveToVelocity(0);
-                            shooter.setPower(0);
+                            shooter.getShooter().setPower(0);
                             transfer.driveServo(0);
                             //intake.setPower(0);
                             packet.put("STATE","DONE");
@@ -205,46 +221,46 @@ public class ActionsBackpack
 //                double hoodAngle = 0;
 
                 packet.put("targetVel",m_targetVelocity);
-                packet.put("power",shooter.getPower());
-                packet.put("vel",shooter.getVelocity());
+                packet.put("power",shooter.getShooter().getPower());
+                packet.put("vel",shooter.getShooter().getVelocity());
 
                 return true;
             }
         };
     }
 
-    public Action target(double velocity)
-    {
-
-        return new Action()
-        {
-            private boolean initialized = false;
-            private double[] shooterParameters;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet)
-            {
-
-                shooterParameters = fireControl.firingSuite(velocity);
-                //shooter.driveToVelocity(shooterParameters[1]);
-                //hood.driveToAngleTarget(shooterParameters[0]);
-
-
-                double t = time.seconds();
-                double power = shooter.getPower();
-                double targetVel = shooterParameters[1];
-                double hoodAngle = shooterParameters[0];
-
-                //packet.put("targetVel",m_targetVelocity);
-                packet.put("Angle",hoodAngle);
-                packet.put("Vel",targetVel);
-                packet.put("power",power);
-
-
-                return false;
-            }
-        };
-    }
+//    public Action target(double velocity)
+//    {
+//
+//        return new Action()
+//        {
+//            private boolean initialized = false;
+//            private double[] shooterParameters;
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet)
+//            {
+//
+//                shooterParameters = fireControl.firingSuite(velocity);
+//                //shooter.driveToVelocity(shooterParameters[1]);
+//                //hood.driveToAngleTarget(shooterParameters[0]);
+//
+//
+//                double t = time.seconds();
+//                double power = shooter.getShooter().getPower();
+//                double targetVel = shooterParameters[1];
+//                double hoodAngle = shooterParameters[0];
+//
+//                //packet.put("targetVel",m_targetVelocity);
+//                packet.put("Angle",hoodAngle);
+//                packet.put("Vel",targetVel);
+//                packet.put("power",power);
+//
+//
+//                return false;
+//            }
+//        };
+//    }
 
 
 //    public Action fireball(double velocity)
@@ -298,7 +314,7 @@ public class ActionsBackpack
 //                double vel = shooter.getVelocity();
 //                double hoodAngle = 0;
 
-                shooter.setPower(power);
+                shooter.getShooter().setPower(power);
 
                 return false;
             }
@@ -307,32 +323,32 @@ public class ActionsBackpack
 
 
 
-public Action fireball(double velocity)
-{
-
-    return new Action()
-    {
-        private boolean initialized = false;
-        private double[] shooterParameters;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket)
-        {
-            shooterParameters = fireControl.firingSuite(velocity);
-            shooter.driveToVelocity(shooterParameters[1]);
-            hood.driveToAngleTarget(shooterParameters[0]);
-
-
-            double t = time.seconds();
-            double power = shooter.getPower();
-            double vel = shooter.getVelocity();
-            double hoodAngle = 0;
-            svgLogger.log(String.format(Locale.US,"%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
-
-            return !shooter.isBusy();
-        }
-    };
-}
+//public Action fireball(double velocity)
+//{
+//
+//    return new Action()
+//    {
+//        private boolean initialized = false;
+//        private double[] shooterParameters;
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket telemetryPacket)
+//        {
+//            shooterParameters = fireControl.firingSuite(velocity);
+//            shooter.driveToVelocity(shooterParameters[1]);
+//            hood.driveToAngleTarget(shooterParameters[0]);
+//
+//
+//            double t = time.seconds();
+//            double power = shooter.getShooter().getPower();
+//            double vel = shooter.getShooter().getVelocity();
+//            double hoodAngle = 0;
+//            svgLogger.log(String.format(Locale.US,"%.3f,%.3f,%.3f,%.3f", t, power, vel, hoodAngle));
+//
+//            return !shooter.getShooter().isBusy();
+//        }
+//    };
+//}
 
     public Action trigger(double position)
     {
@@ -410,6 +426,52 @@ public Action fireball(double velocity)
                 }
 
                 return false;
+            }
+        };
+    }
+    public Action loadBall(double obelisk_id)
+    {
+        ArrayList<String> order;
+        if (obelisk_id == 21) // GPP
+        {
+            order = new ArrayList<>(Arrays.asList("green", "purple", "purple"));
+        }
+        else if (obelisk_id == 22) // PGP
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+        else //ID = 23 PPG
+        {
+            order = new ArrayList<>(Arrays.asList("purple", "green", "purple"));
+        }
+
+        double numBalls = railDetection.getNumBalls();
+        String shoot_color = order.get((int) (numBalls%3));
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+            {
+                if (Objects.equals(shoot_color, "green"))
+                // green
+                {
+                    sorterLeft.driveServo(-1);
+                }
+                else
+                // purple
+                {
+                    sorterRight.driveServo(1);
+                }
+                return true;
+            }
+        };
+    }
+    public Action read_obelisk()
+    {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                aprilTagLocalizer.getDetectionID();
+                return true;
             }
         };
     }

@@ -1,25 +1,20 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
@@ -28,7 +23,7 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
-@TeleOp(name = "Version_1")
+//@TeleOp(name = "Version_1")
 public class Version1 extends LinearOpMode
 {
     Intake intake;
@@ -49,6 +44,7 @@ public class Version1 extends LinearOpMode
     CentricDrive centricDrive;
     IMU imu;
     PIDController pid;
+    ColorSensor colorSensor;
 
     double target_velocity;
     double target_angle;
@@ -59,7 +55,7 @@ public class Version1 extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
         intake = new Intake(this);
-        shooter = new Shooter(this);
+        shooter = new Shooter(hardwareMap, telemetry);
         hood = new Hood(this);
         trigger = new Trigger(this);
         transfer = new Transfer(this);
@@ -78,10 +74,9 @@ public class Version1 extends LinearOpMode
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
 
-//        telemetry = new MultipleTelemetry(
-//            telemetry,
-//            FtcDashboard.getInstance().getTelemetry()
-//        );
+        colorSensor = new ColorSensor(hardwareMap);
+        NormalizedRGBA colors;
+
 
 
         waitForStart();
@@ -89,6 +84,17 @@ public class Version1 extends LinearOpMode
 
         while (opModeIsActive())
         {
+            colors = colorSensor.getDetectedColor(telemetry);
+            float normalizedRed, normalizedGreen, normalizedBlue;
+            normalizedRed = colors.red / colors.alpha;
+            normalizedGreen = colors.green / colors.alpha;
+            normalizedBlue = colors.blue / colors.alpha;
+
+            telemetry.addData("red", normalizedRed);
+            telemetry.addData("green", normalizedGreen);
+            telemetry.addData("blue", normalizedBlue);
+            telemetry.addData("hue", JavaUtil.colorToHue(colors.toColor()));
+
             if (drive_mode % 2 == 1)
             {
                 driveController.gamepadController(gamepad1);
@@ -157,12 +163,12 @@ public class Version1 extends LinearOpMode
             }
 
 
-            if (gamepad2.x)
-            {
-                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
-                target_velocity = shooterParameters[1];
-                target_angle = shooterParameters[0];
-            }
+//            if (gamepad2.x)
+//            {
+//                shooterParameters = fireControl.firingSuite(initialTargetVelocity);
+//                target_velocity = shooterParameters[1];
+//                target_angle = shooterParameters[0];
+//            }
 
             if (gamepad2.y)
             {
@@ -205,14 +211,11 @@ public class Version1 extends LinearOpMode
             }
             else if (gamepad1.a || gamepad2.a)
             {
-                shooter.setPower(0);
+//                shooter.setPower(0);
             }
 
 
-            telemetry = new MultipleTelemetry(
-                telemetry,
-                FtcDashboard.getInstance().getTelemetry()
-            );
+
 
 //            if (gamepad1.x)
 //            {
@@ -223,49 +226,12 @@ public class Version1 extends LinearOpMode
 
             //fireControl.firingSuite(12);
             telemetry.addData("Initial Target Velocity", initialTargetVelocity);
-            telemetry.addData("shooter Power", shooter.getPower());
-            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
-            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
+//            telemetry.addData("shooter Power", shooter.getPower());
+//            telemetry.addData("Shooter RPM", (shooter.getVelocity()/28)*60);
+//            telemetry.addData("Motor Velocity: ", shooter.getVelocity());
 //            telemetry.addData("Trigger pos", trigger.getPosition());
-            shooter.currentDraw();
+//            shooter.currentDraw();
             telemetry.update();
-
-            drive.updatePoseEstimate();
-
-//            drive.localizer.update();
-//
-            Pose2d pose = drive.localizer.getPose();
-//
-//            telemetry.addData("x (in)", pose.position.x);
-//            telemetry.addData("y (in)", pose.position.y);
-//            telemetry.addData("heading (deg)",
-//                Math.toDegrees(pose.heading.toDouble()));
-//            telemetry.update();
-
-            //Pose2d pose = drive.getPoseEstimate(); // Assuming Road Runner
-
-// Add data to the packet for text telemetry
-            TelemetryPacket packet = new TelemetryPacket();
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            Canvas fieldOverlay = packet.fieldOverlay();
-            //dashboard.sendTelemetryPacket(packet);
-            packet.put("x", pose.position.x);
-            packet.put("y", pose.position.y);
-            //packet.put("heading", pose.position.());
-
-// Draw on the field overlay
-// Example: Draw a blue circle for the robot's current position
-            fieldOverlay.setStroke("#3F51B5"); // Blue
-            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
-
-// Send the whole packet
-            dashboard.sendTelemetryPacket(packet);
-
-// Clear the overlay for the next frame (important!)
-            fieldOverlay.clear(); // Or clear specific drawings if needed
-
-            telemetry.update(); // Also update regular telemetry if needed
-
         }
     }
 }

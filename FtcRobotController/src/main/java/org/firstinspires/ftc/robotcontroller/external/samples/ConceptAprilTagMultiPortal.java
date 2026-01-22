@@ -42,7 +42,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * This OpMode demonstrates the basics of using multiple vision portals simultaneously
  */
 @TeleOp(name = "Concept: AprilTagMultiPortal", group = "Concept")
-@Disabled
+//@Disabled
 public class ConceptAprilTagMultiPortal extends LinearOpMode
 {
     VisionPortal portal1;
@@ -77,12 +77,12 @@ public class ConceptAprilTagMultiPortal extends LinearOpMode
         // setLiveViewContainerId(), where we pass in the IDs we received earlier from
         // makeMultiPortalView().
         portal1 = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "goal"))
                 .setLiveViewContainerId(portal1ViewId)
                 .addProcessor(aprilTagProcessor1)
                 .build();
         portal2 = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setLiveViewContainerId(portal2ViewId)
                 .addProcessor(aprilTagProcessor2)
                 .build();
