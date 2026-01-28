@@ -5,16 +5,14 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
@@ -23,10 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Objects;
 
 public class ActionsBackpack
@@ -39,7 +35,7 @@ public class ActionsBackpack
     SorterRight sorterRight; // green
     artifact_rail_detection railDetection;
     AprilTagLocalizer aprilTagLocalizer;
-    Trigger lift;
+    Flipper lift;
     Hood hood;
     Transfer transfer;
     FireControl fireControl;
@@ -60,7 +56,7 @@ public class ActionsBackpack
 
     CsvLogger svgLogger;
 
-    public ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft, SorterRight sorterRight, artifact_rail_detection railDetection)
+    public ActionsBackpack(Shooter shooter, Intake intake, Flipper lift, Hood hood, Transfer transfer, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft, SorterRight sorterRight, artifact_rail_detection railDetection)
     {
         this.shooter = shooter;
         this.intake = intake;

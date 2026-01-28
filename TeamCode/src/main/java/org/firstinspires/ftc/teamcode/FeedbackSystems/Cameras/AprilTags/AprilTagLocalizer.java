@@ -146,7 +146,7 @@ public class AprilTagLocalizer
         if (!currentDetections.isEmpty())
         {
             AprilTagDetection detection = currentDetections.get(0);
-            return new Pose2d(detection.robotPose.getPosition().x, detection.robotPose.getPosition().y, detection.robotPose.getOrientation().getYaw(AngleUnit.RADIANS));
+            return new Pose2d(detection.robotPose.getPosition().x, detection.robotPose.getPosition().y, detection.robotPose.getOrientation().getYaw(AngleUnit.RADIANS) + Math.toRadians(90));
         }
         return new Pose2d(0,0,0);
     }

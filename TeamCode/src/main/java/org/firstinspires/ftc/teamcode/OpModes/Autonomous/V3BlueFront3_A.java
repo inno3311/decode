@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
@@ -53,7 +53,7 @@ public class V3BlueFront3_A extends LinearOpMode
 
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
-        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
+        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Flipper(this),
             new Hood(this), turret, new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
 

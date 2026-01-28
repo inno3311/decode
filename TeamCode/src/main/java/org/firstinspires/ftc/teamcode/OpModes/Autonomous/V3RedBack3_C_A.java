@@ -13,26 +13,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //import org.firstinspires.ftc.teamcode.initialization.Initialization;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.OpenCV.artifact_rail_detection;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Roadrunner.V3ActionsBackpack;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Roadrunner.tuning.TuningOpModes;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
@@ -59,7 +54,7 @@ public class V3RedBack3_C_A extends LinearOpMode
         //artifact_rail_detection pipeline;
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, true);
-        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(this),
+        actionsBackpack = new V3ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Flipper(this),
             new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(), new SorterLeft(this), new SorterRight(this),
         new Intake_sort(this), new ColorSensor(hardwareMap),isBlue);
 

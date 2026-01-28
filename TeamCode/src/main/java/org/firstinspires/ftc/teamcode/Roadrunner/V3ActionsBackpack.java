@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
@@ -37,7 +37,7 @@ public class V3ActionsBackpack
     private static final Logger log = LoggerFactory.getLogger(V3ActionsBackpack.class);
     Shooter shooter;
     Intake intake;
-    Trigger lift;
+    Flipper lift;
     Hood hood;
     Turret turret;
 
@@ -82,7 +82,7 @@ public class V3ActionsBackpack
 
     boolean isBlue;
 
-    public V3ActionsBackpack(Shooter shooter, Intake intake, Trigger lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
+    public V3ActionsBackpack(Shooter shooter, Intake intake, Flipper lift, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, SorterLeft sorterLeft,
                              SorterRight sorterRight, Intake_sort intakeSort, ColorSensor colorSensor, boolean team)
     {
         this.shooter = shooter;

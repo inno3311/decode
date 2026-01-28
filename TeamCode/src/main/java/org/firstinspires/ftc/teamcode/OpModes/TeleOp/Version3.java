@@ -6,31 +6,30 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.FeedbackSystems.PID.PIDController;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.v3.Intake_sort;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterLeft;
 import org.firstinspires.ftc.teamcode.Robot.v3.SorterRight;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.ColorSensor.ColorSensor;
+import org.opencv.core.Mat;
 
 @TeleOp(name = "Version3")
 public class Version3 extends LinearOpMode
@@ -38,7 +37,7 @@ public class Version3 extends LinearOpMode
     Intake intake;
     Shooter shooter;
     Hood hood;
-    Trigger trigger;
+    Flipper trigger;
     SorterLeft sorterLeft;
     SorterRight sorterRight;
     Intake_sort intakeSort;
@@ -55,7 +54,6 @@ public class Version3 extends LinearOpMode
     double[] shooterParameters;
     int drive_mode = 0;
     double drive_mode_flag = 1;
-    double target_angle = 0;
     boolean team = false; //false = red, true = blue
     double startX = 0;
     double startY = 0;
@@ -79,13 +77,10 @@ public class Version3 extends LinearOpMode
         intakeSort = new Intake_sort(this);
         shooter = new Shooter(hardwareMap, telemetry);
         hood = new Hood(this);
-        trigger = new Trigger(this);
+        trigger = new Flipper(this);
         sorterLeft = new SorterLeft(this);
         sorterRight = new SorterRight(this);
         turret = new Turret(hardwareMap, telemetry,team);
-
-        //jrm
-        turret.trimX(4);
 
         time = new ElapsedTime();
 
@@ -188,11 +183,11 @@ public class Version3 extends LinearOpMode
                 drive_mode += 1;
             }
 
-            // Roadrunner positioning update **Out of order**
-            if (gamepad2.back)
+            // Roadrunner positioning update
+            if ((aprilTagLocalizer.getDetectionID() == 20 || aprilTagLocalizer.getDetectionID() == 24))
             {
-                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
-//                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
+//                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
+                drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
             }
             drive.localizer.update();
             Pose2d pose = drive.localizer.getPose();
@@ -269,7 +264,7 @@ public class Version3 extends LinearOpMode
 
             // Turret code
             double aiTurretHeading = 0;
-            if (gamepad2.b)
+            if (gamepad2.b && !gamepad2.start)
             {
                 state = TurretState.resetting;
             }
@@ -295,41 +290,9 @@ public class Version3 extends LinearOpMode
                     break;
             }
 
-            if (gamepad2.dpadUpWasPressed())
-            {
-                turret.trimY(1);
-            }
-            else if (gamepad2.dpadDownWasPressed())
-            {
-                turret.trimY(-1);
-            }
-            if (gamepad2.dpadRightWasPressed())
-            {
-                turret.trimX(1);
-            }
-            else if (gamepad2.dpadLeftWasPressed())
-            {
-                turret.trimX(-1);
-            }
-
-
-
             // Dashboard and telemetry
             TelemetryPacket packet = new TelemetryPacket();
             Canvas fieldOverlay = packet.fieldOverlay();
-
-            telemetry.addData("x (m)", pose.position.x * 0.0254);
-            telemetry.addData("y (m)", pose.position.y * 0.0254);
-            telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-
-            telemetry.addData("Hood angle", hood.getAngle());
-            telemetry.addData("Hood Position", hood.getPosition());
-
-            telemetry.addData("Turret Position", turret.getPosition());
-            telemetry.addLine("-----------------------------------------------------");
-
-            telemetry.addData("Target X", turret.getTargetX());
-            telemetry.addData("Target Y", turret.getTargetY());
 
             if (!team)
             {
@@ -341,36 +304,18 @@ public class Version3 extends LinearOpMode
             }
 
             telemetry.addLine("-----------------------------------------------------");
-
-
-            fieldOverlay.setStroke("#100FFF"); //
-            fieldOverlay.strokeLine(
-                pose.position.x, pose.position.y, -62, 62);
-
-            fieldOverlay.setStroke("#3F51B5"); // Blue
-            fieldOverlay.strokeCircle(pose.position.x, pose.position.y, 3); // x, y, radius
-            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
-                    pose.position.x + 10 * Math.cos(pose.heading.toDouble()),
-                    pose.position.y + 10 * Math.sin(pose.heading.toDouble()));
-
-            fieldOverlay.setStroke("#FF0000"); // Red
-            fieldOverlay.strokeLine(pose.position.x, pose.position.y,
-                    pose.position.x + 8 * Math.cos(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90),
-                    pose.position.y + 8 * Math.sin(Math.toRadians(aiTurretHeading) + pose.heading.toDouble()+90));
-
-            // Target dot
-            fieldOverlay.fillCircle(turret.getTargetX(), turret.getTargetY(), 2);
-
+            telemetry.addData("Bot Velocity", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate);
+            telemetry.addData("Bot Velocity X", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.cos(Math.toRadians(pose.heading.toDouble())));
+            telemetry.addData("Bot Velocity Y", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.sin(Math.toRadians(pose.heading.toDouble())));
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
 
             dashboard = FtcDashboard.getInstance();
             packet = new TelemetryPacket();
-            packet.put("Bot X", pose.position.x);
-            packet.put("Bot Y", pose.position.y);
-            packet.put("bot heading: ", Math.toDegrees(pose.heading.toDouble()));
-            packet.put("aiTurretHeading: " , aiTurretHeading);
+            packet.put("Bot Velocity X", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate);
+            packet.put("Bot Velocity X", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.cos(Math.toRadians(pose.heading.toDouble())));
+            packet.put("Bot Velocity Y", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.sin(Math.toRadians(pose.heading.toDouble())));
             dashboard.sendTelemetryPacket(packet);
 
         }

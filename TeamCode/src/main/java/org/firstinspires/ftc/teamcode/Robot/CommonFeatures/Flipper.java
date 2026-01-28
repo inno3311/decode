@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Parents.ServoParent;
 
-public class Trigger extends ServoParent
+public class Flipper extends ServoParent
 {
-    public Trigger(LinearOpMode opMode)
+    public Flipper(LinearOpMode opMode)
     {
         super("lift", 0, opMode);
     }

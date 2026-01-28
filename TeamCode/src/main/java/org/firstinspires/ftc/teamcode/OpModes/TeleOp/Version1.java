@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Trigger;
+import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.v1.Transfer;
 
 //@TeleOp(name = "Version_1")
@@ -29,7 +27,7 @@ public class Version1 extends LinearOpMode
     Intake intake;
     Shooter shooter;
     Hood hood;
-    Trigger trigger;
+    Flipper trigger;
     Transfer transfer;
 
     DriveController driveController;
@@ -57,7 +55,7 @@ public class Version1 extends LinearOpMode
         intake = new Intake(this);
         shooter = new Shooter(hardwareMap, telemetry);
         hood = new Hood(this);
-        trigger = new Trigger(this);
+        trigger = new Flipper(this);
         transfer = new Transfer(this);
 
         time = new ElapsedTime();

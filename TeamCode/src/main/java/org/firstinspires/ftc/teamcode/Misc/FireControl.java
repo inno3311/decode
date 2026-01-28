@@ -126,7 +126,7 @@ public class FireControl
      */
     private double calculateVelocity(double angle, double targetRange)
     {
-        double targetZ = 1.3;
+        double targetZ = 1.5;
 
         double numeratorParth = Math.pow((Math.tan(Math.toRadians(angle))), 2) + 1;
         double numerator = -g * Math.pow(2 * targetRange,2) * numeratorParth;
@@ -160,14 +160,14 @@ public class FireControl
         {
             if (team) // Blue
             {
-                double x = -62 - robotPose.position.x;
-                double y = -62 - robotPose.position.y;
+                double x = -65 - robotPose.position.x;
+                double y = -65 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
             else // Red
             {
-                double x = -62 - robotPose.position.x;
-                double y = 62 - robotPose.position.y;
+                double x = -65 - robotPose.position.x;
+                double y = 65 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
 
@@ -182,7 +182,7 @@ public class FireControl
 
         if (targetRange > 2.5)
         {
-            targetAngle = 65;
+            targetAngle = 67;
             velocity = calculateVelocity(67, targetRange);
         }
         else
