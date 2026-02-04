@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
@@ -64,7 +68,9 @@ public class Version4 extends LinearOpMode
 
         time = new ElapsedTime();
 
-        driveController = new DriveController(hardwareMap,1,-1,-1);
+        driveController = new DriveController(hardwareMap,-1,1,1);
+
+        fireControl = new FireControl(aprilTagLocalizer, telemetry);
 
         drive = new MecanumDrive(hardwareMap, null);
 
@@ -81,6 +87,9 @@ public class Version4 extends LinearOpMode
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
+        //jrm   temp code
+        //drive.localizer.setPose(new Pose2d(0,0,0));
 
         waitForStart();
         time.startTime();
@@ -130,6 +139,10 @@ public class Version4 extends LinearOpMode
             drive.localizer.update();
             Pose2d pose = drive.localizer.getPose();
 
+
+//            if (pose == null)
+//                continue;
+
             // Firesuit math
             shooterParameters = fireControl.firingSuite(pose, team);
 
@@ -163,6 +176,16 @@ public class Version4 extends LinearOpMode
                     turret.stop();
                     break;
             }
+
+
+            telemetry.addData("Bot  X", pose.position.x);
+            telemetry.addData("Bot  Y", pose.position.y);
+            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
+            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+
+            telemetry.addData("Shooter Vel:",shooterParameters[1]);
+            telemetry.addData("Hood Angle:",shooterParameters[0]);
+
 
             telemetry.update();
         }

@@ -169,6 +169,7 @@ public class Turret
             double power = turretPID.calculate(targetInTicks, turret.getCurrentPosition());
             power = Math.max(-1, Math.min(1, power));
             turret.setPower(power);
+            //turret.setPower(0.3);
         }
         else
         {
