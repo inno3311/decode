@@ -18,15 +18,15 @@ public class Turret
 {
     public static class Params
     {
-        public static double P = 0.0125;
+        public static double P = 0.0075;
         public static double I = 0;
-        public static double D = 0.0175;
+        public static double D = 0.005;
     }
 
     public static Params pid = new Params();
 
     DcMotorEx turret;
-    final double TICKS_PER_DEGREE  = 6.2222; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
+    final double TICKS_PER_DEGREE  = 6.22; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
     TurretPID turretPID = new TurretPID(Params.P, Params.I, Params.D);
     //POWER: 0.25 0.0125, 0, 0.000125    POWER: 0.35 P: 0.0055 D: 0.0005   POWER: 0.5 P: 0.0055  D: 0.01    POWER 0.75 P: 0.00575 D: 0.015  POWER 1 P: 0.0125 D: 0.0175
     TouchSensor turretLimit;
@@ -138,14 +138,14 @@ public class Turret
 
         if (team) // Blue
         {
-            targetX = -65.0;
-            targetY = -65.0;
+            targetX = -62.0;
+            targetY = -62.0;
         }
         else
         {
-            targetX = -65.0;  //Use for auto
+            targetX = -62.0;  //Use for auto
             //targetX = -62.0;
-            targetY =  65.0;
+            targetY =  62.0;
         }
 
         // Vector from robot to target
