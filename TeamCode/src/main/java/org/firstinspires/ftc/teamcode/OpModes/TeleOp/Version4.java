@@ -45,6 +45,9 @@ public class Version4 extends LinearOpMode
     int drive_mode = 0;
     double drive_mode_flag = 1;
     boolean continuousDrive = false;
+    double startX = 0;
+    double startY = 0;
+    double startYaw = 180;
     boolean team = false; //false = red, true = blue
     public enum TurretState
     {
@@ -88,8 +91,17 @@ public class Version4 extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        //jrm   temp code
-        //drive.localizer.setPose(new Pose2d(0,0,0));
+        drive.localizer.setPose((Pose2d) blackboard.get("Pose"));
+        if (drive.localizer.getPose() == null)
+        {
+            Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
+            drive.localizer.setPose(startPose);
+        }
+
+        if (blackboard.get("Alliance") == "BLUE")
+        {
+            team = true;
+        }
 
         waitForStart();
         time.startTime();
@@ -140,9 +152,6 @@ public class Version4 extends LinearOpMode
             Pose2d pose = drive.localizer.getPose();
 
 
-//            if (pose == null)
-//                continue;
-
             // Firesuit math
             shooterParameters = fireControl.firingSuite(pose, team);
 
@@ -151,15 +160,15 @@ public class Version4 extends LinearOpMode
 
             // Turret code
             double aiTurretHeading = 0;
-            if (gamepad2.b && !gamepad2.start)
+            if (gamepad1.b && !gamepad2.start)
             {
                 state = Version3.TurretState.resetting;
             }
-            else if (gamepad2.x)
+            else if (gamepad1.x)
             {
                 state = Version3.TurretState.tracking;
             }
-            else if (gamepad2.a)
+            else if (gamepad1.a && !gamepad1.start)
             {
                 state = Version3.TurretState.stopped;
             }
@@ -178,13 +187,14 @@ public class Version4 extends LinearOpMode
             }
 
 
-            telemetry.addData("Bot  X", pose.position.x);
-            telemetry.addData("Bot  Y", pose.position.y);
-            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
-            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+//            telemetry.addData("Bot  X", pose.position.x);
+//            telemetry.addData("Bot  Y", pose.position.y);
+//            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
+//            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+            telemetry.addData("Turret  Position", turret.getPosition());
 
-            telemetry.addData("Shooter Vel:",shooterParameters[1]);
-            telemetry.addData("Hood Angle:",shooterParameters[0]);
+//            telemetry.addData("Shooter Vel:",shooterParameters[1]);
+//            telemetry.addData("Hood Angle:",shooterParameters[0]);
 
 
             telemetry.update();

@@ -144,7 +144,7 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = ((velocity * 1.4)/(2*Math.PI*shooterWheelRadius)) * 28;
+        double motorVelocity = ((velocity * 1.3)/(2 * Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
@@ -179,7 +179,6 @@ public class FireControl
             targetRange = 2;
         }
 
-
         if (targetRange > 2.5)
         {
             targetAngle = 67;
@@ -192,7 +191,8 @@ public class FireControl
         }
 
         telemetry.addData("Target Range", targetRange);
-        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
+        // To invert maxLaunchAngle - targetAngle
+        return new double[] {targetAngle, targetMotorVelocity(velocity)};
     }
 
 

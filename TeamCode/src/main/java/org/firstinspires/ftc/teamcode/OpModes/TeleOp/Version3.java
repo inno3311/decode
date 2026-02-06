@@ -315,12 +315,6 @@ public class Version3 extends LinearOpMode
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
 
-            dashboard = FtcDashboard.getInstance();
-            packet = new TelemetryPacket();
-            packet.put("Bot Velocity X", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate);
-            packet.put("Bot Velocity X", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.cos(Math.toRadians(pose.heading.toDouble())));
-            packet.put("Bot Velocity Y", imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * Math.sin(Math.toRadians(pose.heading.toDouble())));
-            dashboard.sendTelemetryPacket(packet);
 
         }
     }
