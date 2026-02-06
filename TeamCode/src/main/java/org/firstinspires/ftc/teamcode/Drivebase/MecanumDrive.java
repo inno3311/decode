@@ -99,7 +99,7 @@ public final class MecanumDrive
         //public double inPerTick = 0.00195993742718288030952493294473;
         public double inPerTick = 0.00195046645197702;
         public double lateralInPerTick = 0.0014600378906324816;
-        public double trackWidthTicks = 4955.259814385378; //5755.0436520484145;
+        public double trackWidthTicks = 10000;//4955.259814385378; //5755.0436520484145;
         public double kS = 1.2493762735338882;
         public double kV = 0.0002825258459536698;
         public double kA = 0.00005;
@@ -115,7 +115,7 @@ public final class MecanumDrive
 
         // path controller gains
         public double axialGain = 5.0;
-        public double lateralGain = 2.0;
+        public double lateralGain = 9.0;
         public double headingGain = 6.0; // shared with turn
 
         public double axialVelGain = 0.0;
