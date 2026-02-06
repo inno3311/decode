@@ -83,7 +83,8 @@ public class ServoParent
      */
     protected void driveToAngleTarget(double angle)
     {
-        servo.setPosition(1 - (angle/servoRange));
+        // Add 1- to invert 1-anlge/servoRange
+        servo.setPosition(angle/servoRange);
     }
 
     protected double getAngle()

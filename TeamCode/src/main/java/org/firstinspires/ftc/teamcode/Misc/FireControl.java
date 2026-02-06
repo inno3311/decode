@@ -191,8 +191,7 @@ public class FireControl
         }
 
         telemetry.addData("Target Range", targetRange);
-        // To invert maxLaunchAngle - targetAngle
-        return new double[] {targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
 

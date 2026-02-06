@@ -187,14 +187,12 @@ public class Version4 extends LinearOpMode
             }
 
 
-//            telemetry.addData("Bot  X", pose.position.x);
-//            telemetry.addData("Bot  Y", pose.position.y);
-//            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
-//            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
-            telemetry.addData("Turret  Position", turret.getPosition());
-
-//            telemetry.addData("Shooter Vel:",shooterParameters[1]);
-//            telemetry.addData("Hood Angle:",shooterParameters[0]);
+            telemetry.addData("Bot  X", pose.position.x);
+            telemetry.addData("Bot  Y", pose.position.y);
+            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
+            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+            telemetry.addData("Shooter Vel:",shooterParameters[1]);
+            telemetry.addData("Hood Angle:",shooterParameters[0]);
 
 
             telemetry.update();

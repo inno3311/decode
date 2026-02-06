@@ -70,65 +70,6 @@ public class Turret
         }
     }
 
-//    public void trackGoal(double turretFacing, Pose2d robotPose, boolean team)
-//    {
-//        double x;
-//        double y;
-//
-//        if (team) // Blue
-//        {
-//            x = -55 - robotPose.position.x;
-//            y =  55 - robotPose.position.y;
-//        }
-//        else // Red
-//        {
-//            x = -55 - robotPose.position.x;
-//            y = -55 - robotPose.position.y;
-//        }
-//
-//        // Absolute field angle to target
-//        double targetAngleDeg = Math.toDegrees(Math.atan2(y,x));
-//        //error = normalizeDegrees(targetAngleDeg) - Math.toDegrees(turretFacing);
-//        error = (targetAngleDeg) - Math.toDegrees(turretFacing);
-//
-//        error = normalizeDegrees(error);
-//        // Convert to robot-centric turret angle
-//        //double turretAngleDeg = targetAngleDeg - robotHeadingDeg;
-//
-//        double power = turretPID.calculate(error * TICKS_PER_DEGREE, turret.getCurrentPosition());
-//        power = Math.max(-0.25, Math.min(0.25, power));
-//
-//        turret.setPower(power);
-//
-//        telemetry.addData("Turret Error", error);
-//
-//    }
-
-    public void stop()
-    {
-        turret.setPower(0);
-    }
-
-    public void trimX(int value)
-    {
-        targetX = targetX + value;
-    }
-
-    public void trimY(int value)
-    {
-        targetY = targetY + value;
-    }
-
-    public double getTargetX()
-    {
-        return targetX;
-    }
-
-    public double getTargetY()
-    {
-        return targetY;
-    }
-
     public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, boolean team)
     {
         // Fixed field target
@@ -158,7 +99,7 @@ public class Turret
         telemetry.addData("TargetAngleDeg", targetAngleDeg);
 
         // Convert to robot-centric turret angle
-        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 85);
+        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 90);
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
@@ -263,6 +204,31 @@ public class Turret
         packet.put("target", target);
         packet.put("Current Position", turret.getCurrentPosition());
         packet.put("Zero", 0);
+    }
+
+    public void stop()
+    {
+        turret.setPower(0);
+    }
+
+    public void trimX(int value)
+    {
+        targetX = targetX + value;
+    }
+
+    public void trimY(int value)
+    {
+        targetY = targetY + value;
+    }
+
+    public double getTargetX()
+    {
+        return targetX;
+    }
+
+    public double getTargetY()
+    {
+        return targetY;
     }
 
 }
