@@ -144,7 +144,7 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = ((velocity * 1.3)/(2 * Math.PI*shooterWheelRadius)) * 28;
+        double motorVelocity = ((velocity * 1.1)/(2 * Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
@@ -181,8 +181,8 @@ public class FireControl
 
         if (targetRange > 2.5)
         {
-            targetAngle = 67;
-            velocity = calculateVelocity(67, targetRange);
+            targetAngle = 70;
+            velocity = calculateVelocity(70, targetRange) + 2.5;
         }
         else
         {

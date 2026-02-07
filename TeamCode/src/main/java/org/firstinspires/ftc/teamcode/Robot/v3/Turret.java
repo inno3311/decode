@@ -26,7 +26,7 @@ public class Turret
     public static Params pid = new Params();
 
     DcMotorEx turret;
-    final double TICKS_PER_DEGREE  = 6.44; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
+    final double TICKS_PER_DEGREE  = 6.22; // (Small gear 17 teeth, Big gear 100: 0.17) (Ticks per rotation 384.5) (360/(0.17 * 384.5))
     TurretPID turretPID = new TurretPID(Params.P, Params.I, Params.D);
     //POWER: 0.25 0.0125, 0, 0.000125    POWER: 0.35 P: 0.0055 D: 0.0005   POWER: 0.5 P: 0.0055  D: 0.01    POWER 0.75 P: 0.00575 D: 0.015  POWER 1 P: 0.0125 D: 0.0175
     TouchSensor turretLimit;
@@ -99,7 +99,7 @@ public class Turret
         telemetry.addData("TargetAngleDeg", targetAngleDeg);
 
         // Convert to robot-centric turret angle
-        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 90);
+        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 89);
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 

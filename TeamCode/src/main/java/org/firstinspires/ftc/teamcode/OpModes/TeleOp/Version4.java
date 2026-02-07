@@ -150,6 +150,7 @@ public class Version4 extends LinearOpMode
             {
 //                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
                 drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
+                telemetry.addData("Updated", "Roadrunner reset successful");
             }
             drive.localizer.update();
             Pose2d pose = drive.localizer.getPose();
@@ -194,6 +195,7 @@ public class Version4 extends LinearOpMode
             telemetry.addData("Bot  Y", pose.position.y);
             telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+            telemetry.addData("Turret Position", turret.getPosition());
             telemetry.addData("Shooter Vel:",shooterParameters[1]);
             telemetry.addData("Hood Angle:",shooterParameters[0]);
 
