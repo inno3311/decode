@@ -63,6 +63,9 @@ public class Version4 extends LinearOpMode
     {
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
 
+        // 🔥 THIS is where you fix vibration blur
+        aprilTagLocalizer.setManualCameraExposure(10, 30);
+
         intake = new Intake(this);
         trigger = new Trigger(hardwareMap);
         shooter = new Shooter(hardwareMap, telemetry);

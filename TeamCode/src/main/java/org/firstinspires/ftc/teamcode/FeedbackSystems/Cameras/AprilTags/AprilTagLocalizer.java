@@ -10,6 +10,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -211,6 +213,40 @@ public class AprilTagLocalizer
             }
         }
         return -1;
+    }
+
+    public void setManualCameraExposure(int exposureMs, int gain) {
+
+        // Wait for the camera to start streaming
+        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        ExposureControl exposureControl =
+            visionPortal.getCameraControl(ExposureControl.class);
+
+        if (exposureControl != null) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            exposureControl.setExposure(exposureMs, TimeUnit.MILLISECONDS);
+        }
+
+        GainControl gainControl =
+            visionPortal.getCameraControl(GainControl.class);
+
+        if (gainControl != null) {
+            gainControl.setGain(gain);
+        }
+
+        WhiteBalanceControl wbControl =
+            visionPortal.getCameraControl(WhiteBalanceControl.class);
+
+        if (wbControl != null) {
+            wbControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+        }
     }
 
     public List<AprilTagDetection> getCurrentDetections()
