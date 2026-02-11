@@ -231,4 +231,16 @@ public class Turret
         return targetY;
     }
 
+    public void trimRight()
+    {
+        int pos = turret.getCurrentPosition();
+        turret.setTargetPosition(pos +5);
+    }
+
+    public void trimLeft()
+    {
+        int pos = turret.getCurrentPosition();
+        turret.setTargetPosition(pos - 5);
+    }
+
 }

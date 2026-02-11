@@ -45,7 +45,8 @@ public class ShooterTest extends OpMode
     {
         driveController.gamepadController(gamepad1);
 
-//        shooter.tuning(fireControl.targetMotorVelocity(tagetVelocity), gamepad1);
+        shooter.tuning(fireControl.targetMotorVelocity(tagetVelocity), gamepad1);
+
         if (gamepad1.left_bumper)
         {
             tagetVelocity = 10;

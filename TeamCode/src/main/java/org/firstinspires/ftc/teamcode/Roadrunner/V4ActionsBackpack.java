@@ -81,7 +81,7 @@ public class V4ActionsBackpack
 
     boolean isBlue;
 
-    public V4ActionsBackpack(Shooter shooter, Intake intake, Trigger trigger, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, ColorSensor colorSensor, boolean team)
+    public V4ActionsBackpack(Shooter shooter, Intake intake, Trigger trigger, Hood hood, Turret turret, FireControl fireControl, ElapsedTime time, boolean team)
     {
         this.shooter = shooter;
         this.intake = intake;
@@ -96,7 +96,7 @@ public class V4ActionsBackpack
         //this.transfer = transfer;
         this.fireControl = fireControl;
         this.time = time;
-        this.colorSensor = colorSensor;
+        //this.colorSensor = colorSensor;
         time.startTime();
 
         loadInProgress = false;
@@ -177,8 +177,6 @@ public class V4ActionsBackpack
 
                 color c;
 
-
-
                 switch (state)
                 {
                     case INIT:
@@ -187,20 +185,8 @@ public class V4ActionsBackpack
                         //shooterParameters = fireControl.firingSuite(velocity, pose1, team);
                         shooter.driveToVelocity(setvel);
                         hood.driveToAngleTarget(angle);
-                        state = FireState.TRANSFER_START;
+                        state = FireState.SPINUP;
 
-                        //double railballs = railDetection.getNumBalls();
-                        //packet.put("railDetection", railballs);
-
-//                        c = matrix[aprilTag_Id-21][timesFired];
-//                        if (c == color.PURPLE)
-//                        {
-//                            sorterLeft.driveServo(-1);
-//                        }
-//                        else
-//                        {
-//                            sorterRight.driveServo(1);
-//                        }
                         packet.put("MOTIF", aprilTag_Id);
                         packet.put("STATE","INIT");
                         break;
@@ -221,8 +207,8 @@ public class V4ActionsBackpack
                         break;
                     case FIRE:
                         fireTime = time.seconds();
-                        trigger.setPower(1);
-                        intake.setPower(1);
+                        trigger.setPower(-1);
+                        intake.setPower(-1);
                         state = FireState.SEC_DELAY;
 
                         packet.put("STATE","FIRE");
@@ -240,14 +226,13 @@ public class V4ActionsBackpack
                     break;
                     case DONE:
                     {
-                        shooter.driveToVelocity(0);
-                        shooter.getShooter().setPower(0);
-
+                        //shooter.driveToVelocity(0);
+                        //shooter.getShooter().setPower(0);
+                        trigger.setPower(0);
                         packet.put("STATE","DONE");
                         return false;
                     }
                 }
-
 
                 packet.put("power",shooter.getShooter().getPower());
                 packet.put("vel",shooter.getShooter().getVelocity());
@@ -382,6 +367,21 @@ public class V4ActionsBackpack
             public boolean run(@NonNull TelemetryPacket packet)
             {
                 shooter.getShooter().setPower(power);
+
+                return false;
+            }
+        };
+    }
+
+    public Action setTrigger(double power)
+    {
+
+        return new Action()
+        {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+                trigger.setPower(power);
 
                 return false;
             }

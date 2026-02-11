@@ -19,7 +19,7 @@ public class Shooter
     public static class Params
     {
         public static double F = 19;
-        public static double P = 15;
+        public static double P = 100;
         public static double I = 0;
         public static double D = 1;
     }
@@ -75,7 +75,7 @@ public class Shooter
         dashboard.sendTelemetryPacket(packet);
     }
 
-    private void tuning(double targetVelocity, Gamepad gamepad)
+    public void tuning(double targetVelocity, Gamepad gamepad)
     {
         if (gamepad.bWasPressed())
         {
