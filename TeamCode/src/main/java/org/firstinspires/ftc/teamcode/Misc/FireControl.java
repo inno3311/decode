@@ -14,7 +14,7 @@ public class FireControl
     //Fly Wheel Stats
     private final double shooterWheelRadius = 0.0508;//meter
     private final double maxVelocity = 25;//The max velocity at which we will fire the artifact in m/s
-    private final double maxLaunchAngle = 89;
+    private final double maxLaunchAngle = 90;
     private final double minimumAngle = 65;
 
 
@@ -87,7 +87,7 @@ public class FireControl
      */
     private double calculateSteeperAngle(double velocity, double targetRange)
     {
-        double targetZ = 1.2;
+        double targetZ = 1.3;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -107,7 +107,7 @@ public class FireControl
      */
     private double calculateShallowerAngle(double velocity, double targetRange)
     {
-        double targetZ = 1.3;
+        double targetZ = 1.4;
 
         double numeratorY = g * Math.pow((2 * targetRange), 2);
         double numeratorZ = 4 * (targetZ) * Math.pow(velocity, 2);
@@ -144,7 +144,7 @@ public class FireControl
     public double targetMotorVelocity(double velocity)
     {
 
-        double motorVelocity = ((velocity * 1.1)/(2 * Math.PI*shooterWheelRadius)) * 28;
+        double motorVelocity = ((velocity * 1.5)/(2 * Math.PI*shooterWheelRadius)) * 28;
 
         telemetry.addData("Target Motor Velocity", motorVelocity);
         return motorVelocity;
@@ -160,14 +160,14 @@ public class FireControl
         {
             if (team) // Blue
             {
-                double x = -65 - robotPose.position.x;
-                double y = -65 - robotPose.position.y;
+                double x = -63 - robotPose.position.x;
+                double y = -63 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
             else // Red
             {
-                double x = -65 - robotPose.position.x;
-                double y = 65 - robotPose.position.y;
+                double x = -63 - robotPose.position.x;
+                double y = 63 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
 
@@ -181,8 +181,8 @@ public class FireControl
 
         if (targetRange > 2.5)
         {
-            targetAngle = 70;
-            velocity = calculateVelocity(70, targetRange) + 2.5;
+            targetAngle = 65;
+            velocity = calculateVelocity(65, targetRange) + 1.75;
         }
         else
         {
@@ -194,5 +194,11 @@ public class FireControl
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
-
+//    public double curVelocity(double motorVelocity)
+//    {
+//        double velocity = ((motorVelocity/28)*(2*Math.PI*shooterWheelRadius)) / 1.5;
+//
+//        telemetry.addData("Velocity", motorVelocity);
+//        return velocity;
+//    }
 }

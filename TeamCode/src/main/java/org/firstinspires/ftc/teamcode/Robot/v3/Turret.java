@@ -70,7 +70,7 @@ public class Turret
         }
     }
 
-    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, boolean team)
+    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, boolean team, double offset)
     {
         // Fixed field target
 
@@ -96,10 +96,8 @@ public class Turret
         // Absolute field angle to target
         double targetAngleDeg = Math.abs(180 + Math.toDegrees(Math.atan(dy/dx)));
 
-        telemetry.addData("TargetAngleDeg", targetAngleDeg);
-
         // Convert to robot-centric turret angle
-        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + 89);
+        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + offset);
 
         double noralizedDeg = normalizeDegrees(turretAngleDeg);
 
