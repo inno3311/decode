@@ -84,8 +84,8 @@ public class Turret
         }
         else
         {
-            targetX = -62.0;  //Use for auto
-            //targetX = -62.0;
+            //targetX = -50.0;  //Use for auto
+            targetX = -62.0;
             targetY =  62.0;
         }
 
@@ -118,8 +118,8 @@ public class Turret
         TelemetryPacket packet = new TelemetryPacket();
         dashboard.sendTelemetryPacket(packet);
         packet.put("target", targetInTicks);
-        packet.put("Current Position", turret.getCurrentPosition());
-        packet.put("Zero", 0);
+        packet.put("turret Current Position", turret.getCurrentPosition());
+        //packet.put("Zero", 0);
 
         return noralizedDeg;
     }
