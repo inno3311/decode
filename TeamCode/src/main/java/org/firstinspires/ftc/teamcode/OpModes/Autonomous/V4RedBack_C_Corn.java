@@ -122,7 +122,7 @@ public class V4RedBack_C_Corn extends LinearOpMode
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     //.turnTo(90)
-                    .strafeToLinearHeading(new Vector2d(65, 75), Math.toRadians(80), new TranslationalVelConstraint(40)) //corner
+                    .strafeToLinearHeading(new Vector2d(65, 75), Math.toRadians(80), new TranslationalVelConstraint(40))
                     .waitSeconds(0.5)
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(40))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 35, drive))

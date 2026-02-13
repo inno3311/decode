@@ -24,8 +24,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-@Autonomous(name="V4_RedFront_A ", group="Linear OpMode")
-public class V4RedFront_A extends LinearOpMode
+@Autonomous(name="V4_BlueBack_C_Corn", group="Linear OpMode")
+public class V4BlueBack_C_Corn extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
     public static final String ENDPOSE = "Pose";
@@ -40,18 +40,21 @@ public class V4RedFront_A extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
 
-        blackboard.put(ALLIANCE, "RED");
-        boolean isBlue = false;
+        blackboard.put(ALLIANCE, "BLUE");
+        boolean isBlue = true;
 
         //OpenCvCamera camera;
         //artifact_rail_detection pipeline;
+        Turret turret = new Turret(hardwareMap, telemetry,isBlue);
+        turret.trimX(8);
+        //turret.trimY(-6);
 
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
         actionsBackpack = new V4ActionsBackpack(new Shooter(hardwareMap,telemetry), new Intake(this), new Trigger(hardwareMap),
-            new Hood(this), new Turret(hardwareMap, telemetry,isBlue), new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(),isBlue);
+            new Hood(this), turret, new FireControl(aprilTagLocalizer, telemetry), new ElapsedTime(),isBlue);
 
         // ZOE update with starting location
-        Pose2d beginPose = new Pose2d(-50, 50, Math.toRadians(135));
+        Pose2d beginPose = new Pose2d(60, -15, Math.toRadians(180));
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class))
         {
@@ -99,30 +102,41 @@ public class V4RedFront_A extends LinearOpMode
 
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-
-                    .strafeToLinearHeading(new Vector2d(-10, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 30, drive)) //at launch zone
+                    .splineTo(new Vector2d(50, -15), Math.toRadians(180), new TranslationalVelConstraint(10))
+                    .afterTime(0, actionsBackpack.turretTracking(drive))
                     .waitSeconds(6)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(-10, 50), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
-                    .strafeToLinearHeading(new Vector2d(-10, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
-                    .waitSeconds(6)
+                    .splineTo(new Vector2d(36, -60), Math.toRadians(270), new TranslationalVelConstraint(40)) // C
+                    .waitSeconds(.5)
+                    //first set, fires 3, intakes 3.
+                    .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(40)) //launch zone
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 35, drive))
+                    .waitSeconds(3)
 
-                    .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(90))
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeTo(new Vector2d(10, 50)) //B
-                    .strafeToLinearHeading(new Vector2d(-10, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
-                    .waitSeconds(6)
-                    .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(90))
+                    //.turnTo(90)
+                    .strafeToLinearHeading(new Vector2d(65, -75), Math.toRadians(260), new TranslationalVelConstraint(40)) //corner
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 35, drive))
+                    .waitSeconds(5)
+                    .strafeToLinearHeading(new Vector2d(30, -15), Math.toRadians(270), new TranslationalVelConstraint(40))
 
 
+
+
+
+
+
+//                    .afterTime(0, actionsBackpack.intakeBall(1))
 //                    .strafeTo(new Vector2d(-10, 50), new TranslationalVelConstraint(20)) // A
+                    //second set, fires 3, intakes 3,
        //             .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
        //             .strafeTo(new Vector2d(-10, 20)) //launch zone
        //             .waitSeconds(8)
        //             .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(86)) //in line with B
+                    //third set, fires 3, moves.
 
 
 //                .waitSeconds(4)
