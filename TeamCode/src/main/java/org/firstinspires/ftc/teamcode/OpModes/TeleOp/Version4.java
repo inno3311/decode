@@ -83,8 +83,8 @@ public class Version4 extends LinearOpMode
 
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
@@ -114,7 +114,19 @@ public class Version4 extends LinearOpMode
         {
 
             // Drive code
-            driveController.gamepadController(gamepad1);
+//            driveController.gamepadController(gamepad1);
+            if (gamepad1.dpad_left)
+            {
+                imu.resetYaw();
+            }
+            centricDrive.drive(
+                    gamepad1.left_stick_x,
+                    gamepad1.left_stick_y,
+                    imu.getRobotYawPitchRollAngles().getYaw(),
+//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+                    gamepad1.left_trigger,
+                    gamepad1.right_stick_x
+            );
 
 
             if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
@@ -178,15 +190,26 @@ public class Version4 extends LinearOpMode
                 state = Version3.TurretState.stopped;
             }
 
-            if (gamepad2.left_bumper && flag < time.seconds())
+//            if (gamepad2.left_bumper && flag < time.seconds())
+//            {
+//                turretOffset -= 2;
+//                flag = time.seconds() + 0.3;
+//            }
+//            else if (gamepad2.right_bumper && flag < time.seconds())
+//            {
+//                turretOffset += 2;
+//                flag = time.seconds() + 0.3;
+//            }
+
+            if (gamepad2.leftBumperWasPressed())
             {
                 turretOffset -= 2;
-                flag = time.seconds() + 0.3;
+                //flag = time.seconds() + 0.3;
             }
-            else if (gamepad2.right_bumper && flag < time.seconds())
+            else if (gamepad2.rightBumperWasPressed())
             {
                 turretOffset += 2;
-                flag = time.seconds() + 0.3;
+                //flag = time.seconds() + 0.3;
             }
 
             switch (state)

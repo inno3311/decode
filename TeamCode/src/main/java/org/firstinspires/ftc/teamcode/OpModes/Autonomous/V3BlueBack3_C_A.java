@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 @Autonomous(name="V3_BlueBack3_C_A", group="Linear OpMode")
+@Disabled
 public class V3BlueBack3_C_A extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
@@ -106,7 +108,7 @@ public class V3BlueBack3_C_A extends LinearOpMode
 
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelist.  This may no longer be needed
+                //.afterTime(0, actionsBackpack.read_obelisk(list))  // read obelisk.  This may no longer be needed
                 .afterTime(0, actionsBackpack.shootBallManual(9,3, 1400,35, drive))  //fire first set of three balls
                 .waitSeconds(8)
                 .afterTime(0,actionsBackpack.intakeColor(7))

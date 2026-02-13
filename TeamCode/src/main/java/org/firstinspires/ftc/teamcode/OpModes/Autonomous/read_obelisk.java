@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 //@Autonomous(name="read_obelisk", group="Linear OpMode")
+@Disabled
 public class read_obelisk extends LinearOpMode
 {
     V3ActionsBackpack actionsBackpack;

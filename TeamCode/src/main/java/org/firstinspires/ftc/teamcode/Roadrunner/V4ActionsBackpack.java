@@ -207,7 +207,7 @@ public class V4ActionsBackpack
                         break;
                     case FIRE:
                         fireTime = time.seconds();
-                        trigger.setPower(-1);
+                        trigger.setPower(-0.5);
                         intake.setPower(-1);
                         state = FireState.SEC_DELAY;
 
@@ -258,104 +258,21 @@ public class V4ActionsBackpack
         };
     }
 
-
-
-    public Action shootBall(int numRounds, Pose2d pose2d, boolean team, MecanumDrive drive)
+    public Action turretTracking(MecanumDrive drive)
     {
-
         return new Action()
         {
-            private boolean initialized = false;
-            private double[] shooterParameters;
-            double fireTime;
-            double transTime;
-            double currentTime;
-            int timesFired;
-
-            FireState state = FireState.INIT;
-
-            @Override
             public boolean run(@NonNull TelemetryPacket packet)
             {
                 Pose2d pose1 = drive.localizer.getPose();
-                pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), team, 90);
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90);
 
-                switch (state)
-                {
-                    case INIT:
-                        timesFired = 0;
-
-                        shooterParameters = fireControl.firingSuite(pose1, team);
-                        shooter.driveToVelocity(shooterParameters[1]);
-                        hood.driveToAngleTarget(shooterParameters[0]);
-                        state = FireState.SPINUP;
-
-                        packet.put("STATE","INIT");
-                        break;
-                    case SPINUP:
-                        double vel = shooter.getShooter().getVelocity();
-                        boolean notAtSpeed = Math.abs(vel - shooterParameters[1]) > 50;
-
-                        if (!notAtSpeed)
-                        {
-                            state = FireState.FIRE;
-                        }
-
-                        packet.put("STATE","SPINUP");
-                        packet.put("Target vel", shooterParameters[1]);
-                        packet.put("vel",vel);
-                        packet.put("notAtSpeed", notAtSpeed);
-                        break;
-                    case FIRE:
-                        fireTime = time.seconds();
-                        trigger.setPower(1);
-
-
-                        packet.put("STATE","FIRE");
-                        break;
-
-                    case TRANSFER_START:
-                        sorterGreen.driveServo(-1);
-                        transTime = time.seconds();
-                        state = FireState.TRANSFER_STOP;
-
-                        packet.put("STATE","TRANSFER");
-                        break;
-                    case TRANSFER_STOP:
-                        if (time.seconds() - transTime > 1)
-                        {
-                            sorterGreen.driveServo(0);
-                            if (timesFired == numRounds)
-                            {
-                                state = FireState.DONE;
-                            }
-                            else
-                            {
-                                state = FireState.SPINUP;
-                            }
-                        }
-
-                        packet.put("STATE","TRANSFER_STOP");
-                        break;
-                    case DONE:
-                        {
-                            shooter.driveToVelocity(0);
-                            shooter.getShooter().setPower(0);
-
-                            packet.put("STATE","DONE");
-                            return false;
-                        }
-                }
-
-
-                packet.put("power",shooter.getShooter().getPower());
-                packet.put("vel",shooter.getShooter().getVelocity());
-
-                return true;
-            }
+                return false;
+            };
         };
     }
+
+
 
 
     public Action mezRampUp(double power)

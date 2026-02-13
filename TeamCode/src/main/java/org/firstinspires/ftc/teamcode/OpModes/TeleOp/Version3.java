@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -36,6 +37,7 @@ import org.opencv.core.Mat;
 import java.io.File;
 
 @TeleOp(name = "Version3")
+@Disabled
 public class Version3 extends LinearOpMode
 {
     Intake intake;

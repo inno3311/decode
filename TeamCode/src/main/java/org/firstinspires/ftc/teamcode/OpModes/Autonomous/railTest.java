@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -10,6 +11,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 //@Autonomous(name="Artifact Rail Test")
+@Disabled
 public class railTest extends LinearOpMode
 {
 

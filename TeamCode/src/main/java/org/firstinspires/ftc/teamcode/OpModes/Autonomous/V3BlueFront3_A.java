@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 @Autonomous(name="V3_BlueFront3_A", group="Linear OpMode")
+@Disabled
 public class V3BlueFront3_A extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
