@@ -48,7 +48,7 @@ public class Version4 extends LinearOpMode
     double startY = 0;
     double startYaw = 180;
     boolean team = false; //false = red, true = blue
-    double turretOffset = 89;
+    double turretOffset = 90;
     double flag = 0;
     public enum TurretState
     {
@@ -202,6 +202,7 @@ public class Version4 extends LinearOpMode
                     break;
             }
 
+            telemetry.addData("Turret Position", turret.getPosition());
             telemetry.addData("TurretOffset", turretOffset);
             telemetry.addData("Target Shooter Velocity:", shooterParameters[1]);
             telemetry.addData("Target Hood Angle:", 90 - shooterParameters[0]);
@@ -209,7 +210,6 @@ public class Version4 extends LinearOpMode
 //            telemetry.addData("Bot  Y", pose.position.y);
 //            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
 //            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
-//            telemetry.addData("Turret Position", turret.getPosition());
 
             telemetry.update();
         }
