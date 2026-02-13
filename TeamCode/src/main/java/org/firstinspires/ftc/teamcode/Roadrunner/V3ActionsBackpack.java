@@ -185,7 +185,7 @@ public class V3ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), team);
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), team, 90);
 
                 switch (state)
                 {
@@ -620,7 +620,7 @@ public class V3ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue);
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90);
 
                 color c;
 

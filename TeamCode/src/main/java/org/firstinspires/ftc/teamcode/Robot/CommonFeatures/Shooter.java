@@ -126,6 +126,11 @@ public class Shooter
 
     }
 
+    public double getMotorVelocity()
+    {
+        return shooter.getVelocity();
+    }
+
     //needed for auto stuff.
     public DcMotorEx getShooter()
     {

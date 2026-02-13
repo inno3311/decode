@@ -287,7 +287,7 @@ public class Version3 extends LinearOpMode
                     turret.zero(gamepad2);
                     break;
                 case tracking:
-                    aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()), team);
+                    aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()), team, 90);
                     break;
                 case stopped:
                     turret.stop();
