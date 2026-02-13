@@ -87,7 +87,7 @@ public class V4BlueBack_C_Corn extends LinearOpMode
                     searchCount++;
                     telemetry.addData("searchCount", searchCount);
                 }
-                telemetry.addLine("!!! Team is RED !!!");
+                telemetry.addLine("!!! Team is BLUE !!!");
                 telemetry.update();
                 idle();
 
@@ -102,25 +102,27 @@ public class V4BlueBack_C_Corn extends LinearOpMode
 
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 30, drive)) //at launch zone
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1500, 30, drive)) //at launch zone
                     .splineTo(new Vector2d(50, -15), Math.toRadians(180), new TranslationalVelConstraint(10))
                     //.afterTime(0, actionsBackpack.turretTracking(drive))
-                    .waitSeconds(6)
+                    .waitSeconds(7)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .splineTo(new Vector2d(36, -60), Math.toRadians(270), new TranslationalVelConstraint(40)) // C
-                    .waitSeconds(.5)
+                    //.waitSeconds(.5)
                     //first set, fires 3, intakes 3.
                     .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(40)) //launch zone
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 35, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1500, 35, drive))
                     .waitSeconds(3)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     //.turnTo(90)
-                    .strafeToLinearHeading(new Vector2d(65, -75), Math.toRadians(260), new TranslationalVelConstraint(40)) //corner
-                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(65, -75), Math.toRadians(270), new TranslationalVelConstraint(40)) //corner
+                    .strafeToLinearHeading(new Vector2d(65, -50), Math.toRadians(270), new TranslationalVelConstraint(40)) //corner
+                    .strafeToLinearHeading(new Vector2d(65, -75), Math.toRadians(270), new TranslationalVelConstraint(40)) //corner
+                    //.waitSeconds(0.5)
                     .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1500, 35, drive))
-                    .waitSeconds(5)
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1500, 35, drive))
+                    .waitSeconds(3)
                     .strafeToLinearHeading(new Vector2d(30, -15), Math.toRadians(270), new TranslationalVelConstraint(40))
 
 

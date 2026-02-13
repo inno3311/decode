@@ -153,7 +153,7 @@ public class V4ActionsBackpack
         };
     }
 
-    public Action shootBallManual(double velocity, int numRounds, double setvel, double angle,MecanumDrive drive)
+    public Action shootBallManual(double velocity, int turretoffset, double setvel, double angle,MecanumDrive drive)
     {
 
         return new Action()
@@ -173,7 +173,7 @@ public class V4ActionsBackpack
             {
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90);
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90 + turretoffset);
 
                 color c;
 

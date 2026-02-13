@@ -84,7 +84,8 @@ public class ServoParent
     protected void driveToAngleTarget(double angle)
     {
         // Add 1- to invert 1-anlge/servoRange
-        servo.setPosition(angle/servoRange);
+        if (!Double.isNaN(angle/servoRange))
+            servo.setPosition(angle/servoRange);
     }
 
     protected double getAngle()
