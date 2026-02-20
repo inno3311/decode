@@ -110,7 +110,7 @@ public class V4BlueFront_A extends LinearOpMode
                     .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1200, 20, drive))
                     .waitSeconds(3)
 
-                    .strafeToLinearHeading(new Vector2d(10, -10), Math.toRadians(270))
+                    .strafeToLinearHeading(new Vector2d(12, -10), Math.toRadians(270))
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeTo(new Vector2d(12, -70))
                     //.waitSeconds(1)
