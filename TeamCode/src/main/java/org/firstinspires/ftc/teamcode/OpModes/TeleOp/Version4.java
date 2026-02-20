@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -114,19 +115,19 @@ public class Version4 extends LinearOpMode
         {
 
             // Drive code
-//            driveController.gamepadController(gamepad1);
+            driveController.gamepadController(gamepad1);
             if (gamepad1.dpad_left)
             {
                 imu.resetYaw();
             }
-            centricDrive.drive(
-                    gamepad1.left_stick_x,
-                    gamepad1.left_stick_y,
-                    imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                    gamepad1.left_trigger,
-                    gamepad1.right_stick_x
-            );
+//            centricDrive.drive(
+//                    gamepad1.left_stick_x,
+//                    gamepad1.left_stick_y,
+//                    imu.getRobotYawPitchRollAngles().getYaw(),
+////                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+//                    gamepad1.left_trigger,
+//                    gamepad1.right_stick_x
+//            );
 
 
             if (gamepad1.a && gamepad1.b && gamepad1.y && gamepad1.x && drive_mode_flag <= time.seconds())
@@ -165,12 +166,12 @@ public class Version4 extends LinearOpMode
                 drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
 //                telemetry.addData("Updated", "Roadrunner reset successful");
             }
-            drive.localizer.update();
+            PoseVelocity2d velocity2d = drive.localizer.update();
             Pose2d pose = drive.localizer.getPose();
 
 
             // Firesuit math
-            shooterParameters = fireControl.firingSuite(pose, team);
+            shooterParameters = fireControl.firingSuite(pose, velocity2d, team);
 
             shooter.driveToVelocity(shooterParameters[1]);
             hood.driveToAngleTarget(shooterParameters[0]);
@@ -189,17 +190,6 @@ public class Version4 extends LinearOpMode
             {
                 state = Version3.TurretState.stopped;
             }
-
-//            if (gamepad2.left_bumper && flag < time.seconds())
-//            {
-//                turretOffset -= 2;
-//                flag = time.seconds() + 0.3;
-//            }
-//            else if (gamepad2.right_bumper && flag < time.seconds())
-//            {
-//                turretOffset += 2;
-//                flag = time.seconds() + 0.3;
-//            }
 
             if (gamepad2.leftBumperWasPressed())
             {
@@ -229,12 +219,21 @@ public class Version4 extends LinearOpMode
             telemetry.addData("TurretOffset", turretOffset);
             telemetry.addData("Target Shooter Velocity:", shooterParameters[1]);
             telemetry.addData("Target Hood Angle:", 90 - shooterParameters[0]);
-//            telemetry.addData("Bot  X", pose.position.x);
-//            telemetry.addData("Bot  Y", pose.position.y);
-//            telemetry.addData("Bot  Heading", Math.toDegrees(pose.heading.toDouble()));
-//            telemetry.addData("Turret  Heading", Math.toDegrees(aiTurretHeading));
+            telemetry.addLine("==========================================");
+            telemetry.addData("Robot linear velocity X", velocity2d.linearVel.x);
+            telemetry.addData("Robot linear velocity Y", velocity2d.linearVel.y);
+            telemetry.addData("Robot angular velocity", velocity2d.angVel);
+            telemetry.addData("Robot Heading", Math.toDegrees(pose.heading.toDouble()));
 
             telemetry.update();
+
+
+            TelemetryPacket packet = new TelemetryPacket();
+            dashboard.sendTelemetryPacket(packet);
+            packet.put("Robot linear velocity X", velocity2d.linearVel.x);
+            packet.put("Robot linear velocity Y", velocity2d.linearVel.y);
+            packet.put("Robot angular velocity", velocity2d.angVel);
+
         }
     }
 }

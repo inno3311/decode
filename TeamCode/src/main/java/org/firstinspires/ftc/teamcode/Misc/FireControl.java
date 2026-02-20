@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Misc;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
@@ -194,11 +195,70 @@ public class FireControl
         return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
     }
 
-//    public double curVelocity(double motorVelocity)
+    public double[] firingSuite(Pose2d robotPose, PoseVelocity2d velocity2d, boolean team)
+    {
+        double velocity = 0;
+        double velocityOffset = 0;
+        double targetAngle;
+        double targetRange;
+
+        try
+        {
+            if (team) // Blue
+            {
+                double x = -63 - robotPose.position.x;
+                double y = -63 - robotPose.position.y;
+                targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+                velocityOffset = (velocity2d.linearVel.x * Math.cos((5*Math.PI/4)-robotPose.heading.toDouble()) * 0.0254) + (velocity2d.linearVel.y * Math.sin((5*Math.PI/4)-robotPose.heading.real) * 0.0254);
+            }
+            else // Red
+            {
+                double x = -63 - robotPose.position.x;
+                double y = 63 - robotPose.position.y;
+                targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+                velocityOffset = (velocity2d.linearVel.x * Math.cos((3*Math.PI/4)-robotPose.heading.toDouble()) * 0.0254) + (velocity2d.linearVel.y * Math.sin((3*Math.PI/4)-robotPose.heading.real) * 0.0254);
+            }
+
+            // Convert from inches to meters
+            targetRange *= 0.0254;
+        }
+        catch (Exception e)
+        {
+            targetRange = 2;
+        }
+
+        if (targetRange > 3)
+        {
+            targetAngle = 68;
+            velocity = calculateVelocity(68, targetRange) + 2.5;
+        }
+        else
+        {
+            if (velocityOffset < 0.1)
+            {
+                velocity += (targetRange - 2.2) + 9;
+                targetAngle = calculateSteeperAngle(velocity, targetRange) + 2.5;
+                velocity -= (velocityOffset - 1);
+            }
+            else
+            {
+                velocity += (targetRange - 2.2) + 9;
+                targetAngle = calculateSteeperAngle(velocity, targetRange) + 5;
+                velocity -= velocityOffset;
+            }
+        }
+
+
+        telemetry.addData("Target Range", targetRange);
+        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
+    }
+
+    //    public double curVelocity(double motorVelocity)
 //    {
 //        double velocity = ((motorVelocity/28)*(2*Math.PI*shooterWheelRadius)) / 1.5;
 //
 //        telemetry.addData("Velocity", motorVelocity);
 //        return velocity;
 //    }
+
 }
