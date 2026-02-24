@@ -108,24 +108,23 @@ public class V4RedBack_C_Corn extends LinearOpMode
 
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1500, 30, drive)) //at launch zone
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1430, 30, drive)) //at launch zone
                     .splineTo(new Vector2d(50, 15), Math.toRadians(180), new TranslationalVelConstraint(10))
 //                    .afterTime(0, actionsBackpack.turretTracking(drive))
                     .waitSeconds(6)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .splineTo(new Vector2d(36, 60), Math.toRadians(90), new TranslationalVelConstraint(40)) // C
+                    .splineTo(new Vector2d(36, 65), Math.toRadians(90), new TranslationalVelConstraint(40)) // C
                     .waitSeconds(.5)
-                    //first set, fires 3, intakes 3.
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(40)) //launch zone
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1500, 35, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 6, 1400, 35, drive))
                     .waitSeconds(3)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     //.turnTo(90)
-                    .strafeToLinearHeading(new Vector2d(65, 75), Math.toRadians(80), new TranslationalVelConstraint(40))
+                    .strafeToLinearHeading(new Vector2d(65, 75), Math.toRadians(85), new TranslationalVelConstraint(40))
                     .waitSeconds(0.5)
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1500, 35, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 6, 1450, 35, drive))
                     .waitSeconds(5)
                     .strafeToLinearHeading(new Vector2d(30, 15), Math.toRadians(90), new TranslationalVelConstraint(40))
 

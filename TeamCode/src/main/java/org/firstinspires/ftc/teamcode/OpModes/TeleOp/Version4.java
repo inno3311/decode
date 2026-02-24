@@ -191,12 +191,12 @@ public class Version4 extends LinearOpMode
                 state = Version3.TurretState.stopped;
             }
 
-            if (gamepad2.leftBumperWasPressed())
+            if (gamepad2.left_bumper)
             {
                 turretOffset -= 2;
                 //flag = time.seconds() + 0.3;
             }
-            else if (gamepad2.rightBumperWasPressed())
+            else if (gamepad2.right_bumper)
             {
                 turretOffset += 2;
                 //flag = time.seconds() + 0.3;
