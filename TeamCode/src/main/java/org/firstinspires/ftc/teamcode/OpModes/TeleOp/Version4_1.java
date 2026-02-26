@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -12,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
@@ -21,13 +19,12 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTag
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.Robot.v4.Trigger;
 
-@TeleOp(name = "Version4_2")
-public class Version4 extends LinearOpMode
+@TeleOp(name = "Version4")
+public class Version4_1 extends LinearOpMode
 {
     Intake intake;
     Trigger trigger;
@@ -82,13 +79,13 @@ public class Version4 extends LinearOpMode
 
         drive = new MecanumDrive(hardwareMap, null);
 
-//        imu = hardwareMap.get(IMU.class, "imu");
-//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-//                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-//                RevHubOrientationOnRobot.UsbFacingDirection.UP
-//        );
-//        imu.initialize(new IMU.Parameters(orientationOnRobot));
-//        imu.resetYaw();
+        imu = hardwareMap.get(IMU.class, "imu");
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
+        );
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
 
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
@@ -96,13 +93,7 @@ public class Version4 extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        Pose2d pos = (Pose2d) blackboard.get("Pose");
-        if (pos == null)
-        {
-            pos = new Pose2d(0,0,0);
-        }
-
-        drive.localizer.setPose((Pose2d) pos);
+        drive.localizer.setPose((Pose2d) blackboard.get("Pose"));
         if (drive.localizer.getPose() == null)
         {
             Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
@@ -158,7 +149,7 @@ public class Version4 extends LinearOpMode
 
             if (gamepad2.y || gamepad2.left_trigger > 0.1)
             {
-                trigger.setPower(1);
+                trigger.setPower(-1);
             }
             else
             {
