@@ -180,10 +180,10 @@ public class FireControl
             targetRange = 2;
         }
 
-        if (targetRange > 2.5)
+        if (targetRange > 2.75)
         {
             targetAngle = 68;
-            velocity = calculateVelocity(68, targetRange) + 2.5;
+            velocity = calculateVelocity(68, targetRange)+1;
         }
         else
         {
@@ -227,10 +227,10 @@ public class FireControl
             targetRange = 2;
         }
 
-        if (targetRange > 3)
+        if (targetRange > 2.75)
         {
             targetAngle = 68;
-            velocity = calculateVelocity(68, targetRange) + 2.5;
+            velocity = calculateVelocity(68, targetRange)+1.5;
         }
         else
         {
@@ -250,7 +250,7 @@ public class FireControl
 
 
         telemetry.addData("Target Range", targetRange);
-        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity)};
+        return new double[] {maxLaunchAngle - targetAngle, targetMotorVelocity(velocity), velocity};
     }
 
     //    public double curVelocity(double motorVelocity)

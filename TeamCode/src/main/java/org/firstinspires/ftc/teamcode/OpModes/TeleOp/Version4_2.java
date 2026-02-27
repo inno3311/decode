@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.CentricDrive;
 import org.firstinspires.ftc.teamcode.Drivebase.Centric.TurnToHeading;
 import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
@@ -21,13 +18,12 @@ import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTag
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
-import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Flipper;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.Robot.v4.Trigger;
 
-@TeleOp(name = "Version4_2")
-public class Version4 extends LinearOpMode
+@TeleOp(name = "Headless Hermit Crab")
+public class Version4_2 extends LinearOpMode
 {
     Intake intake;
     Trigger trigger;
@@ -122,10 +118,10 @@ public class Version4 extends LinearOpMode
 
             // Drive code
             driveController.gamepadController(gamepad1);
-            if (gamepad1.dpad_left)
-            {
-                imu.resetYaw();
-            }
+//            if (gamepad1.dpad_left)
+//            {
+//                imu.resetYaw();
+//            }
 //            centricDrive.drive(
 //                    gamepad1.left_stick_x,
 //                    gamepad1.left_stick_y,
@@ -214,6 +210,7 @@ public class Version4 extends LinearOpMode
                     turret.zero(gamepad2);
                     break;
                 case tracking:
+//                    aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()), velocity2d, shooterParameters[2], team, turretOffset);
                     aiTurretHeading = turret.turretAngleToFixedTarget(pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()), team, turretOffset);
                     break;
                 case stopped:

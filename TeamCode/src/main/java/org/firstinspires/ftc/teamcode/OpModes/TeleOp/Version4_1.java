@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.Robot.v4.Trigger;
 
 @TeleOp(name = "Version4")
+@Disabled
 public class Version4_1 extends LinearOpMode
 {
     Intake intake;

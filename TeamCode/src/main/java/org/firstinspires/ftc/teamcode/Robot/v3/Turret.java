@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.v3;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.algorithms.TurretPID;
+import org.opencv.core.Mat;
 
 @Config
 public class Turret
@@ -123,6 +125,86 @@ public class Turret
 
         return noralizedDeg;
     }
+
+    public double turretAngleToFixedTarget(double robotX, double robotY, double robotHeadingDeg, PoseVelocity2d velocity2d, double shooterVelocity, boolean team, double offset)
+    {
+        // Fixed field target
+        turretPID.setPID(Params.P, Params.I, Params.D);
+
+        double trigVariable;
+        if (team) // Blue
+        {
+            targetX = -60.0;
+            targetY = -60.0;
+            trigVariable = (5*Math.PI)/4;
+        }
+        else
+        {
+            //targetX = -50.0;  //Use for auto
+            targetX = -60.0;
+            targetY =  60.0;
+            trigVariable = (3*Math.PI)/4;
+        }
+
+//        double robotVelocityMagnitude = Math.sqrt((Math.pow(velocity2d.linearVel.x * Math.sin(trigVariable),2) * 0.0254)
+//                + (Math.pow(velocity2d.linearVel.y*Math.cos(trigVariable),2) * 0.0254));
+//
+//        double velocityOffsetAngle = 0;
+//        try
+//        {
+//            velocityOffsetAngle = Math.toDegrees(Math.atan2(robotVelocityMagnitude,shooterVelocity));
+//        }
+//        catch (Exception e) {velocityOffsetAngle = 0;}
+
+        double robotVelocityVector;
+        double velocityX = Math.round(velocity2d.linearVel.x*0.0254/2.5);
+        double velocityY = Math.round(velocity2d.linearVel.y*0.0254/2.5);
+        try
+        {
+            robotVelocityVector = Math.sqrt(Math.pow(velocityX,2)
+                    + Math.pow(velocityY,2)) * Math.sin(trigVariable-Math.atan2(velocityY,velocityX));
+        }
+        catch (Exception e)
+        {
+            robotVelocityVector = 0;
+        }
+        double velocityOffsetAngle = Math.round(Math.toDegrees(Math.atan2(robotVelocityVector,shooterVelocity)));
+
+        // Vector from robot to target
+        double dx = targetX - robotX;
+        double dy = targetY - robotY;
+
+        // Absolute field angle to target
+        double targetAngleDeg = Math.abs(180 + Math.toDegrees(Math.atan(dy/dx) - velocityOffsetAngle));
+
+        // Convert to robot-centric turret angle
+        double turretAngleDeg = targetAngleDeg - (robotHeadingDeg + offset);
+
+        double noralizedDeg = normalizeDegrees(turretAngleDeg);
+
+        double targetInTicks = -noralizedDeg * TICKS_PER_DEGREE;
+
+        if (targetInTicks > 0 && targetInTicks < 1115)
+        {
+            double power = turretPID.calculate(targetInTicks, turret.getCurrentPosition());
+            power = Math.max(-1, Math.min(1, power));
+            turret.setPower(power);
+            //turret.setPower(0.3);
+        }
+        else
+        {
+            turret.setPower(0);
+        }
+
+        TelemetryPacket packet = new TelemetryPacket();
+        dashboard.sendTelemetryPacket(packet);
+        packet.put("target", targetInTicks);
+        packet.put("turret Current Position", turret.getCurrentPosition());
+        //packet.put("Zero", 0);
+
+        return noralizedDeg;
+    }
+
     public double normalizeDegrees(double angle)
     {
         while (angle > 180) angle -= 360;
