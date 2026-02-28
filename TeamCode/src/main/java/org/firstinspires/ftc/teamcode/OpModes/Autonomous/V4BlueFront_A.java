@@ -102,6 +102,7 @@ public class V4BlueFront_A extends LinearOpMode
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
                     .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.turretTracking(drive,6))
                     .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1200, 20, drive))
                     .waitSeconds(6)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
