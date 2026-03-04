@@ -180,15 +180,15 @@ public class FireControl
             targetRange = 2;
         }
 
-        if (targetRange > 2.75)
+        if (targetRange > 2.65)
         {
-            targetAngle = 68;
-            velocity = calculateVelocity(68, targetRange)+1;
+            targetAngle = 65;
+            velocity = calculateVelocity(65, targetRange)+1;
         }
         else
         {
-            velocity = (targetRange - 2.2) + 9;
-            targetAngle = calculateSteeperAngle(velocity, targetRange)+5;
+            velocity = (targetRange - 2.2) + 10;
+            targetAngle = calculateSteeperAngle(velocity, targetRange)+3;
         }
 
         telemetry.addData("Target Range", targetRange);
@@ -227,23 +227,21 @@ public class FireControl
             targetRange = 2;
         }
 
-        if (targetRange > 2.75)
+        if (targetRange > 2.65)
         {
-            targetAngle = 68;
-            velocity = calculateVelocity(68, targetRange)+1.5;
+            targetAngle = 65;
+            velocity = calculateVelocity(65, targetRange)+1.5;
         }
         else
         {
+            velocity += (targetRange - 2.2) + 10;
+            targetAngle = calculateSteeperAngle(velocity, targetRange);
             if (velocityOffset < 0.1)
             {
-                velocity += (targetRange - 2.2) + 9;
-                targetAngle = calculateSteeperAngle(velocity, targetRange) + 2.5;
                 velocity -= (velocityOffset - 1);
             }
-            else
+            else if (velocityOffset > 0.1)
             {
-                velocity += (targetRange - 2.2) + 9;
-                targetAngle = calculateSteeperAngle(velocity, targetRange) + 5;
                 velocity -= velocityOffset;
             }
         }
