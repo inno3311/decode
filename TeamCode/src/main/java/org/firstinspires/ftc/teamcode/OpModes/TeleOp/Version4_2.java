@@ -195,12 +195,12 @@ public class Version4_2 extends LinearOpMode
 
             if (gamepad2.left_bumper)
             {
-                turretOffset -= 2;
+                turretOffset -= 1;
                 //flag = time.seconds() + 0.3;
             }
             else if (gamepad2.right_bumper)
             {
-                turretOffset += 2;
+                turretOffset += 1;
                 //flag = time.seconds() + 0.3;
             }
 

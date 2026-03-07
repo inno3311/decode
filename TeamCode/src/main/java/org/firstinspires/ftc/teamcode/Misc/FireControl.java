@@ -161,14 +161,14 @@ public class FireControl
         {
             if (team) // Blue
             {
-                double x = -63 - robotPose.position.x;
-                double y = -63 - robotPose.position.y;
+                double x = -67 - robotPose.position.x;
+                double y = -67 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
             else // Red
             {
-                double x = -63 - robotPose.position.x;
-                double y = 63 - robotPose.position.y;
+                double x = -67 - robotPose.position.x;
+                double y = 67 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
             }
 
@@ -183,11 +183,11 @@ public class FireControl
         if (targetRange > 2.65)
         {
             targetAngle = 65;
-            velocity = calculateVelocity(65, targetRange)+1;
+            velocity = calculateVelocity(65, targetRange)+1.5;
         }
         else
         {
-            velocity = (targetRange - 2.2) + 10;
+            velocity = (targetRange - 2.2)+9;
             targetAngle = calculateSteeperAngle(velocity, targetRange)+3;
         }
 
@@ -206,15 +206,15 @@ public class FireControl
         {
             if (team) // Blue
             {
-                double x = -63 - robotPose.position.x;
-                double y = -63 - robotPose.position.y;
+                double x = -67 - robotPose.position.x;
+                double y = -67 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
                 velocityOffset = (velocity2d.linearVel.x * Math.cos((5*Math.PI/4)-robotPose.heading.toDouble()) * 0.0254) + (velocity2d.linearVel.y * Math.sin((5*Math.PI/4)-robotPose.heading.real) * 0.0254);
             }
             else // Red
             {
-                double x = -63 - robotPose.position.x;
-                double y = 63 - robotPose.position.y;
+                double x = -67 - robotPose.position.x;
+                double y = 67 - robotPose.position.y;
                 targetRange = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
                 velocityOffset = (velocity2d.linearVel.x * Math.cos((3*Math.PI/4)-robotPose.heading.toDouble()) * 0.0254) + (velocity2d.linearVel.y * Math.sin((3*Math.PI/4)-robotPose.heading.real) * 0.0254);
             }
@@ -234,7 +234,7 @@ public class FireControl
         }
         else
         {
-            velocity += (targetRange - 2.2) + 10;
+            velocity += (targetRange - 2.2)+9;
             targetAngle = calculateSteeperAngle(velocity, targetRange);
             if (velocityOffset < 0.1)
             {

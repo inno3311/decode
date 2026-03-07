@@ -60,6 +60,8 @@ public class V4ActionsBackpack
 
     public List<AprilTagDetection> taglist;
 
+    int turretOffset = 0;
+
 
     double loadTimeStart;
     boolean loadInProgress;
@@ -269,9 +271,21 @@ public class V4ActionsBackpack
 
                 Pose2d pose1 = drive.localizer.getPose();
                 pose1 = drive.localizer.getPose();
-                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90 + turretoffset);
-
+                double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90 + turretOffset);
+                //turret.
                 return true;
+            };
+        };
+    }
+
+    public Action adjustTurretOffset(int newTurretoffset)
+    {
+        return new Action()
+        {
+            public boolean run(@NonNull TelemetryPacket packet)
+            {
+                turretOffset = newTurretoffset;
+                return false;
             };
         };
     }

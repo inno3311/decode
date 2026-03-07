@@ -122,8 +122,6 @@ public class V4RedFront_Gate extends LinearOpMode
 
                     .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(90))
 
-//                    .strafeToLinearHeading(new Vector2d(-10, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
-//                    .strafeToLinearHeading(new Vector2d(12, 10), Math.toRadians(90)) //B
 
 
 

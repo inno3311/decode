@@ -24,12 +24,11 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-@Autonomous(name="V4_BlueFront_A", group="Linear OpMode")
-public class V4BlueFront_A extends LinearOpMode
+@Autonomous(name="V4_BlueFront_Gate ", group="Linear OpMode")
+public class V4BlueFront_Gate extends LinearOpMode
 {
     public static final String ALLIANCE = "Alliance";
     public static final String ENDPOSE = "Pose";
-
 
     V4ActionsBackpack actionsBackpack;
 
@@ -85,7 +84,7 @@ public class V4BlueFront_A extends LinearOpMode
                     searchCount++;
                     telemetry.addData("searchCount", searchCount);
                 }
-                telemetry.addLine("!!! Team is BLUE !!!");
+                telemetry.addLine("!!! Team is RED !!!");
                 telemetry.update();
                 idle();
 
@@ -101,37 +100,30 @@ public class V4BlueFront_A extends LinearOpMode
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                    .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
                     .afterTime(0, actionsBackpack.turretTracking(drive,-3))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1100, 20, drive))
-                    .waitSeconds(6)
-                    .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(-10, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
                     .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1100, 20, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
+                    .waitSeconds(6)
+
+                    .afterTime(0, actionsBackpack.intakeBall(-1))
+                    .strafeToLinearHeading(new Vector2d(12, -10), Math.toRadians(270)) //B
+                    .strafeTo(new Vector2d(12, -64))
+                    .strafeTo(new Vector2d(12, -45))
+                    .strafeToLinearHeading(new Vector2d(4, -57), Math.toRadians(270)) //Gate
+                    .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
                     .waitSeconds(3)
 
-                    .strafeToLinearHeading(new Vector2d(12, -10), Math.toRadians(270))
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeTo(new Vector2d(12, -70))
-                    //.waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(12, -40), Math.toRadians(270), new TranslationalVelConstraint(40))
-                     .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1100, 20, drive))
+                    .strafeToLinearHeading(new Vector2d(-12, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
+                    .strafeToLinearHeading(new Vector2d(-12, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -4, 1150, 21, drive))
                     .waitSeconds(3)
+
                     .strafeToLinearHeading(new Vector2d(10, -10), Math.toRadians(270))
 
 
-//                    .strafeTo(new Vector2d(-10, 50), new TranslationalVelConstraint(20)) // A
-       //             .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1050, 35, drive))
-       //             .strafeTo(new Vector2d(-10, 20)) //launch zone
-       //             .waitSeconds(8)
-       //             .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(86)) //in line with B
 
-
-//                .waitSeconds(4)
-//                .strafeToLinearHeading(new Vector2d(0, 45), Math.toRadians(180))
-//                .splineTo(new Vector2d(-12,20),Math.toRadians(90),new TranslationalVelConstraint(40))
 
                     ; //do not remove ;
 
