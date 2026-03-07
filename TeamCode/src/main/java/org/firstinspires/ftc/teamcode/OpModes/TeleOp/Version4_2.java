@@ -116,6 +116,16 @@ public class Version4_2 extends LinearOpMode
         while (opModeIsActive())
         {
 
+            // Set team for turret tracking and firesuit
+            if (gamepad2.right_stick_button)
+            {
+                team = false; // Red
+            }
+            else if (gamepad2.left_stick_button)
+            {
+                team = true; // Blue
+            }
+
             // Drive code
             driveController.gamepadController(gamepad1);
 //            if (gamepad1.dpad_left)
@@ -166,7 +176,6 @@ public class Version4_2 extends LinearOpMode
             {
 //                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
                 drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
-//                telemetry.addData("Updated", "Roadrunner reset successful");
             }
             PoseVelocity2d velocity2d = drive.localizer.update();
             Pose2d pose = drive.localizer.getPose();
@@ -202,6 +211,10 @@ public class Version4_2 extends LinearOpMode
             {
                 turretOffset += 1;
                 //flag = time.seconds() + 0.3;
+            }
+            else if (gamepad2.dpad_up)
+            {
+                turretOffset = 90;
             }
 
             switch (state)

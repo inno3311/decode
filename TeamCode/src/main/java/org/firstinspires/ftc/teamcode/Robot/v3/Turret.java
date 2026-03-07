@@ -61,14 +61,14 @@ public class Turret
         //boolean team = false;
         if (isBlue) // Blue
         {
-            targetX = -60.0;
-            targetY = -60.0;
+            targetX = -63.0;
+            targetY = -63.0;
         }
         else
         {
             //targetX = -54.0;  //Use for auto
-            targetX = -60.0;
-            targetY =  60.0;
+            targetX = -63.0;
+            targetY =  63.0;
         }
     }
 
@@ -81,14 +81,14 @@ public class Turret
 
         if (team) // Blue
         {
-            targetX = -60.0;
-            targetY = -60.0;
+            targetX = -65.0;
+            targetY = -65.0;
         }
         else
         {
             //targetX = -50.0;  //Use for auto
-            targetX = -60.0;
-            targetY =  60.0;
+            targetX = -65.0;
+            targetY =  65.0;
         }
 
         // Vector from robot to target
