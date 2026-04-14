@@ -230,7 +230,7 @@ public class FireControl
         if (targetRange > 2.65)
         {
             targetAngle = 65;
-            velocity = calculateVelocity(65, targetRange)+1.5;
+            velocity = calculateVelocity(65, targetRange)+1.25;
         }
         else
         {
@@ -238,11 +238,11 @@ public class FireControl
             targetAngle = calculateSteeperAngle(velocity, targetRange);
             if (velocityOffset < 0.1)
             {
-                velocity -= (velocityOffset - 1);
+                velocity -= (velocityOffset - 1)+0.5;
             }
             else if (velocityOffset > 0.1)
             {
-                velocity -= velocityOffset;
+                velocity -= velocityOffset+0.5;
             }
         }
 
