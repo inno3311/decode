@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Drivebase.DriveController;
 import org.firstinspires.ftc.teamcode.Drivebase.MecanumDrive;
 import org.firstinspires.ftc.teamcode.FeedbackSystems.Cameras.AprilTags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Misc.FireControl;
+import org.firstinspires.ftc.teamcode.Roadrunner.Drawing;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Hood;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Intake;
 import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
@@ -175,6 +176,7 @@ public class Version4_2 extends LinearOpMode
             // Firesuit math
             shooterParameters = fireControl.firingSuite(pose, velocity2d, team);
 
+            //jrm comment following like to disable flywheel.
             shooter.driveToVelocity(shooterParameters[1]);
             hood.driveToAngleTarget(shooterParameters[0]);
 
@@ -218,25 +220,34 @@ public class Version4_2 extends LinearOpMode
                     break;
             }
 
-            telemetry.addData("Turret Position", turret.getPosition());
-            telemetry.addData("TurretOffset", turretOffset);
-            telemetry.addData("Target Shooter Velocity:", shooterParameters[1]);
-            telemetry.addData("Target Hood Angle:", 90 - shooterParameters[0]);
-            telemetry.addLine("==========================================");
-            telemetry.addData("Robot linear velocity X", velocity2d.linearVel.x);
-            telemetry.addData("Robot linear velocity Y", velocity2d.linearVel.y);
-            telemetry.addData("Robot angular velocity", velocity2d.angVel);
-            telemetry.addData("Robot Heading", Math.toDegrees(pose.heading.toDouble()));
+//            telemetry.addData("Turret Position", turret.getPosition());
+//            telemetry.addData("TurretOffset", turretOffset);
+//            telemetry.addData("Target Shooter Velocity:", shooterParameters[1]);
+//            telemetry.addData("Target Hood Angle:", 90 - shooterParameters[0]);
+//            telemetry.addLine("==========================================");
+//            telemetry.addData("Robot linear velocity X", velocity2d.linearVel.x);
+//            telemetry.addData("Robot linear velocity Y", velocity2d.linearVel.y);
+//            telemetry.addData("Robot angular velocity", velocity2d.angVel);
+//            telemetry.addData("Robot Heading", Math.toDegrees(pose.heading.toDouble()));
+            telemetry.addData("01_Turret Position", turret.getPosition());
+            telemetry.addData("02_TurretOffset", turretOffset);
+            telemetry.addData("03_Target Shooter Velocity:", shooterParameters[1]);
+            telemetry.addData("04_Target Hood Angle:", 90 - shooterParameters[0]);
+            telemetry.addLine("05_==========================================");
+            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
+            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
+            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
+            telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
 
             telemetry.update();
 
 
             TelemetryPacket packet = new TelemetryPacket();
-            dashboard.sendTelemetryPacket(packet);
             packet.put("Robot linear velocity X", velocity2d.linearVel.x);
             packet.put("Robot linear velocity Y", velocity2d.linearVel.y);
             packet.put("Robot angular velocity", velocity2d.angVel);
-
+            Drawing.drawRobot(packet.fieldOverlay(), pose);
+            dashboard.sendTelemetryPacket(packet);
         }
     }
 }

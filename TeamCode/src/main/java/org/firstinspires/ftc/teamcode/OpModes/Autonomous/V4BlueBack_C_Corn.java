@@ -99,8 +99,6 @@ public class V4BlueBack_C_Corn extends LinearOpMode
 
             try
             {
-
-
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
                     .afterTime(0, actionsBackpack.turretTracking(drive,8))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1350, 30, drive)) //at launch zone 1400
@@ -127,10 +125,6 @@ public class V4BlueBack_C_Corn extends LinearOpMode
                     .afterTime(0, actionsBackpack.shootBallManual(9, 6, 1450, 35, drive))  //runs out of time
                     .waitSeconds(2.5)
                     .strafeToLinearHeading(new Vector2d(30, -15), Math.toRadians(270), new TranslationalVelConstraint(100))
-
-
-
-
 
 
 

@@ -154,8 +154,6 @@ public class V4BlueFront_A extends LinearOpMode
         {
             throw new RuntimeException();
         }
-
-
     }
 }
 

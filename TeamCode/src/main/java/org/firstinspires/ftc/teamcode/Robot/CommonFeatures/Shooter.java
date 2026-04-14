@@ -69,8 +69,8 @@ public class Shooter
 
         dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
-        packet.put("Target Velocity", targetVelocity);
-        packet.put("Current Velocity", currentVelocity);
+        packet.put("? Target Velocity", targetVelocity);
+        packet.put("? Current Velocity", currentVelocity);
         packet.put("zero", 0);
         dashboard.sendTelemetryPacket(packet);
     }
