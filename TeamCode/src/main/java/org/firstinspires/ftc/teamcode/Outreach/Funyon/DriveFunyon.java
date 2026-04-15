@@ -71,17 +71,34 @@ public class DriveFunyon
      *
      * @param gamepad - the gamepad you want to control the drive base
      */
-    public void gamepadController(Gamepad gamepad)
+    public void gamepadController(Gamepad gamepad, Float y, Float x, Float slowMo, Double robot_heading, Float turn)
     {
-        double drive = -gamepad.left_stick_y;
-        double turn = gamepad.right_stick_x;
-        double strafe = gamepad.left_stick_x;
-        speedFactor = 0.3;
+        double speed = 8*Math.pow((slowMo-0.543879), 4) + 0.3;
+
+        double drive_y = y * Math.cos(Math.toRadians(robot_heading)) + x * Math.sin(Math.toRadians(robot_heading));
+        double drive_x = -y * Math.sin(Math.toRadians(robot_heading)) + x * Math.cos(Math.toRadians(robot_heading));
+        double joystick_magnitude = Math.sqrt((x*x) + (y*y));
+        double scalar = 0;
+        if (drive_x != 0 && drive_y != 0)
+        {
+            scalar = joystick_magnitude/(Math.max(Math.abs(drive_x), Math.abs(drive_y)));
+        }
+        drive_x = drive_x * scalar;
+        drive_y = drive_y * scalar;
+        if(drive_y == 0){
+            drive_y = 0.0001;
+        }
+        speedFactor = 0.5;
         if (gamepad.left_bumper)
         {
             speedFactor = 1;
         }
-        driveMotors(drive, turn, strafe, speedFactor);
+        driveMotors(-drive_y, turn, drive_x, speed*speedFactor);
+
+//        double drive = -gamepad.left_stick_y;
+//        double turn = gamepad.right_stick_x;
+//        double strafe = gamepad.left_stick_x;
+//        driveMotors(drive, turn, strafe, speedFactor);
     }
 
     /**

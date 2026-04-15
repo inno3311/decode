@@ -42,21 +42,21 @@ public class FunyonShooter
     {
         if (gamepad.a)
         {
-            mechanicalDriveOutreach.stop();
+//            mechanicalDriveOutreach.stop();
             mechanicalDriveOutreach.inch();
             intakeWheels.setPower(1);
             intakeMill.setPower(1);
-            try
-            {
-                Thread.sleep(250);
-            }
-            catch (InterruptedException e) {e.printStackTrace();}
-            mechanicalDriveOutreach.stop();
-            try
-            {
-                Thread.sleep(2250);
-            }
-            catch (InterruptedException e) {e.printStackTrace();}
+//            try
+//            {
+//                Thread.sleep(250);
+//            }
+//            catch (InterruptedException e) {e.printStackTrace();}
+//            mechanicalDriveOutreach.stop();
+//            try
+//            {
+//                Thread.sleep(2250);
+//            }
+//            catch (InterruptedException e) {e.printStackTrace();}
         }
         else if (gamepad.right_bumper)
         {
