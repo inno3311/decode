@@ -233,23 +233,14 @@ public class Version4_2 extends LinearOpMode
                     break;
             }
 
-//            telemetry.addData("Turret Position", turret.getPosition());
-//            telemetry.addData("TurretOffset", turretOffset);
-//            telemetry.addData("Target Shooter Velocity:", shooterParameters[1]);
-//            telemetry.addData("Target Hood Angle:", 90 - shooterParameters[0]);
-//            telemetry.addLine("==========================================");
-//            telemetry.addData("Robot linear velocity X", velocity2d.linearVel.x);
-//            telemetry.addData("Robot linear velocity Y", velocity2d.linearVel.y);
-//            telemetry.addData("Robot angular velocity", velocity2d.angVel);
-//            telemetry.addData("Robot Heading", Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("01_Turret Position", turret.getPosition());
             telemetry.addData("02_TurretOffset", turretOffset);
             telemetry.addData("03_Target Shooter Velocity:", shooterParameters[1]);
             telemetry.addData("04_Target Hood Angle:", 90 - shooterParameters[0]);
             telemetry.addLine("05_==========================================");
-            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
-            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
-            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
+//            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
+//            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
+//            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
             telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
 
             telemetry.update();

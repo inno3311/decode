@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Servo Test")
-@Disabled
+//@Disabled
 public class ServoTest extends LinearOpMode
 {
     DcMotor motor;
@@ -22,11 +22,11 @@ public class ServoTest extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
         time = new ElapsedTime();
-        servo = hardwareMap.servo.get("servo");
+        servo = hardwareMap.servo.get("hood");
 
-        motor = this.hardwareMap.get(DcMotorEx.class, "motor");
-        motor.setDirection(DcMotorEx.Direction.FORWARD);
-        motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+//        motor = this.hardwareMap.get(DcMotorEx.class, "motor");
+//        motor.setDirection(DcMotorEx.Direction.FORWARD);
+//        motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
         double servoTarget = 0;
@@ -36,6 +36,8 @@ public class ServoTest extends LinearOpMode
 
         while (opModeIsActive())
         {
+            telemetry.addData(" servoTarget: ", servoTarget);
+
             if (gamepad1.dpad_up && flagTime < time.seconds())
             {
                 flagTime = time.seconds() + 0.25;
@@ -64,7 +66,9 @@ public class ServoTest extends LinearOpMode
                 servo.setPosition(driveServoToAngle(servoTarget));
             }
 
-            motor.setPower(gamepad1.right_stick_y);
+//            motor.setPower(gamepad1.right_stick_y);
+
+              telemetry.update();
 
         }
     }
