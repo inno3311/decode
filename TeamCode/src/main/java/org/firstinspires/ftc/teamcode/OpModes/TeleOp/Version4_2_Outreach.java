@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.Robot.v4.Trigger;
 
-@TeleOp(name = "Headless Hermit Crab")
-public class Version4_2 extends LinearOpMode
+@TeleOp(name = "Outreach V4.2")
+public class Version4_2_Outreach extends LinearOpMode
 {
     Intake intake;
     Trigger trigger;
@@ -49,8 +49,6 @@ public class Version4_2 extends LinearOpMode
     boolean team = false; //false = red, true = blue
     double turretOffset = 90;
     double flag = 0;
-
-    boolean isFlyWheelDisabled = false;
     public enum TurretState
     {
         resetting,
@@ -137,7 +135,7 @@ public class Version4_2 extends LinearOpMode
             }
             else
             {
-                if (gamepad1.dpad_up)
+                if (gamepad2.dpad_up)
                 {
                     imu.resetYaw();
                 }
@@ -151,7 +149,7 @@ public class Version4_2 extends LinearOpMode
                 );
             }
 
-            if (gamepad1.back && drive_mode_flag <= time.seconds())
+            if (gamepad2.back && drive_mode_flag <= time.seconds())
             {
                 drive_mode_flag += time.seconds() + 0.25;
                 drive_mode += 1;
@@ -180,30 +178,8 @@ public class Version4_2 extends LinearOpMode
                 trigger.setPower(0);
             }
 
-            //if (gamepad1.aWasPressed())
-            if (gamepad1.dpadLeftWasPressed())
-            {
-                //shooter.setDisabled(false);
-                if (isFlyWheelDisabled == false)
-                {
-                    isFlyWheelDisabled = true;
-                }
-                else
-                {
-                    isFlyWheelDisabled = false;
-                }
-                shooter.setDisabled(isFlyWheelDisabled);
-            }
-//            if ((gamepad1.start))
-//            {
-//                shooter.setDisabled(true);
-//            }
-//            else
-//            {
-//                shooter.setDisabled(false);
-//            }
             // Roadrunner positioning update
-            if ((aprilTagLocalizer.getDetectionID() == 20 || aprilTagLocalizer.getDetectionID() == 24) && (gamepad1.start))
+            if ((aprilTagLocalizer.getDetectionID() == 20 || aprilTagLocalizer.getDetectionID() == 24) && (gamepad2.start))
             {
 //                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
                 drive.localizer.setPose(aprilTagLocalizer.getFieldPose());
@@ -221,30 +197,30 @@ public class Version4_2 extends LinearOpMode
 
             // Turret code
             double aiTurretHeading = 0;
-            if (gamepad1.b && !gamepad2.start)
+            if (gamepad2.b && !gamepad2.start)
             {
                 state = Version3.TurretState.resetting;
             }
-            else if (gamepad1.x)
+            else if (gamepad2.x)
             {
                 state = Version3.TurretState.tracking;
             }
-            else if (gamepad1.a && !gamepad2.start)
+            else if (gamepad2.a && !gamepad2.start)
             {
                 state = Version3.TurretState.stopped;
             }
 
-            if (gamepad1.left_bumper)
+            if (gamepad1.left_bumper || gamepad2.left_bumper)
             {
                 turretOffset -= 1;
                 //flag = time.seconds() + 0.3;
             }
-            else if (gamepad1.right_bumper)
+            else if (gamepad1.right_bumper || gamepad2.right_bumper)
             {
                 turretOffset += 1;
                 //flag = time.seconds() + 0.3;
             }
-            else if (gamepad1.dpad_down)
+            else if (gamepad2.dpad_down)
             {
                 turretOffset = 90;
             }
@@ -273,7 +249,7 @@ public class Version4_2 extends LinearOpMode
 //            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
             telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("10_Drive Mode", drive_mode%2);
-
+            telemetry.addData("Firing at blue", team);
             telemetry.update();
 
 

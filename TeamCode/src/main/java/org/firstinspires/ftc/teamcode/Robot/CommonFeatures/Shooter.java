@@ -29,6 +29,8 @@ public class Shooter
     double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001};
     int stepIndex = 0;
 
+    boolean isDisabled = false;
+
     FtcDashboard dashboard;
     Telemetry telemetry;
 
@@ -56,23 +58,32 @@ public class Shooter
      */
     public void driveToVelocity(double targetVelocity)
     {
-        shooter.setVelocityPIDFCoefficients(Params.P, Params.I, Params.D, Params.F);
-        shooter.setVelocity(targetVelocity);
+        if (isDisabled == false)
+        {
 
-        double currentVelocity = shooter.getVelocity();
-        double error = targetVelocity - currentVelocity;
 
-        telemetry.addData("Target Velocity", targetVelocity);
-        telemetry.addData("Current Velocity", currentVelocity);
-        telemetry.addData("Error", error);
-        telemetry.addLine("------------------------------");
+            shooter.setVelocityPIDFCoefficients(Params.P, Params.I, Params.D, Params.F);
+            shooter.setVelocity(targetVelocity);
 
-        dashboard = FtcDashboard.getInstance();
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.put("? Target Velocity", targetVelocity);
-        packet.put("? Current Velocity", currentVelocity);
-        packet.put("zero", 0);
-        dashboard.sendTelemetryPacket(packet);
+            double currentVelocity = shooter.getVelocity();
+            double error = targetVelocity - currentVelocity;
+
+            telemetry.addData("Target Velocity", targetVelocity);
+            telemetry.addData("Current Velocity", currentVelocity);
+            telemetry.addData("Error", error);
+            telemetry.addLine("------------------------------");
+
+            dashboard = FtcDashboard.getInstance();
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.put("? Target Velocity", targetVelocity);
+            packet.put("? Current Velocity", currentVelocity);
+            packet.put("zero", 0);
+            dashboard.sendTelemetryPacket(packet);
+        }
+        else
+        {
+            shooter.setVelocity(0);
+        }
     }
 
     public void tuning(double targetVelocity, Gamepad gamepad)
@@ -124,6 +135,11 @@ public class Shooter
         packet.put("zero", 0);
         dashboard.sendTelemetryPacket(packet);
 
+    }
+
+    public void setDisabled (boolean disabled)
+    {
+        isDisabled = disabled;
     }
 
     public double getMotorVelocity()
