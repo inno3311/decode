@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -55,6 +57,7 @@ public class Version4_2 extends LinearOpMode
     {
         resetting,
         tracking,
+        
         stopped,
     }
 
@@ -203,6 +206,7 @@ public class Version4_2 extends LinearOpMode
 //                shooter.setDisabled(false);
 //            }
             // Roadrunner positioning update
+            // Must now use Start button to reset.
             if ((aprilTagLocalizer.getDetectionID() == 20 || aprilTagLocalizer.getDetectionID() == 24) && (gamepad1.start))
             {
 //                drive.localizer.setPose(new Pose2d(0,0,imu.getRobotYawPitchRollAngles().getYaw()));
@@ -265,8 +269,9 @@ public class Version4_2 extends LinearOpMode
 
             telemetry.addData("01_Turret Position", turret.getPosition());
             telemetry.addData("02_TurretOffset", turretOffset);
-            telemetry.addData("03_Target Shooter Velocity:", shooterParameters[1]);
-            telemetry.addData("04_Target Hood Angle:", 90 - shooterParameters[0]);
+            telemetry.addData("03_TurretHeading", aiTurretHeading);
+            telemetry.addData("04_Target Shooter Velocity:", shooterParameters[1]);
+            telemetry.addData("05_Target Hood Angle:", 90 - shooterParameters[0]);
             telemetry.addLine("05_==========================================");
 //            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
 //            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
@@ -274,14 +279,29 @@ public class Version4_2 extends LinearOpMode
             telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("10_Drive Mode", drive_mode%2);
 
+
+
+
             telemetry.update();
 
 
+            double length = 6; // length of turret line in inches (adjust for visibility)
+            double turretX = pose.position.x + length * Math.cos(Math.toRadians(aiTurretHeading));
+            double turretY = pose.position.y + length * Math.sin(Math.toRadians(aiTurretHeading));
+
+
+
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("Robot linear velocity X", velocity2d.linearVel.x);
-            packet.put("Robot linear velocity Y", velocity2d.linearVel.y);
-            packet.put("Robot angular velocity", velocity2d.angVel);
-            Drawing.drawRobot(packet.fieldOverlay(), pose);
+            Canvas c = packet.fieldOverlay();
+//            packet.put("Robot linear velocity X", velocity2d.linearVel.x);
+//            packet.put("Robot linear velocity Y", velocity2d.linearVel.y);
+//            packet.put("Robot angular velocity", velocity2d.angVel);
+            Drawing.drawRobot(c, pose);
+
+            // draw turret direction
+            c.setStroke("red");
+            c.strokeLine(pose.position.x, pose.position.y, turretX, turretY);
+
             dashboard.sendTelemetryPacket(packet);
         }
     }

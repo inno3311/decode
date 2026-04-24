@@ -227,20 +227,20 @@ public class FireControl
             targetRange = 2;
         }
 
-        if (targetRange > 2.65)
+        if (targetRange > 2.65) //Far zone
         {
             targetAngle = 65;
-            velocity = calculateVelocity(65, targetRange)+1.25;
+            velocity = calculateVelocity(65, targetRange)+0.6;
         }
-        else
+        else //Close zone
         {
             velocity += (targetRange - 2.2)+9;
             targetAngle = calculateSteeperAngle(velocity, targetRange);
-            if (velocityOffset < 0.1)
+            if (velocityOffset < 0.1) //If you are moving away from the gaol or are stopped
             {
                 velocity -= (velocityOffset - 1)+0.5;
             }
-            else if (velocityOffset > 0.1)
+            else if (velocityOffset > 0.1) //If you moving toward the goal
             {
                 velocity -= velocityOffset+0.5;
             }

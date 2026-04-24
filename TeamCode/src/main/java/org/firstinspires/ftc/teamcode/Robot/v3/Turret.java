@@ -120,7 +120,9 @@ public class Turret
         TelemetryPacket packet = new TelemetryPacket();
         dashboard.sendTelemetryPacket(packet);
         packet.put("target", targetInTicks);
-        packet.put("turret Current Position", turret.getCurrentPosition());
+        packet.put("__turret Current Position", turret.getCurrentPosition());
+        packet.put("__turret Heading turretAngleDeg", turretAngleDeg);
+        packet.put("__turret Heading noralizedDeg", noralizedDeg);
         //packet.put("Zero", 0);
 
         return noralizedDeg;
@@ -234,7 +236,7 @@ public class Turret
             }
             else
             {
-                turret.setPower(-0.2);
+                turret.setPower(-0.4);
             }
         }
         else if (gamepad.left_stick_x == 0)

@@ -114,23 +114,23 @@ public class ServoParent
         driveToAngleTarget(angle);
     }
 
-    public Action action(double target)
-    {
-        return new Action()
-        {
-//            private boolean initialized = false;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket)
-            {
-//                if (!initialized)
-//                {
-                    driveServo(target);
-//                    initialized = true;
-//                }
-
-                return false;
-            }
-        };
-    }
+//    public Action action(double target)
+//    {
+//        return new Action()
+//        {
+////            private boolean initialized = false;
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket)
+//            {
+////                if (!initialized)
+////                {
+//                    driveServo(target);
+////                    initialized = true;
+////                }
+//
+//                return false;
+//            }
+//        };
+//    }
 
 }
