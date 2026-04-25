@@ -8,7 +8,8 @@ public class Hood extends ServoParent
 
     public Hood(LinearOpMode opMode)
     {
-        super("hood", 25, opMode);
+        super("hood", 38, opMode);
+//        super("hood", 25, opMode); //Original
     }
 
     @Override

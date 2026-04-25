@@ -79,7 +79,7 @@ public class ServoTest extends LinearOpMode
 //        {
 //            return 0;
 //        }
-        return angle/servoRange;
+        return (angle+20)/servoRange;
     }
 }
 
