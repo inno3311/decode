@@ -236,7 +236,7 @@ public class Turret
             }
             else
             {
-                turret.setPower(-0.4);
+                turret.setPower(-0.25);
             }
         }
         else if (gamepad.left_stick_x == 0)

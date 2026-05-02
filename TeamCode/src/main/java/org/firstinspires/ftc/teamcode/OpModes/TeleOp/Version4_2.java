@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,6 +27,17 @@ import org.firstinspires.ftc.teamcode.Robot.CommonFeatures.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.v3.Turret;
 import org.firstinspires.ftc.teamcode.Robot.v4.Trigger;
 
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+
+
+import java.util.Locale;
 @TeleOp(name = "Headless Hermit Crab")
 public class Version4_2 extends LinearOpMode
 {
@@ -52,6 +64,8 @@ public class Version4_2 extends LinearOpMode
     double turretOffset = 90;
     double flag = 0;
 
+    GoBildaPinpointDriver odo;
+
     boolean isFlyWheelDisabled = false;
     public enum TurretState
     {
@@ -66,6 +80,7 @@ public class Version4_2 extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
 
         // 🔥 THIS is where you fix vibration blur
@@ -85,13 +100,16 @@ public class Version4_2 extends LinearOpMode
 
         drive = new MecanumDrive(hardwareMap, null);
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP
-        );
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(
+//                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+//                RevHubOrientationOnRobot.UsbFacingDirection.UP
+//        );
+//        imu.initialize(new IMU.Parameters(orientationOnRobot));
+//        imu.resetYaw();
+
+        odo.recalibrateIMU();
+        odo.resetPosAndIMU();
 
         turnToHeading = new TurnToHeading(telemetry, drive, imu);
         centricDrive = new CentricDrive(drive, telemetry);
@@ -122,6 +140,7 @@ public class Version4_2 extends LinearOpMode
 
         while (opModeIsActive())
         {
+            odo.update();
 
             // Set team for turret tracking and firesuit
             if (gamepad2.right_stick_button)
@@ -142,12 +161,14 @@ public class Version4_2 extends LinearOpMode
             {
                 if (gamepad1.dpad_up)
                 {
-                    imu.resetYaw();
+//                    imu.resetYaw();
+                    odo.resetPosAndIMU();
                 }
                 centricDrive.drive(
                     gamepad1.left_stick_x,
                     gamepad1.left_stick_y,
-                    imu.getRobotYawPitchRollAngles().getYaw(),
+//                    imu.getRobotYawPitchRollAngles().getYaw(),
+                    odo.getHeading(AngleUnit.DEGREES),
 //                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
                     gamepad2.left_trigger,
                     gamepad1.right_stick_x
@@ -273,11 +294,15 @@ public class Version4_2 extends LinearOpMode
             telemetry.addData("04_Target Shooter Velocity:", shooterParameters[1]);
             telemetry.addData("05_Target Hood Angle:", 90 - shooterParameters[0]);
             telemetry.addLine("05_==========================================");
-//            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
-//            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
-//            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
+            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
+            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
+            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
             telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("10_Drive Mode", drive_mode%2);
+            telemetry.addData("11_Robot x_position", pose.position.x);
+            telemetry.addData("12_Robot y_position", pose.position.y);
+            telemetry.addData("13_Robot heading", odo.getHeading(AngleUnit.DEGREES));
+
 
 
 
