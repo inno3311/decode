@@ -288,23 +288,20 @@ public class Version4_2 extends LinearOpMode
                     break;
             }
 
-            telemetry.addData("01_Turret Position", turret.getPosition());
-            telemetry.addData("02_TurretOffset", turretOffset);
-            telemetry.addData("03_TurretHeading", aiTurretHeading);
-            telemetry.addData("04_Target Shooter Velocity:", shooterParameters[1]);
-            telemetry.addData("05_Target Hood Angle:", 90 - shooterParameters[0]);
+            telemetry.addData("01_Turret Position", "%.1f", turret.getPosition());
+            telemetry.addData("02_TurretOffset", "%.1f", turretOffset);
+            telemetry.addData("03_TurretHeading", "%.1f", aiTurretHeading);
+            telemetry.addData("04_Target Shooter Velocity:", "%.1f", shooterParameters[1]);
+            telemetry.addData("05_Target Hood Angle:", "%.1f", 90 - shooterParameters[0]);
             telemetry.addLine("05_==========================================");
-            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
-            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
-            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
-            telemetry.addData("09_Robot Heading", Math.toDegrees(pose.heading.toDouble()));
+//            telemetry.addData("06_Robot linear velocity X", velocity2d.linearVel.x);
+//            telemetry.addData("07_Robot linear velocity Y", velocity2d.linearVel.y);
+//            telemetry.addData("08_Robot angular velocity", velocity2d.angVel);
+            telemetry.addData("09_Robot Heading","%.1f",  Math.toDegrees(pose.heading.toDouble()));
             telemetry.addData("10_Drive Mode", drive_mode%2);
-            telemetry.addData("11_Robot x_position", pose.position.x);
-            telemetry.addData("12_Robot y_position", pose.position.y);
-            telemetry.addData("13_Robot heading", odo.getHeading(AngleUnit.DEGREES));
-
-
-
+            telemetry.addData("11_Robot x_position", "%.1f", pose.position.x);
+            telemetry.addData("12_Robot y_position", "%.1f", pose.position.y);
+            telemetry.addData("13_Robot heading", "%.1f", odo.getHeading(AngleUnit.DEGREES));
 
 
             telemetry.update();

@@ -236,7 +236,7 @@ public class Turret
             }
             else
             {
-                turret.setPower(-0.25);
+                turret.setPower(-0.25);  //change for reset speed.
             }
         }
         else if (gamepad.left_stick_x == 0)
