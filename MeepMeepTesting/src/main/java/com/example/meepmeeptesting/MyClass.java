@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
@@ -33,7 +34,7 @@ public class MyClass
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_LIGHT)
             .setDarkMode(true)
             .setBackgroundAlpha(0.95f)
-            .addEntity(myBot)
+//            .addEntity(myBot)
             .addEntity(myBot2)
             .start();
     }
@@ -133,26 +134,32 @@ public class MyClass
             .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
            .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-48, 50,Math.toRadians(126) ))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-50, 50,Math.toRadians(135) ))
+            .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
+
+
+            .waitSeconds(1)
+
+            .strafeToLinearHeading(new Vector2d(-11, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
+            .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
+
+            .waitSeconds(1)
+
+                .setTangent(Math.toRadians(0))
+            .splineToConstantHeading(new Vector2d(12, 20), Math.toRadians(90), new TranslationalVelConstraint(20))
+            .splineToConstantHeading(new Vector2d(12, 70), Math.toRadians(90), new TranslationalVelConstraint(40))
+//            .strafeToLinearHeading(new Vector2d(12, 10), Math.toRadians(90))
+//            .strafeTo(new Vector2d(12, 70)) //B
+
+            //.waitSeconds(1)
                 .setReversed(true)
-                .strafeTo(new Vector2d(-18, 18))
-                .waitSeconds(3)
-                .splineTo(new Vector2d(-12, 30), Math.toRadians(90))
-                .splineTo(new Vector2d(-12, 48), Math.toRadians(90))
-                .strafeTo(new Vector2d(2, 48))
-                .waitSeconds(1)
-                .strafeTo(new Vector2d(2, 55))
-                .waitSeconds(1)
-                .setReversed(true)
-                .splineTo(new Vector2d(10, 24), Math.toRadians(135+180))
-                .setReversed(false)
-                .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
-                .waitSeconds(3)
-                .strafeToLinearHeading(new Vector2d(12, 24), Math.toRadians(90))
-                .strafeTo(new Vector2d(12, 50))
-                .waitSeconds(3)
-                .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
-                .waitSeconds(3)
+            .splineToConstantHeading(new Vector2d(12, 40), Math.toRadians(270), new TranslationalVelConstraint(40))
+            .splineToConstantHeading(new Vector2d(-10, 12), Math.toRadians(180), new TranslationalVelConstraint(40))
+//            .strafeToLinearHeading(new Vector2d(12, 40), Math.toRadians(90), new TranslationalVelConstraint(40))
+//            .strafeToLinearHeading(new Vector2d(-10, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
+
+            .waitSeconds(1)
+            .strafeToLinearHeading(new Vector2d(10, 12), Math.toRadians(90))
       .build());
 
 
