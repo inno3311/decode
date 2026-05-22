@@ -103,12 +103,12 @@ public class V4RedFront_A extends LinearOpMode
                     .afterTime(0, actionsBackpack.turretTracking(drive,3))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1100, 20, drive))
                     .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
-                    .waitSeconds(3)
+                    .waitSeconds(1.5)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeToLinearHeading(new Vector2d(-11, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
                     .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1100, 20, drive))
-                    .waitSeconds(3)
+                    .waitSeconds(2)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .setTangent(Math.toRadians(0))
@@ -119,7 +119,7 @@ public class V4RedFront_A extends LinearOpMode
                     .splineToConstantHeading(new Vector2d(12, 40), Math.toRadians(270), new TranslationalVelConstraint(40))
                     .splineToConstantHeading(new Vector2d(-10, 12), Math.toRadians(170), new TranslationalVelConstraint(30))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1100, 20, drive))
-                    .waitSeconds(3)
+                    .waitSeconds(2)
                     .strafeToLinearHeading(new Vector2d(10, 10), Math.toRadians(90))
 
 
