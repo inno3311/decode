@@ -100,27 +100,53 @@ public class V4BlueFront_Gate extends LinearOpMode
 
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
 
-                    .afterTime(0, actionsBackpack.turretTracking(drive,-3))
+                    .afterTime(0, actionsBackpack.turretTracking(drive,-4))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 26, drive))
                     .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
-                    .waitSeconds(6)
+                    .waitSeconds(1.5)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeToLinearHeading(new Vector2d(12, -10), Math.toRadians(270)) //B
                     .strafeTo(new Vector2d(12, -64))
                     .strafeTo(new Vector2d(12, -45))
                     .strafeToLinearHeading(new Vector2d(4, -57), Math.toRadians(270)) //Gate
-                    .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
-                    .waitSeconds(3)
+                    .strafeToLinearHeading(new Vector2d(-8, -10), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 26, drive))
+                    .waitSeconds(2)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(-12, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
-                    .strafeToLinearHeading(new Vector2d(-12, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, -4, 1150, 21, drive))
-                    .waitSeconds(3)
+                    .strafeToLinearHeading(new Vector2d(-11, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
+                    .strafeToLinearHeading(new Vector2d(-11, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, -4, 1150, 26, drive))
+                    .waitSeconds(2)
 
-                    .strafeToLinearHeading(new Vector2d(10, -10), Math.toRadians(270))
+                    .afterTime(0, actionsBackpack.intakeBall(-1))
+                    .strafeToLinearHeading(new Vector2d(32, -64), Math.toRadians(180), new TranslationalVelConstraint(40))
+                    .waitSeconds(2)
+                    .strafeToLinearHeading(new Vector2d(28, -64), Math.toRadians(180), new TranslationalVelConstraint(40))
+                    .strafeToLinearHeading(new Vector2d(0, -24), Math.toRadians(270))
+
+//                    .afterTime(0, actionsBackpack.turretTracking(drive,-3))
+//                    .strafeToLinearHeading(new Vector2d(-10, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
+//                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
+//                    .waitSeconds(6)
+//
+//                    .afterTime(0, actionsBackpack.intakeBall(-1))
+//                    .strafeToLinearHeading(new Vector2d(12, -10), Math.toRadians(270)) //B
+//                    .strafeTo(new Vector2d(12, -64))
+//                    .strafeTo(new Vector2d(12, -45))
+//                    .strafeToLinearHeading(new Vector2d(4, -57), Math.toRadians(270)) //Gate
+//                    .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(270), new TranslationalVelConstraint(40))
+//                    .afterTime(0, actionsBackpack.shootBallManual(9, -3, 1150, 21, drive))
+//                    .waitSeconds(3)
+//
+//                    .afterTime(0, actionsBackpack.intakeBall(-1))
+//                    .strafeToLinearHeading(new Vector2d(-12, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
+//                    .strafeToLinearHeading(new Vector2d(-12, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
+//                    .afterTime(0, actionsBackpack.shootBallManual(9, -4, 1150, 21, drive))
+//                    .waitSeconds(3)
+//
+//                    .strafeToLinearHeading(new Vector2d(10, -10), Math.toRadians(270))
 
 
 
