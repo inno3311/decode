@@ -114,23 +114,23 @@ public class V4RedBack_C_Corn extends LinearOpMode
                     .waitSeconds(4)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .afterTime(0, actionsBackpack.adjustTurretOffset(4))
-                    .splineTo(new Vector2d(36, 65), Math.toRadians(90), new TranslationalVelConstraint(40)) // C
+                    .splineTo(new Vector2d(36, 68), Math.toRadians(90), new TranslationalVelConstraint(40)) // C
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(100)) //launch zone
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1400, 29, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 4, 1400, 29, drive)) //5
                     .waitSeconds(3)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(61, 68), Math.toRadians(85), new TranslationalVelConstraint(40))
+                    .strafeToLinearHeading(new Vector2d(61, 70), Math.toRadians(85), new TranslationalVelConstraint(40))
                     .waitSeconds(0.1)
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(100))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1400, 29, drive))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 4, 1400, 29, drive)) //5
                     .waitSeconds(3)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeToLinearHeading(new Vector2d(62, 68), Math.toRadians(85), new TranslationalVelConstraint(40))
                     .waitSeconds(0.1)
                     .strafeToLinearHeading(new Vector2d(50, 15), Math.toRadians(90), new TranslationalVelConstraint(100))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1450, 29, drive))  //runs out of time
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 5, 1450, 29, drive))
                     .waitSeconds(2.5)
                     .strafeToLinearHeading(new Vector2d(30, 15), Math.toRadians(90), new TranslationalVelConstraint(100))
 

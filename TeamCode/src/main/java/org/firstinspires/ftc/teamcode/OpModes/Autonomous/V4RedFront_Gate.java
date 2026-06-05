@@ -115,7 +115,7 @@ public class V4RedFront_Gate extends LinearOpMode
                     .waitSeconds(2)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(-11, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
+                    .strafeToLinearHeading(new Vector2d(-13, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
                     .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
                     .afterTime(0, actionsBackpack.shootBallManual(9, 4, 1150, 26, drive))
                     .waitSeconds(2)
