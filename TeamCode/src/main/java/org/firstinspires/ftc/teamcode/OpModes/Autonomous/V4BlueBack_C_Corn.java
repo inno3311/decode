@@ -100,30 +100,31 @@ public class V4BlueBack_C_Corn extends LinearOpMode
             try
             {
                 TrajectoryActionBuilder yellow_drop = drive.actionBuilder(beginPose)
-                    .afterTime(0, actionsBackpack.turretTracking(drive,30)) //-8
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1350, 29, drive)) //-5  v1400
+                    .afterTime(0, actionsBackpack.turretTracking(drive,2)) //-8
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1375, 29, drive)) // v1400
                     .splineTo(new Vector2d(50, -15), Math.toRadians(180), new TranslationalVelConstraint(40))
-                    .waitSeconds(4)
+                    .waitSeconds(3)
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .afterTime(0, actionsBackpack.adjustTurretOffset(-4))
-                    .splineTo(new Vector2d(36, -68), Math.toRadians(270), new TranslationalVelConstraint(40)) // C
+                    .splineTo(new Vector2d(36, -67), Math.toRadians(270), new TranslationalVelConstraint(40)) // C
                     .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(100)) //launch zone
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1400, 29, drive)) //10
-                    .waitSeconds(3)
+                    .afterTime(0, actionsBackpack.adjustTurretOffset(-1))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1350, 29, drive))
+                    .waitSeconds(2)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(61, -70), Math.toRadians(265), new TranslationalVelConstraint(40))
+                    .strafeToLinearHeading(new Vector2d(61, -72), Math.toRadians(275), new TranslationalVelConstraint(40))
                     .waitSeconds(0.1)
                     .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(100))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1400, 29, drive))
-                    .waitSeconds(3)
+                    .afterTime(0, actionsBackpack.adjustTurretOffset(1))
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1350, 29, drive))
+                    .waitSeconds(2)
 
                     .afterTime(0, actionsBackpack.intakeBall(-1))
-                    .strafeToLinearHeading(new Vector2d(62, -70), Math.toRadians(265), new TranslationalVelConstraint(40))
+                    .strafeToLinearHeading(new Vector2d(62, -72), Math.toRadians(280), new TranslationalVelConstraint(40))
                     .waitSeconds(0.1)
                     .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(270), new TranslationalVelConstraint(100))
-                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1400, 29, drive))
-                    .waitSeconds(3)
+                    .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1350, 29, drive))
+                    .waitSeconds(2)
                     .strafeToLinearHeading(new Vector2d(30, -15), Math.toRadians(270), new TranslationalVelConstraint(100))
 
 
