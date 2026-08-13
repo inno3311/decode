@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class BaseHW
 {
-   public OpMode m_OpMode = null;
+   OpMode m_OpMode = null;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////
    /// Add all needed hardware devices here.
