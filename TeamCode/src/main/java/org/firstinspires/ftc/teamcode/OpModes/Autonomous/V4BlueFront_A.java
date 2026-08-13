@@ -105,6 +105,7 @@ public class V4BlueFront_A extends LinearOpMode
                     .afterTime(0, actionsBackpack.shootBallManual(9, 0, 1150, 26, drive)) //-3 offset for all
                     .strafeToLinearHeading(new Vector2d(-11, -12), Math.toRadians(270), new TranslationalVelConstraint(40))
                     .waitSeconds(2)
+                      .afterTime(0,actionsBackpack.setTrigger(0))    //hack time
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeToLinearHeading(new Vector2d(-11, -56), Math.toRadians(270), new TranslationalVelConstraint(40)) //A
                     .strafeToLinearHeading(new Vector2d(-11, -12), Math.toRadians(270), new TranslationalVelConstraint(40))

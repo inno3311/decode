@@ -104,6 +104,7 @@ public class V4RedFront_A extends LinearOpMode
                     .afterTime(0, actionsBackpack.shootBallManual(9, 3, 1150, 26, drive)) //V=1100 A=20
                     .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
                     .waitSeconds(1.5)
+                      .afterTime(0,actionsBackpack.setTrigger(0))    //hack time
                     .afterTime(0, actionsBackpack.intakeBall(-1))
                     .strafeToLinearHeading(new Vector2d(-11, 56), Math.toRadians(90), new TranslationalVelConstraint(40)) //A
                     .strafeToLinearHeading(new Vector2d(-11, 12), Math.toRadians(90), new TranslationalVelConstraint(40))
