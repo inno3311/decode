@@ -14,14 +14,16 @@ public class StudentTrainingOpMode extends OpMode
       private BlackboardKeys() {}
    }
 
-   public enum AllianceColor2 {
+   public enum AllianceColor {
       RED,
       BLUE,
       UNKNOWN
    }
 
-   public enum InitState2 {
-      INIT_START
+   public enum InitState {
+      INIT_START,
+      A_B_MENU,
+      COLOR_SELECTED
    }
 
    /////////////////
@@ -29,25 +31,68 @@ public class StudentTrainingOpMode extends OpMode
    /////////////////
 
    //Used to indicate which team color you are on.
-   private  StudentTrainingOpMode.AllianceColor2 m_AllianceColor = StudentTrainingOpMode.AllianceColor2.UNKNOWN;
+   private  StudentTrainingOpMode.AllianceColor m_AllianceColor = StudentTrainingOpMode.AllianceColor.UNKNOWN;
 
-   private InitState2 m_initState = InitState2.INIT_START;
+   private InitState m_initState = InitState.INIT_START;
 
 
    @Override
    public void init()
    {
-      telemetry.log().add("Entering init");
-
-      telemetry.addData("Alliance: ", m_AllianceColor.name());
-
-      telemetry.log().add("Exiting init");
+      telemetry.log().add("Entering Init");
+      telemetry.addData("AC", m_AllianceColor.name());
+      if (blackboard.containsKey(BlackboardKeys.ALLIANCE_KEY))
+      {
+         m_AllianceColor = (AllianceColor) blackboard.get(BlackboardKeys.ALLIANCE_KEY);
+         telemetry.log().add("Blackboard loaded ", m_AllianceColor.name());
+      } else
+      {
+         m_AllianceColor = AllianceColor.RED;
+      }
+      telemetry.addData("AC", m_AllianceColor.name());
+      telemetry.log().add("Exiting Init");
    }
 
    @Override
    public void init_loop()
    {
+      switch (m_initState)
+      {
+         case INIT_START:
+            m_initState = InitState.A_B_MENU;
+            break;
+         case A_B_MENU:
+            telemetry.addLine("Select Alliance");
+            telemetry.addLine("");
+            telemetry.addLine("Press X = BLUE");
+            telemetry.addLine("Press B = RED");
 
+            if (gamepad1.bWasPressed())
+            {
+               m_AllianceColor = AllianceColor.RED;
+               telemetry.log().add("Red was selected");
+               telemetry.speak("We are RED team");
+               m_initState = InitState.COLOR_SELECTED;
+            }
+
+            if (gamepad1.xWasPressed())
+            {
+               m_AllianceColor = AllianceColor.BLUE;
+               telemetry.log().add("Blue was selected");
+               telemetry.speak("We are BLUE team");
+               m_initState = InitState.COLOR_SELECTED;
+            }
+
+            break;
+         case COLOR_SELECTED:
+            telemetry.addLine("Do you wish to start over?");
+            if (gamepad1.yWasPressed())
+            {
+               m_initState = InitState.INIT_START;
+            }
+
+            break;
+      }
    }
 
    @Override
@@ -59,6 +104,6 @@ public class StudentTrainingOpMode extends OpMode
    @Override
    public void stop()
    {
-
+   blackboard.put(BlackboardKeys.ALLIANCE_KEY, m_AllianceColor);
    }
 }
