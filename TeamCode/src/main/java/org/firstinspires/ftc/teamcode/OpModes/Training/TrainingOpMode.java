@@ -52,10 +52,15 @@ public class TrainingOpMode extends OpMode
    ///
    private ledHW m_led;
 
+   private DriveBaseHW m_driveBase;
+
    @Override
    public void init()
    {
       telemetry.log().add("Entering init");
+
+      m_driveBase = new DriveBaseHW();
+      m_driveBase.init(this.hardwareMap);
 
       m_led = new ledHW(this, "led");
       m_led.green();
@@ -143,6 +148,10 @@ public class TrainingOpMode extends OpMode
    @Override
    public void loop()
    {
+
+
+      m_driveBase.drive(-gamepad1.right_stick_y,gamepad1.right_stick_x,-gamepad1.left_stick_x);
+
       double dt = loopTimer.milliseconds();
       loopTimer.reset();
 
