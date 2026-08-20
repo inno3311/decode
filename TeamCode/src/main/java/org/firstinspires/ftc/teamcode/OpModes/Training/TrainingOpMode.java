@@ -167,8 +167,6 @@ public class TrainingOpMode extends OpMode
    public void loop()
    {
 
-      m_driveBase.drive(-gamepad1.right_stick_y,gamepad1.right_stick_x,-gamepad1.left_stick_x);
-
       //  User input from gamepad1.
       //  Action depends on current test state.
       //  Will either start or stop the test.
@@ -189,16 +187,16 @@ public class TrainingOpMode extends OpMode
       switch (m_intakeTestState)
       {
          case IDLE:
-            // do nothing
+            m_driveBase.drive(-gamepad1.right_stick_y,gamepad1.right_stick_x,-gamepad1.left_stick_x);// do nothing
          break;
          case INIT:
             m_intake.intake();
-            m_driveBase.drive(.5,0,0);
+            m_driveBase.drive(.3,0,0);
             m_testTimer.reset();
             m_intakeTestState = IntakeTestState.TRAVEL;
             break;
          case TRAVEL:
-            if (m_testTimer.seconds() > 3)
+            if (m_testTimer.seconds() > 1)
             {
                m_intakeTestState = IntakeTestState.STOP;
             }
