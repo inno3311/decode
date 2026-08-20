@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Objects;
+
 @TeleOp(name = "BioBuzz Proto", group = "OpMode")
 public class TrainingOpMode extends OpMode
 {
@@ -31,6 +33,14 @@ public class TrainingOpMode extends OpMode
       INIT_READY
    }
 
+
+   private enum IntakeTestState {
+      IDLE,
+      INIT,
+      TRAVEL,
+      STOP
+   }
+
    /////////////////
    /// CLASS MEMBERS
    /////////////////
@@ -41,11 +51,15 @@ public class TrainingOpMode extends OpMode
 
    public InitState initState = InitState.INIT_WAIT_FOR_ALLIANCE;
 
+   IntakeTestState m_intakeTestState = IntakeTestState.IDLE;
+
 
    private final ElapsedTime loopTimer = new ElapsedTime();
    private double avg = 0;
    private double min = Double.MAX_VALUE;
    private double max = 0;
+
+   private final ElapsedTime m_testTimer = new ElapsedTime();
 
    ///
    /// Hardware
@@ -54,6 +68,8 @@ public class TrainingOpMode extends OpMode
 
    private DriveBaseHW m_driveBase;
 
+   private IntakeHW m_intake;
+
    @Override
    public void init()
    {
@@ -61,6 +77,8 @@ public class TrainingOpMode extends OpMode
 
       m_driveBase = new DriveBaseHW();
       m_driveBase.init(this.hardwareMap);
+
+      m_intake = new IntakeHW(this, "intake");
 
       m_led = new ledHW(this, "led");
       m_led.green();
@@ -149,9 +167,51 @@ public class TrainingOpMode extends OpMode
    public void loop()
    {
 
-
       m_driveBase.drive(-gamepad1.right_stick_y,gamepad1.right_stick_x,-gamepad1.left_stick_x);
 
+      //  User input from gamepad1.
+      //  Action depends on current test state.
+      //  Will either start or stop the test.
+      if (gamepad1.yWasPressed())
+      {
+         if (Objects.requireNonNull(m_intakeTestState) == IntakeTestState.IDLE)
+         {
+            m_intakeTestState = IntakeTestState.INIT;
+         }
+         else
+         {
+            m_intakeTestState = IntakeTestState.STOP;
+         }
+      }
+
+      /// Robot Control Code
+
+      switch (m_intakeTestState)
+      {
+         case IDLE:
+            // do nothing
+         break;
+         case INIT:
+            m_intake.intake();
+            m_driveBase.drive(.5,0,0);
+            m_testTimer.reset();
+            m_intakeTestState = IntakeTestState.TRAVEL;
+            break;
+         case TRAVEL:
+            if (m_testTimer.seconds() > 3)
+            {
+               m_intakeTestState = IntakeTestState.STOP;
+            }
+            break;
+         case STOP:
+            m_intake.stop();
+            m_driveBase.drive(0,0,0);
+            m_intakeTestState = IntakeTestState.IDLE;
+            break;
+      }
+
+
+      ///  Telemetry loop times
       double dt = loopTimer.milliseconds();
       loopTimer.reset();
 
@@ -164,6 +224,7 @@ public class TrainingOpMode extends OpMode
       telemetry.addData("Avg", "%.2f", avg);
       telemetry.addData("Min", "%.2f", min);
       telemetry.addData("Max", "%.2f", max);
+
    }
 
    @Override
@@ -171,6 +232,5 @@ public class TrainingOpMode extends OpMode
    {
       blackboard.put(BlackboardKeys.ALLIANCE_KEY,m_AllianceColor);
       super.stop();
-
    }
 }
