@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 public class ColorSorter
 {
-    private ColorSensor colorSorter;
+    private final ColorSensor colorSorter;
 
     public enum color
     {
       green, purple, none
-    };
+    }
 
     public ColorSorter(LinearOpMode opMode)
     {

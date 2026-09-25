@@ -42,7 +42,7 @@ public class DriveFunyon
 
 
         // Run Without Encoders
-        setMotorMode(this.runMode);
+        setMotorMode(runMode);
 
         // Brake when power set to Zero
         lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

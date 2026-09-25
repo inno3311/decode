@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Misc.CsvLogger;
 
 public class LogTestAction implements Action
 {
-   private long lastTime = 0;
+   private final long lastTime = 0;
    private final CsvLogger logger = CsvLogger.getInstance();
    private final FtcDashboard dashboard = FtcDashboard.getInstance();
 

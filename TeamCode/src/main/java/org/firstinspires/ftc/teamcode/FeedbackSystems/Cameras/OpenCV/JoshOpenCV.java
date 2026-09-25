@@ -23,8 +23,8 @@ public class JoshOpenCV extends OpenCvPipeline
    public int blur = 0;
 
 
-   private Mat ycrcbMat       = new Mat();
-   private Mat binaryMat      = new Mat();
+   private final Mat ycrcbMat       = new Mat();
+   private final Mat binaryMat      = new Mat();
    Mat gray = new Mat();
    @Override
    public void init(Mat firstFrame)

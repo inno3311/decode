@@ -55,19 +55,19 @@ public class SampleSeeker extends OpenCvPipeline
    public Scalar lower = new Scalar(0, 146, 153);
    public Scalar upper = new Scalar(255, 255, 255);
    private double threshold;
-   private double max_size_threshold = 3000; //pixels
-   private double min_size_threshold = 1000; //pixels
-   private double x_resolution = 320;
-   private double y_resolution = 180;
-   private double diagonal_fov = 90;
-   private double x_fov = get_horizontal_fov(x_resolution, y_resolution, diagonal_fov);
-   private double y_fov = get_vertical_fov(x_resolution, y_resolution, diagonal_fov);
-   private double x_degrees_per_pixel = x_fov/x_resolution;
-   private double y_degrees_per_pixel = y_fov/y_resolution;
-   private double max_pickup_angle = 30;
+   private final double max_size_threshold = 3000; //pixels
+   private final double min_size_threshold = 1000; //pixels
+   private final double x_resolution = 320;
+   private final double y_resolution = 180;
+   private final double diagonal_fov = 90;
+   private final double x_fov = get_horizontal_fov(x_resolution, y_resolution, diagonal_fov);
+   private final double y_fov = get_vertical_fov(x_resolution, y_resolution, diagonal_fov);
+   private final double x_degrees_per_pixel = x_fov/x_resolution;
+   private final double y_degrees_per_pixel = y_fov/y_resolution;
+   private final double max_pickup_angle = 30;
    private double camera_x_offset = -1.5; // distance in inches camera is FROM claw center
    private double camera_y_offset  = 2.5; // distance in inches camera is FROM claw center
-   private double camera_height = 14; //inches
+   private final double camera_height = 14; //inches
    /*
     * A good practice when typing EOCV pipelines is
     * declaring the Mats you will use here at the top
@@ -78,9 +78,9 @@ public class SampleSeeker extends OpenCvPipeline
     * memory leak and causing the app to crash due to an
     * "Out of Memory" error.
     */
-   private Mat ycrcbMat       = new Mat();
-   private Mat binaryMat      = new Mat();
-   private Mat maskedInputMat = new Mat();
+   private final Mat ycrcbMat       = new Mat();
+   private final Mat binaryMat      = new Mat();
+   private final Mat maskedInputMat = new Mat();
 
 
    /*

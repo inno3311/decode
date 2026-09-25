@@ -139,15 +139,14 @@ public class Logging
     {
         public String format(LogRecord rec)
         {
-            StringBuffer buf = new StringBuffer(1024);
 
-            buf.append(String.format("<%d>", rec.getThreadID())); //Thread.currentThread().getId()));
-            buf.append(formatDate(rec.getMillis()));
-            buf.append(" ");
-            buf.append(formatMessage(rec));
-            buf.append("\r\n");
+            String buf = String.format("<%d>", rec.getThreadID()) + //Thread.currentThread().getId()));
+                formatDate(rec.getMillis()) +
+                " " +
+                formatMessage(rec) +
+                "\r\n";
 
-            return buf.toString();
+            return buf;
         }
 
         private String formatDate(long milliseconds)
@@ -225,7 +224,7 @@ public class Logging
 
     private static String currentMethod(Integer level)
     {
-        StackTraceElement stackTrace[];
+        StackTraceElement[] stackTrace;
 
         stackTrace = new Throwable().getStackTrace();
 

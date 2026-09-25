@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class FunyonShooter
 {
     DriveFunyon mechanicalDriveOutreach;
-    private DcMotor intakeWheels;
-    private DcMotor intakeMill;
-    private DcMotor shooter;
-    private Servo trigger;
+    private final DcMotor intakeWheels;
+    private final DcMotor intakeMill;
+    private final DcMotor shooter;
+    private final Servo trigger;
 
     //inti for shooter class
     public FunyonShooter(HardwareMap hardwareMap)

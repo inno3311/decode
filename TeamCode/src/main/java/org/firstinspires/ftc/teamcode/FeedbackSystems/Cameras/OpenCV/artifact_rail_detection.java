@@ -38,7 +38,7 @@ public class artifact_rail_detection extends OpenCvPipeline
    double angle_difference = Math.toDegrees(Math.atan(distance_minimum_camera/camera_height));
    double x_degrees_per_pixel = x_fov/x_resolution;
    double y_degrees_per_pixel = y_fov/y_resolution;
-   private Scalar object_size_limits = new Scalar(150, 20000);
+   private final Scalar object_size_limits = new Scalar(150, 20000);
 
 
 
@@ -65,13 +65,13 @@ public class artifact_rail_detection extends OpenCvPipeline
    public int threshold = 500;
 
 
-   private Mat output = new Mat();
-   private Mat purple_binary_mat = new Mat();
-   private Mat green_binary_mat = new Mat();
-   private Mat hsv_mask = new Mat();
-   private Mat binary_mask_mat = new Mat();
-   private Mat grey = new Mat();
-   private Mat drawings = new Mat();
+   private final Mat output = new Mat();
+   private final Mat purple_binary_mat = new Mat();
+   private final Mat green_binary_mat = new Mat();
+   private final Mat hsv_mask = new Mat();
+   private final Mat binary_mask_mat = new Mat();
+   private final Mat grey = new Mat();
+   private final Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    // 1 is red, -1 is blue
    public double side = 1;

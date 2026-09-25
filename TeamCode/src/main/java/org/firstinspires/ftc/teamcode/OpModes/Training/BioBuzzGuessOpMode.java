@@ -2,19 +2,23 @@
 package org.firstinspires.ftc.teamcode.OpModes.Training;
 
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.Training.*;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.Training.DriveBaseHW;
+import org.firstinspires.ftc.teamcode.Training.IntakeHW;
 
 import java.util.Objects;
 
-@TeleOp(name = "BioBuzz Proto", group = "OpMode")
-public class TrainingOpMode extends OpMode
+@TeleOp(name = "BioBuzzGuess Proto", group = "OpMode")
+public class BioBuzzGuessOpMode extends OpMode
 {
    public static final class BlackboardKeys {
 
@@ -50,7 +54,7 @@ public class TrainingOpMode extends OpMode
    /////////////////
 
    //Used to indicate which team color you are on.
-   public AllianceColor m_AllianceColor = TrainingOpMode.AllianceColor.UNKNOWN;
+   public AllianceColor m_AllianceColor = BioBuzzGuessOpMode.AllianceColor.UNKNOWN;
 
 
    public InitState initState = InitState.INIT_WAIT_FOR_ALLIANCE;
@@ -74,7 +78,12 @@ public class TrainingOpMode extends OpMode
 
    private IntakeHW m_intake;
 
-   private Limelight3A limelight;
+   DcMotor m_lift;
+
+   Servo m_servo;
+
+   double servoIndex;
+
 
    @Override
    public void init()
@@ -83,6 +92,12 @@ public class TrainingOpMode extends OpMode
 
       m_driveBase = new DriveBaseHW();
       m_driveBase.init(this.hardwareMap);
+
+      m_servo = hardwareMap.get(Servo.class, "servo");
+
+      m_lift = hardwareMap.get(DcMotorEx.class, "lift");
+      //m_lift.setTargetPosition(0);
+      m_lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
       m_intake = new IntakeHW(this, "intake");
 
@@ -101,13 +116,15 @@ public class TrainingOpMode extends OpMode
       if (m_AllianceColor != null)
          telemetry.log().add(m_AllianceColor.name());
 
+      servoIndex = 0;
+
       //Limelight
-      limelight = hardwareMap.get(Limelight3A.class, "limelight");
+      //limelight = hardwareMap.get(Limelight3A.class, "limelight");
       telemetry.setMsTransmissionInterval(11);
-      limelight.pipelineSwitch(0);
+      //limelight.pipelineSwitch(0);
 
       //Starting camera
-      limelight.start();
+      //limelight.start();
 
       telemetry.log().add("Exiting init");
    }
@@ -175,7 +192,7 @@ public class TrainingOpMode extends OpMode
       min = Double.MAX_VALUE;
       max = 0;
       loopTimer.reset();
-
+      m_lift.setPower(0.3);
    }
 
    @Override
@@ -197,41 +214,69 @@ public class TrainingOpMode extends OpMode
          }
       }
 
+      if (gamepad1.dpadLeftWasPressed())
+      {
+         servoIndex = servoIndex + 0.1;
+         m_servo.setPosition(servoIndex);
+      }
+      else if (gamepad1.dpadRightWasPressed())
+      {
+         servoIndex = servoIndex - 0.1;
+          m_servo.setPosition(servoIndex);
+      }
+
+      if (gamepad1.dpad_up)
+      {
+         //int pos = m_lift.getCurrentPosition();
+         m_lift.setPower(0.5);
+         //telemetry.log().add("pos:" + pos);
+
+      }
+      else if (gamepad1.dpad_down)
+      {
+         //int pos = m_lift.getCurrentPosition();
+         m_lift.setPower(-0.3);
+         //telemetry.log().add("pos:" + pos);
+      }
+      else
+      {
+         m_lift.setPower(0);
+      }
       /// Limelight
 
       //Need to add a pipeline swapping ability for AprilTags
 
       if (gamepad1.a) {
-         limelight.pipelineSwitch(1);
+         //limelight.pipelineSwitch(1);
       } else if (gamepad1.b) {
-         limelight.pipelineSwitch(2);
+         //limelight.pipelineSwitch(2);
       }
 
-      LLResult result = limelight.getLatestResult();
-      if (result != null) {
-         if (result.isValid()) {
-            //m_led.yellow();
-            Pose3D botpose = result.getBotpose();
-            telemetry.addData("Target-x", result.getTx());   //x-coordinates of target
-            telemetry.addData("Target-y", result.getTy());   //y-coordinates of target  //all relative to crosshairs
-            telemetry.addData("Target-a", result.getTa());   //angle of the target
-            telemetry.addData("Botpose", botpose.toString());//Robot position
-         }
-         else {
-            //m_led.green();
-            telemetry.addLine("Blind Man's Bluff");
-         }
-      }
-      else {
-         telemetry.addLine("None found");
-      }
+      //LLResult result = limelight.getLatestResult();
+//      if (result != null) {
+//         if (result.isValid()) {
+//            //m_led.yellow();
+//            Pose3D botpose = result.getBotpose();
+//            telemetry.addData("Target-x", result.getTx());   //x-coordinates of target
+//            telemetry.addData("Target-y", result.getTy());   //y-coordinates of target  //all relative to crosshairs
+//            telemetry.addData("Target-a", result.getTa());   //angle of the target
+//            telemetry.addData("Botpose", botpose.toString());//Robot position
+//         }
+//         else {
+//            //m_led.green();
+//            telemetry.addLine("Blind Man's Bluff");
+//         }
+//      }
+//      else {
+//         telemetry.addLine("None found");
+//      }
 
       /// Robot Control Code
 
       switch (m_intakeTestState)
       {
          case IDLE:
-            m_driveBase.drive(-gamepad1.left_stick_y, gamepad1.right_stick_x, -gamepad1.left_stick_x);// do nothing
+            m_driveBase.drive(-gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);// do nothing
             if (gamepad1.right_trigger > 0.1)
             {
                m_intake.intake();

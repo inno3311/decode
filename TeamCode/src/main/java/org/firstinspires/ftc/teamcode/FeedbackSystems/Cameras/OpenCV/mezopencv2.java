@@ -55,12 +55,12 @@ public class mezopencv2 extends OpenCvPipeline
     * memory leak and causing the app to crash due to an
     * "Out of Memory" error.
     */
-   private Mat ycrcbMat       = new Mat();
-   private Mat binaryMat      = new Mat();
-   private Mat maskedInputMat = new Mat();
+   private final Mat ycrcbMat       = new Mat();
+   private final Mat binaryMat      = new Mat();
+   private final Mat maskedInputMat = new Mat();
 
    // Volatile since accessed by OpMode thread w/o synchronization
-   private volatile SkystonePosition position = SkystonePosition.LEFT;
+   private final SkystonePosition position = SkystonePosition.LEFT;
 
    /*
     * Working variables
@@ -110,7 +110,7 @@ public class mezopencv2 extends OpenCvPipeline
 //      region3_Cb = Cb.submat(new Rect(region3_pointA, region3_pointB));
    }
 
-   private Mat srcGray = new Mat();
+   private final Mat srcGray = new Mat();
    private static final int MAX_THRESHOLD = 255;
   //rivate int threshold = 100;
   // private Random rng = new Random(12345);

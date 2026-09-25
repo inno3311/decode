@@ -53,7 +53,7 @@ public class V3ActionsBackpack
 
     ColorSensor colorSensor;
 
-    enum color {GREEN, PURPLE};
+    enum color {GREEN, PURPLE}
 
     color[][] matrix = new color[3][9];
 
@@ -162,7 +162,7 @@ public class V3ActionsBackpack
                 FtcDashboard dashboard = FtcDashboard.getInstance();
                 dashboard.sendTelemetryPacket(packet);
                 return false;
-            };
+            }
         };
     }
 
@@ -171,7 +171,7 @@ public class V3ActionsBackpack
 
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
             private double[] shooterParameters;
             double fireTime;
             double transTime;
@@ -317,7 +317,7 @@ public class V3ActionsBackpack
     {
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)
@@ -605,7 +605,7 @@ public class V3ActionsBackpack
 
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
             //private double[] shooterParameters;
             double fireTime;
             double transTime;

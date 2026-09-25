@@ -12,6 +12,8 @@ public class ledHW //extends BaseHW
    private static final double GREEN = 0.500;
    private static final double BLUE  = 0.611;
 
+   private static final double YELLOW  = 0.388;
+
 
    private Servo m_led;
 
@@ -48,6 +50,9 @@ public class ledHW //extends BaseHW
 
    public void blue() {
       m_led.setPosition(BLUE);
+   }
+   public void yellow() {
+      m_led.setPosition(YELLOW);
    }
 
 }

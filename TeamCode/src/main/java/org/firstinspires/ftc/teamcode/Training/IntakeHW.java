@@ -30,7 +30,7 @@ public class IntakeHW
       m_OpMode.telemetry.log().add("Adding: ", m_name);
       m_intake = m_OpMode.hardwareMap.get(DcMotorEx.class, m_name);
 
-      m_intake.setDirection(DcMotorSimple.Direction.FORWARD);
+      m_intake.setDirection(DcMotorSimple.Direction.REVERSE);
    }
 
    public void intake()
@@ -40,7 +40,7 @@ public class IntakeHW
 
    public void outtake()
    {
-      m_intake.setPower(0);
+      m_intake.setPower(-1);
    }
 
    public void stop()

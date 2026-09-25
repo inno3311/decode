@@ -27,8 +27,8 @@ public class DriveController
     int turnDir = 0;
 
 
-    final double  COUNTS_PER_INCH = (8192 * 1) / (2 * 3.1415); // 1,303.835747254496
-    private double heading = 0;
+    final double  COUNTS_PER_INCH = (8192) / (2 * 3.1415); // 1,303.835747254496
+    private final double heading = 0;
 
     public DriveController(HardwareMap hardwareMap, int driveDir, int strafeDir, int turnDir)
     {

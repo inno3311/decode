@@ -16,8 +16,8 @@ public class ServoParent
     private String servoName;
     double servoRange;
 
-    private HardwareMap hardwareMap;
-    private Telemetry telemetry;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
     protected Gamepad gamepad1;
     protected Gamepad gamepad2;
 
@@ -86,12 +86,12 @@ public class ServoParent
         // Remove 1- to invert angle/servoRange
 
         //blue shooter
-        if (!Double.isNaN(1-angle/servoRange))
-            servo.setPosition(1-angle/servoRange);
+//        if (!Double.isNaN(1-angle/servoRange))
+//            servo.setPosition(1-angle/servoRange);
 
         //green shooter
-//        if (!Double.isNaN(angle/servoRange))
-//            servo.setPosition(angle/servoRange);
+        if (!Double.isNaN(angle/servoRange))
+            servo.setPosition(angle/servoRange);
     }
 
     protected double getAngle()

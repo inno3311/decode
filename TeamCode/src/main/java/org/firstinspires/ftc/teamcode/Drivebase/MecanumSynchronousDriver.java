@@ -25,7 +25,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
     * Number of ticks covered in one inch of movement for the odometery wheel.
     * NOTE: value may need fine tuning.
     */
-   private final double ticksPerInch = (8192 * 1) / (2 * 3.1415); // == 1303
+   private final double ticksPerInch = (8192) / (2 * 3.1415); // == 1303
 // Circumference of the robot when turning == encoder dist from center (radius) * 2 * pi
 
    private final double ticksPerDegree = 199;  // 12.63 V
@@ -72,7 +72,7 @@ public class MecanumSynchronousDriver<imuControl> extends DriveController
        time = new ElapsedTime();
 
        //logger.setup();
-       logger.log("Starting MecanumSynchronousDriver");
+       Logging.log("Starting MecanumSynchronousDriver");
 
        mOpMode = opMode;
        opMode.telemetry.update();

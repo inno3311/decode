@@ -66,11 +66,11 @@ public final class MecanumDrive
     private double leftPowerBack = 0;
     private double speed = 0;
 
-    private int driveDir = 1;
-    private int strafeDir = 1;
-    private int turnDir = 1;
+    private final int driveDir = 1;
+    private final int strafeDir = 1;
+    private final int turnDir = 1;
 
-    private Pose2d poseEstimate = new Pose2d(0, 0, 0);
+    private final Pose2d poseEstimate = new Pose2d(0, 0, 0);
 
 
     public static class Params

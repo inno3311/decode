@@ -58,7 +58,7 @@ public class Shooter
      */
     public void driveToVelocity(double targetVelocity)
     {
-        if (isDisabled == false)
+        if (!isDisabled)
         {
 
 

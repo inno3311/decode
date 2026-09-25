@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Training;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DriveBaseHW
@@ -19,8 +20,10 @@ public class DriveBaseHW
       backLeftMotor = hardwareMap.dcMotor.get("lb");
       backRightMotor = hardwareMap.dcMotor.get("rb");
 
-      backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
       frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+      frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+      backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
+      backRightMotor.setDirection(DcMotor.Direction.REVERSE);
       frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
       frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
       backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -43,7 +46,7 @@ public class DriveBaseHW
       backRightMotor.setPower(backRightPower);
    }
 
-   //// Thanks to FTC16072 for sharing this code!!
+
    public void drive(double forward, double right, double rotate) {
       double frontLeftPower = forward + right + rotate;
       double frontRightPower = forward- right- rotate;

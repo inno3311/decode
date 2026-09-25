@@ -49,7 +49,7 @@ public class artifact_floor_detection extends OpenCvPipeline
    double y_degrees_per_pixel = y_fov/y_resolution;
 
 
-   private Scalar object_size_limits = new Scalar(200, 20000);
+   private final Scalar object_size_limits = new Scalar(200, 20000);
 
    // x_max, x_min, y_max, y_min
    public Scalar detection_limits = new Scalar(0, 320, 0, 180);
@@ -76,12 +76,12 @@ public class artifact_floor_detection extends OpenCvPipeline
    public int threshold = 500;
 
 
-   private Mat output = new Mat();
-   private Mat binary_mat      = new Mat();
-   private Mat hsv_mask = new Mat();
-   private Mat binary_mask_mat = new Mat();
-   private Mat grey = new Mat();
-   private Mat drawings = new Mat();
+   private final Mat output = new Mat();
+   private final Mat binary_mat      = new Mat();
+   private final Mat hsv_mask = new Mat();
+   private final Mat binary_mask_mat = new Mat();
+   private final Mat grey = new Mat();
+   private final Mat drawings = new Mat();
    private ArrayList<Point> artifact_points = new ArrayList<>();
    private ArrayList<Double> artifact_radii = new ArrayList<>();
 

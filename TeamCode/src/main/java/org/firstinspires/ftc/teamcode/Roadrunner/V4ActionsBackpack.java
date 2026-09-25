@@ -54,7 +54,7 @@ public class V4ActionsBackpack
 
     ColorSensor colorSensor;
 
-    enum color {GREEN, PURPLE};
+    enum color {GREEN, PURPLE}
 
     color[][] matrix = new color[3][9];
 
@@ -160,7 +160,7 @@ public class V4ActionsBackpack
 
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
             //private double[] shooterParameters;
             double fireTime;
             double transTime;
@@ -256,7 +256,7 @@ public class V4ActionsBackpack
                 FtcDashboard dashboard = FtcDashboard.getInstance();
                 dashboard.sendTelemetryPacket(packet);
                 return false;
-            };
+            }
         };
     }
 
@@ -274,7 +274,7 @@ public class V4ActionsBackpack
                 double target = turret.turretAngleToFixedTarget(pose1.position.x, pose1.position.y, Math.toDegrees(pose1.heading.toDouble()), isBlue, 90 + turretOffset);
                 //turret.
                 return true;
-            };
+            }
         };
     }
 
@@ -286,7 +286,7 @@ public class V4ActionsBackpack
             {
                 turretOffset = newTurretoffset;
                 return false;
-            };
+            }
         };
     }
 
@@ -329,7 +329,7 @@ public class V4ActionsBackpack
     {
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)

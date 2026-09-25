@@ -22,7 +22,7 @@ import java.util.Locale;
 /** removed distance sensor part of code now for rotate mainly - Sam**/
 public class IMU
 {
-    private final double ticksPerInch = (8192 * 1) / (2 * 3.1415); // == 1303
+    private final double ticksPerInch = (8192) / (2 * 3.1415); // == 1303
 
     private DriveController driveController;
 

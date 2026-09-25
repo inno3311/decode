@@ -22,8 +22,8 @@ public class MotorParent
     private String motorName;
     private boolean hasEncoder;
 
-    private HardwareMap hardwareMap;
-    private Telemetry telemetry;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
     protected Gamepad gamepad1;
     protected Gamepad gamepad2;
 

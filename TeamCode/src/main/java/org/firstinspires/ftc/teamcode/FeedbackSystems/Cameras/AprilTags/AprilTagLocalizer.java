@@ -34,8 +34,8 @@ public class AprilTagLocalizer
     private VisionPortal visionPortal;
 
     //Camera position
-    private Position cameraPosition = new Position(DistanceUnit.INCH, 0, 0, 0, 0);
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -90, 0, 0);
+    private final Position cameraPosition = new Position(DistanceUnit.INCH, 0, 0, 0, 0);
+    private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -90, 0, 0);
 
     //Constructor
     public AprilTagLocalizer(HardwareMap hardwareMap)

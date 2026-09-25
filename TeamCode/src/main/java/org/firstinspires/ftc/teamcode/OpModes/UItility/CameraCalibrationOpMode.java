@@ -66,13 +66,14 @@ public class CameraCalibrationOpMode extends LinearOpMode {
    }
 
    public static class CalibrationPipeline extends OpenCvPipeline {
-      private int boardWidth, boardHeight;
-      private Size frameSize = new Size(1280, 720);
-      private Mat gray = new Mat();
-      private List<Mat> imagePoints = new ArrayList<>();
-      private List<Mat> objectPoints = new ArrayList<>();
-      private MatOfPoint3f objp;
-      private Telemetry telemetry;
+      private final int boardWidth;
+       private final int boardHeight;
+      private final Size frameSize = new Size(1280, 720);
+      private final Mat gray = new Mat();
+      private final List<Mat> imagePoints = new ArrayList<>();
+      private final List<Mat> objectPoints = new ArrayList<>();
+      private final MatOfPoint3f objp;
+      private final Telemetry telemetry;
 
       public CalibrationPipeline(int boardWidth, int boardHeight, Telemetry telemetry) {
          this.boardWidth = boardWidth;

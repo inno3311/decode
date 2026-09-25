@@ -103,7 +103,7 @@ public class Version4_2_Outreach extends LinearOpMode
             pos = new Pose2d(0,0,0);
         }
 
-        drive.localizer.setPose((Pose2d) pos);
+        drive.localizer.setPose(pos);
         if (drive.localizer.getPose() == null)
         {
             Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
@@ -132,25 +132,25 @@ public class Version4_2_Outreach extends LinearOpMode
             }
 
             // Drive code
-            if(drive_mode%2 == 1)
+//            if(drive_mode%2 == 1)   //jrm removed field centric!!!!!!!!   >:[
             {
                 driveController.gamepadController(gamepad1);
             }
-            else
-            {
-                if (gamepad2.dpad_up)
-                {
-                    imu.resetYaw();
-                }
-                centricDrive.drive(
-                    gamepad1.left_stick_x,
-                    gamepad1.left_stick_y,
-                    imu.getRobotYawPitchRollAngles().getYaw(),
-//                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
-                    gamepad2.left_trigger,
-                    gamepad1.right_stick_x
-                );
-            }
+//            else
+//            {
+//                if (gamepad2.dpad_up)
+//                {
+//                    imu.resetYaw();
+//                }
+//                centricDrive.drive(
+//                    gamepad1.left_stick_x,
+//                    gamepad1.left_stick_y,
+//                    imu.getRobotYawPitchRollAngles().getYaw(),
+////                turnToHeading.turnToHeading(gamepad1.right_stick_x, gamepad1.right_stick_y, 0.2, 0.2),
+//                    gamepad2.left_trigger,
+//                    gamepad1.right_stick_x
+//                );
+//            }
 
             if (gamepad2.back && drive_mode_flag <= time.seconds())
             {
@@ -185,14 +185,7 @@ public class Version4_2_Outreach extends LinearOpMode
             if (gamepad2.dpadLeftWasPressed())
             {
                 //shooter.setDisabled(false);
-                if (isFlyWheelDisabled == false)
-                {
-                    isFlyWheelDisabled = true;
-                }
-                else
-                {
-                    isFlyWheelDisabled = false;
-                }
+                isFlyWheelDisabled = !isFlyWheelDisabled;
                 shooter.setDisabled(isFlyWheelDisabled);
             }
 //            if ((gamepad1.start))

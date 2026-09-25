@@ -123,7 +123,7 @@ public class Version4_2 extends LinearOpMode
             pos = new Pose2d(0,0,0);
         }
 
-        drive.localizer.setPose((Pose2d) pos);
+        drive.localizer.setPose(pos);
         if (drive.localizer.getPose() == null)
         {
             Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startYaw)); // inches, radians
@@ -208,14 +208,7 @@ public class Version4_2 extends LinearOpMode
             if (gamepad1.dpadLeftWasPressed())
             {
                 //shooter.setDisabled(false);
-                if (isFlyWheelDisabled == false)
-                {
-                    isFlyWheelDisabled = true;
-                }
-                else
-                {
-                    isFlyWheelDisabled = false;
-                }
+                isFlyWheelDisabled = !isFlyWheelDisabled;
                 shooter.setDisabled(isFlyWheelDisabled);
             }
 //            if ((gamepad1.start))

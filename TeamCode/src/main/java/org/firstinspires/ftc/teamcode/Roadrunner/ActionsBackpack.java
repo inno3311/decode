@@ -94,7 +94,7 @@ public class ActionsBackpack
                 FtcDashboard dashboard = FtcDashboard.getInstance();
                 dashboard.sendTelemetryPacket(packet);
                 return false;
-            };
+            }
         };
     }
 
@@ -103,7 +103,7 @@ public class ActionsBackpack
 
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
             private double[] shooterParameters;
 
             double fireTime;
@@ -137,7 +137,7 @@ public class ActionsBackpack
 
                         double vel = shooter.getShooter().getVelocity();
                         boolean notAtSpeed = Math.abs(vel - m_targetVelocity) > 10;
-                        if (notAtSpeed == false)
+                        if (!notAtSpeed)
                         {
                             state = FireState.FIRE;
                         }
@@ -370,7 +370,7 @@ public class ActionsBackpack
     {
         return new Action()
         {
-            private boolean initialized = false;
+            private final boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket)

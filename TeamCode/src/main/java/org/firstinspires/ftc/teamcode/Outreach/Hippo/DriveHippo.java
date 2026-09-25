@@ -19,8 +19,8 @@ public class DriveHippo
     public double leftPowerBack   = 0;
     public double speedFactor = 0;
 
-    final double  COUNTS_PER_INCH = (8192 * 1) / (2 * 3.1415); // 1,303.835747254496
-    private double heading = 0;
+    final double  COUNTS_PER_INCH = (8192) / (2 * 3.1415); // 1,303.835747254496
+    private final double heading = 0;
     IMU imuControl;
 
     /**

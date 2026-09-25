@@ -72,12 +72,12 @@ public class opencvtest2 extends OpenCvPipeline
     * memory leak and causing the app to crash due to an
     * "Out of Memory" error.
     */
-   private Mat ycrcbMat       = new Mat();
-   private Mat binaryMat      = new Mat();
-   private Mat maskedInputMat = new Mat();
+   private final Mat ycrcbMat       = new Mat();
+   private final Mat binaryMat      = new Mat();
+   private final Mat maskedInputMat = new Mat();
 
    // Volatile since accessed by OpMode thread w/o synchronization
-   private volatile SkystonePosition position = SkystonePosition.LEFT;
+   private final SkystonePosition position = SkystonePosition.LEFT;
 
    /*
     * Working variables
