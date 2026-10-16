@@ -51,6 +51,8 @@ public class Version4_2_Outreach extends LinearOpMode
     double turretOffset = 90;
     double flag = 0;
 
+    boolean intakeIsRunning = false;
+
     boolean isFlyWheelDisabled = false;
     public enum TurretState
     {
@@ -180,6 +182,15 @@ public class Version4_2_Outreach extends LinearOpMode
             {
                 trigger.setPower(0);
             }
+
+
+//            if (gamepad1.a) {
+//                intake.setPower(-1);
+//            }
+//            else
+//            {
+//                intake.setPower(0);
+//            }
 
             //if (gamepad1.aWasPressed())
             if (gamepad2.dpadLeftWasPressed())
